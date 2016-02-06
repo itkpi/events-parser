@@ -1,6 +1,5 @@
 const fs = require('fs')
 const xml2json = require('xml2json')
-const querystring = require('querystring')
 const http = require('http')
 
 /**
@@ -40,7 +39,7 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
     fs.readFile(__dirname + '/old_data.json', (err, old_data) => {
       if (err) throw err
 
-      setTimeout(null, 15000)
+      setTimeout(null, 10000)
       var newData = JSON.parse(new_data)
       var oldData = JSON.parse(old_data)
 
@@ -59,7 +58,7 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
       }
 
       /**
-       * Send event to EventMonkey
+       * RSS to API
        */
       while (num >= 0) {
         var newID = newI[num].description
@@ -69,11 +68,15 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
         var title, agenda, place, registration_url, image_url, only_date, when_start
         switch (newData.rss.channel.link) {
           case 'http://dou.ua/calendar/':
-        //     title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+            title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+
             agenda = newID.substring(newID.indexOf('h', 70), newID.indexOf('"', 150)) + // mini picture
                       newID.substring(newID.indexOf('p', newID.indexOf('М', 250)) + 4) // other
+
             place = newID.substring(newID.indexOf('М', 250) + 27, newID.indexOf('p', newID.indexOf('М', 250)) - 2)
-            registration_url = ''
+            if (place.toLowerCase() === 'online') place = 'Онлайн'
+
+            registration_url = 'http://ITKPI.PP.UA/'
             image_url = ''
             only_date = false
 
@@ -97,7 +100,6 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
             var mm = month[newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200) + 17))]
             var yyyy = today.getFullYear()
             if (dd < 10) dd = '0' + dd
-            if (mm < 10) mm = '0' + mm
             if (mm_now > mm) yyyy += 1
 
             when_start = yyyy + '-' + mm + '-' + dd
@@ -108,30 +110,23 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
               only_date = true
             }
 
-
             break
         }
 
-          //   title: title,
-          //   agenda: agenda,
-          //   place:  place,
-          //   registration_url: registration_url,
-          //   image_url: image_url,
-          //   when_start: when_start,
-          // // when_end: when_start
-          //   only_date: only_date,
-
+        /**
+         * Send event to EventMonkey
+         */
         var body = JSON.stringify({
-          title: 'test',
-          agenda: '-',
-          social: '-',
-          place: 'Онлайн',
-          registration_url: 'https://vk.com/',
-          image_url: 'https://pp.vk.me/c631130/v631130008/b3a4/fgq304e9aOk.jpg',
+          title: '_T_E_S_T_ 3' + title,
+          agenda: agenda,
+          social: '',
+          place: place,
+          registration_url: registration_url,
+          image_url: image_url,
           level: 'NONE',
-          when_start: '2016-10-11 10:00',
-          when_end: '2016-10-11 09:00',
-          only_date: 'false',
+          when_start: when_start,
+          when_end: when_start, // ОБОВ’ЯЗКОВЕ ПОЛЕ, МАТЬ ЙОГО!
+          only_date: only_date,
           team: 'ITKPI',
           submitter_email: 'vm@itkpi.pp.ua'
         })

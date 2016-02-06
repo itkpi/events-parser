@@ -1,4 +1,4 @@
-*.json
-_*.*
-*.xml
+/tmp/*
 /logs/*
+.vscode/*
+jsconfig.json

@@ -1,74 +1,97 @@
+/**
+ * Events-parser. Parsing events from:
+ * - DOU.UA (partially)
+ * - Meetup.com (in future)
+ * - AIN.UA (in future)
+ * - Other (in future)
+ *
+ * Version 0.1alpha1
+ *
+ * Author: https://github.com/MaxymVlasov
+ *
+ * Some problems:
+ * 1. SyntaxError: Unexpected end of input
+ *      at Object.parse (native)
+ *      at /home/vm/code/itkpi/events-parser/app.js:69:26
+ *      at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:404:3)
+ * 2. _log_ delete not optimized => disable
+ *
+ * Not testing work with:
+ * 1. Get xml-data from sources
+ * 2. Save old file
+ */
+
 'use strict'
 
 const fs = require('fs')
 const xml2json = require('xml2json')
 const http = require('http')
+_log_('Start')
 
-/**
- * Get xml-data from sources
- */
 let adress = [ // xml-file name, link
   ['dou_ua_online', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']
 ]
 let adr = 0 // TODO: for-cycle
 
-http.get(adress[adr][1], (res) => {
-  _log_(`Got response: ${res.statusCode}`)
-  fs.writeFile(__dirname + '/xml/' + adress[adr][0] + '.xml', '', (err) => {
-    if (err) throw err
-    _log_('Done: clear ' + adress[adr][0] + '.xml')
-  })
+/**
+ * Get xml-data from sources DISABLE FOR TESTS
+ */
+// http.get(adress[adr][1], (res) => {
+//   // _log_(`Got response: ${res.statusCode}`)
+//   fs.writeFile(__dirname + '/xml/' + adress[adr][0] + '.xml', '', (err) => {
+//     if (err) { _log_(err); throw err }
+//      // _log_('Done: clear ' + adress[adr][0] + '.xml')
+//   })
 
-  res.on('data', function (chunk) {
-    fs.appendFile(__dirname + '/xml/' + adress[adr][0] + '.xml', chunk, (err) => {
-      if (err) throw err
-      _log_('Done: write chunk of ' + adress[adr][0] + '.xml')
-    })
-  })
-}).on('error', (e) => {
-  _log_(`Got error: ${e.message}`)
-})
+//   res.on('data', function (chunk) {
+//     fs.appendFile(__dirname + '/xml/' + adress[adr][0] + '.xml', chunk, (err) => {
+//       if (err) { _log_(err); throw err }
+//        // _log_('Done: write chunk of ' + adress[adr][0] + '.xml')
+//     })
+//   })
+// }).on('error', (e) => {
+//   // _log_(`Got error: ${e.message}`)
+// })
 
 /**
  * Save old file DISABLE FOR TESTS
  */
-// fs.readFile(__dirname + '/new_data.json', (err, data) => {
-//   if (err) throw err
+// fs.readFile(__dirname + '/json/new_' + adress[adr][0] + '.json', (err, data) => {
+//   if (err) { _log_(err); throw err }
 
-//   fs.writeFile(__dirname + '/old_data.json', data, (err) => {
-//     if (err) throw err
-//     _log_('Done: write old file')
+//   fs.writeFile(__dirname + '/json/old_' + adress[adr][0] + '.json', data, (err) => {
+//     if (err) { _log_(err); throw err }
+//     // _log_('Done: write old file')
 //   })
-//   _log_('Done: read old file')
+//   // _log_('Done: read old file')
 // })
 
 /**
  * XML to JSON
  */
-fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru/q/199773
-  if (err) throw err
+fs.readFile(__dirname + '/xml/' + adress[adr][0] + '.xml', (err, data) => { // TODO: https://toster.ru/q/199773
+  if (err) { _log_(err); throw err }
 
   let result = xml2json.toJson(data, {sanitize: false})
 
+  fs.writeFile(__dirname + '/json/new_' + adress[adr][0] + '.json', result, (err) => {
+    if (err) { _log_(err); throw err }
 
-  fs.writeFile(__dirname + '/new_data.json', result, (err) => {
-    if (err) throw err
-    _log_('Done: write new file')
   })
-  _log_('Done: read new file')
+
 
   /**
   * Add new event
   */
-  fs.readFile(__dirname + '/new_data.json', (err, new_data) => {
-    if (err) throw err
+  fs.readFile(__dirname + '/json/new_' + adress[adr][0] + '.json', (err, new_data) => {
+    if (err) { _log_(err); throw err }
 
-    fs.readFile(__dirname + '/old_data.json', (err, old_data) => {
-      if (err) throw err
+    fs.readFile(__dirname + '/json/old_' + adress[adr][0] + '.json', (err, old_data) => {
+      if (err) { _log_(err); throw err }
 
-      setTimeout(null, 10000)
       let newData = JSON.parse(new_data)
       let oldData = JSON.parse(old_data)
+      // setTimeout(null, 2000)
 
       if (newData.rss.channel.lastBuildDate ===
           oldData.rss.channel.lastBuildDate) return _log_('UP TO DATE')
@@ -89,8 +112,6 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
        */
       while (num >= 0) {
         let newID = newI[num].description
-
-        _log_('qwerty')
 
         let title, agenda, place, registration_url, image_url, only_date, when_start
         switch (newData.rss.channel.link) {
@@ -171,28 +192,26 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
 
         request.end(body)
         num -= 1
-        _log_('ololo')
       }
+      _log_('Done')
     })
-    _log_('Done: Add new event')
   })
 })
-
 
 function _log_ (log) {
   let d = new Date()
   let date = d.getDate()
   fs.appendFile(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n', (err) => {
-    if (err) throw err
+    if (err) { _log_(err); throw err }
   })
 
-  // delete old 
-  // TODO: need optomization
-  if (date - 7 < 1) date += 30
-  fs.writeFile(__dirname + '/logs/' + (date - 7) + '.txt', '', (err) => {
-    if (err) throw err
-  })
-  fs.unlink(__dirname + '/logs/' + (date - 7) + '.txt', (err) => {
-    if (err) throw err
-  })
+  // // delete old
+  // // TODO: need optomization
+  // if (date - 7 < 1) date += 30
+  // fs.writeFile(__dirname + '/logs/' + (date - 7) + '.txt', '', (err) => {
+  //   if (err) { _log_(err); throw err }
+  // })
+  // fs.unlink(__dirname + '/logs/' + (date - 7) + '.txt', (err) => {
+  //   if (err) { _log_(err); throw err }
+  // })
 }

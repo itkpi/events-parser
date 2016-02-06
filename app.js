@@ -1,6 +1,33 @@
+'use strict'
+
 const fs = require('fs')
 const xml2json = require('xml2json')
 const http = require('http')
+
+/**
+ * Get xml-data from sources
+ */
+let adress = [ // xml-file name, link
+  ['dou_ua_online', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']
+]
+let adr = 0 // TODO: for-cycle
+
+http.get(adress[adr][1], (res) => {
+  _log_(`Got response: ${res.statusCode}`)
+  fs.writeFile(__dirname + '/xml/' + adress[adr][0] + '.xml', '', (err) => {
+    if (err) throw err
+    _log_('Done: clear ' + adress[adr][0] + '.xml')
+  })
+
+  res.on('data', function (chunk) {
+    fs.appendFile(__dirname + '/xml/' + adress[adr][0] + '.xml', chunk, (err) => {
+      if (err) throw err
+      _log_('Done: write chunk of ' + adress[adr][0] + '.xml')
+    })
+  })
+}).on('error', (e) => {
+  _log_(`Got error: ${e.message}`)
+})
 
 /**
  * Save old file DISABLE FOR TESTS
@@ -10,9 +37,9 @@ const http = require('http')
 
 //   fs.writeFile(__dirname + '/old_data.json', data, (err) => {
 //     if (err) throw err
-//     console.log('Done: write old file')
+//     _log_('Done: write old file')
 //   })
-//   console.log('Done: read old file')
+//   _log_('Done: read old file')
 // })
 
 /**
@@ -21,14 +48,14 @@ const http = require('http')
 fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru/q/199773
   if (err) throw err
 
-  var result = xml2json.toJson(data, {sanitize: false})
+  let result = xml2json.toJson(data, {sanitize: false})
 
 
   fs.writeFile(__dirname + '/new_data.json', result, (err) => {
     if (err) throw err
-    console.log('Done: write new file')
+    _log_('Done: write new file')
   })
-  console.log('Done: read new file')
+  _log_('Done: read new file')
 
   /**
   * Add new event
@@ -40,16 +67,16 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
       if (err) throw err
 
       setTimeout(null, 10000)
-      var newData = JSON.parse(new_data)
-      var oldData = JSON.parse(old_data)
+      let newData = JSON.parse(new_data)
+      let oldData = JSON.parse(old_data)
 
       if (newData.rss.channel.lastBuildDate ===
-          oldData.rss.channel.lastBuildDate) return console.log('UP TO DATE')
+          oldData.rss.channel.lastBuildDate) return _log_('UP TO DATE')
 
-      var newI = newData.rss.channel.item
-      var oldI = oldData.rss.channel.item
+      let newI = newData.rss.channel.item
+      let oldI = oldData.rss.channel.item
 
-      var num = 0 // # останнього нового запису
+      let num = 0 // # останнього нового запису
       for (num; num < oldI.length; num++) {
         if (oldI[0].link === newI[num].link) {
           num -= 1
@@ -61,11 +88,11 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
        * RSS to API
        */
       while (num >= 0) {
-        var newID = newI[num].description
+        let newID = newI[num].description
 
-        console.log('qwerty')
+        _log_('qwerty')
 
-        var title, agenda, place, registration_url, image_url, only_date, when_start
+        let title, agenda, place, registration_url, image_url, only_date, when_start
         switch (newData.rss.channel.link) {
           case 'http://dou.ua/calendar/':
             title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
@@ -80,7 +107,7 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
             image_url = ''
             only_date = false
 
-            var month = {
+            let month = {
               января: '01',
               февраля: '02',
               марта: '03',
@@ -94,16 +121,16 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
               ноября: '11',
               декабря: '12'
             }
-            var today = new Date()
-            var dd = newID.substring(newID.indexOf('Д', 200) + 15, newID.indexOf(' ', newID.indexOf('Д', 200) + 15))
-            var mm_now = today.getMonth() + 1 // January is 0!
-            var mm = month[newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200) + 17))]
-            var yyyy = today.getFullYear()
+            let today = new Date()
+            let dd = newID.substring(newID.indexOf('Д', 200) + 15, newID.indexOf(' ', newID.indexOf('Д', 200) + 15))
+            let mm_now = today.getMonth() + 1 // January is 0!
+            let mm = month[newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200) + 17))]
+            let yyyy = today.getFullYear()
             if (dd < 10) dd = '0' + dd
             if (mm_now > mm) yyyy += 1
 
             when_start = yyyy + '-' + mm + '-' + dd
-            var time = newID.substring(newID.indexOf('Н', 250) + 17, newID.indexOf('b', newID.indexOf('Н', 250) + 17) - 1)
+            let time = newID.substring(newID.indexOf('Н', 250) + 17, newID.indexOf('b', newID.indexOf('Н', 250) + 17) - 1)
             if (time.length < 6) {
               when_start += ' ' + time
             } else {
@@ -116,7 +143,7 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
         /**
          * Send event to EventMonkey
          */
-        var body = JSON.stringify({
+        let body = JSON.stringify({
           title: '_T_E_S_T_ 3' + title,
           agenda: agenda,
           social: '',
@@ -131,7 +158,7 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
           submitter_email: 'vm@itkpi.pp.ua'
         })
 
-        var request = new http.ClientRequest({
+        let request = new http.ClientRequest({
           hostname: 'eventsmonkey.itkpi.pp.ua',
           port: 80,
           path: '/api/v1/suggested_events',
@@ -144,9 +171,28 @@ fs.readFile(__dirname + '/test.xml', (err, data) => { // TODO: https://toster.ru
 
         request.end(body)
         num -= 1
-        console.log('ololo')
+        _log_('ololo')
       }
     })
-    console.log('Done: Add new event')
+    _log_('Done: Add new event')
   })
 })
+
+
+function _log_ (log) {
+  let d = new Date()
+  let date = d.getDate()
+  fs.appendFile(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n', (err) => {
+    if (err) throw err
+  })
+
+  // delete old 
+  // TODO: need optomization
+  if (date - 7 < 1) date += 30
+  fs.writeFile(__dirname + '/logs/' + (date - 7) + '.txt', '', (err) => {
+    if (err) throw err
+  })
+  fs.unlink(__dirname + '/logs/' + (date - 7) + '.txt', (err) => {
+    if (err) throw err
+  })
+}

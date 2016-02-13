@@ -4,50 +4,51 @@ const fs = require('fs-extra')
 const xml2json = require('xml2json')
 const http = require('http')
 const request = require('sync-request')
-_log_('Start')
 
 let adress = [ // xml-file name, link
   ['dou_ua_online', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']
 ]
 let adr = 0 // TODO: for-cycle
 
-/**
- * Get xml-data from sources
- */
-fs.ensureFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml')
+// Paths to auxiliary files
+let xml = __dirname + '/xml/' + adress[adr][0] + '.xml'
+let newJSON = __dirname + '/json/new_' + adress[adr][0] + '.json'
+let oldJSON = __dirname + '/json/old_' + adress[adr][0] + '.json'
+
+// Check for the existence files
+fs.ensureFileSync(xml)
+fs.ensureFileSync(newJSON)
+fs.ensureFileSync(oldJSON)
+fs.ensureDirSync(__dirname + '/logs/')
+
+_log_('Start')
+
+// Get xml-data from sources
 let res = request('GET', adress[adr][1])
-fs.writeFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml', res.getBody())
+fs.writeFileSync(xml, res.getBody())
 
-/**
- * Save old file
- */
-fs.ensureFileSync(__dirname + '/json/new_' + adress[adr][0] + '.json')
-fs.ensureFileSync(__dirname + '/json/old_' + adress[adr][0] + '.json')
-fs.copySync(__dirname + '/json/new_' + adress[adr][0] + '.json', __dirname + '/json/old_' + adress[adr][0] + '.json')
+// Save old file
+fs.copySync(newJSON, oldJSON)
 
-/**
- * XML to JSON
- */
-let data = fs.readFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml')
+// XML to JSON
+let data = fs.readFileSync(xml)
 let result = xml2json.toJson(data, {sanitize: false})
-fs.writeFileSync(__dirname + '/json/new_' + adress[adr][0] + '.json', result)
+fs.writeFileSync(newJSON, result)
 
-data = fs.readFileSync(__dirname + '/json/old_' + adress[adr][0] + '.json')
-if (data == '') return _log_('INIT') // not rewrite to '==='
+data = fs.readFileSync(oldJSON)
+if (data == '') return _log_(adress[adr][0] + ': INIT \n') // not rewrite to '==='
 
-/**
- * Add new event
- */
-let newData = fs.readJsonSync(__dirname + '/json/new_' + adress[adr][0] + '.json', {throws: false})
-let oldData = fs.readJsonSync(__dirname + '/json/old_' + adress[adr][0] + '.json', {throws: false})
+// Add new event
+let newData = fs.readJsonSync(newJSON, {throws: false})
+let oldData = fs.readJsonSync(oldJSON, {throws: false})
 
 if (newData.rss.channel.item[0].title ===
-    oldData.rss.channel.item[0].title) return _log_('UP TO DATE')
+    oldData.rss.channel.item[0].title) return _log_(adress[adr][0] + ': UP TO DATE \n')
 
 let newI = newData.rss.channel.item
 let oldI = oldData.rss.channel.item
 
-let num = 0 // # останнього нового запису
+let num = 0 // # the last new entry
 for (num; num < oldI.length; num++) {
   if (oldI[0].link === newI[num].link) {
     num -= 1
@@ -55,21 +56,27 @@ for (num; num < oldI.length; num++) {
   }
 }
 
-/**
- * RSS to API
- */
+// RSS to API
 while (num >= 0) {
   let newID = newI[num].description
+  
+  function index (foo, bar) {
+    return newID.indexOf(foo, bar)
+  }
+
+  function substr (foo, bar) {
+    return newID.substring(foo, bar)
+  }
 
   let title, agenda, place, registration_url, image_url, only_date, when_start
   switch (newData.rss.channel.link) {
     case 'http://dou.ua/calendar/':
       title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
 
-      agenda = newID.substring(newID.indexOf('h', 70), newID.indexOf('"', 150)) + // mini picture
-                newID.substring(newID.indexOf('p', newID.indexOf('М', 250)) + 4) // other
+      agenda = substr(index('h', 70), index('"', 150)) + // mini picture
+                substr(index('p', index('М', 250)) + 4) // other
 
-      place = newID.substring(newID.indexOf('М', 250) + 27, newID.indexOf('p', newID.indexOf('М', 250)) - 2)
+      place = substr(index('М', 250) + 27, index('p', index('М', 250)) - 2)
       if (place.toLowerCase() === 'online') place = 'Онлайн'
 
       registration_url = 'http://ITKPI.PP.UA/'
@@ -91,15 +98,15 @@ while (num >= 0) {
         декабря: '12'
       }
       let today = new Date()
-      let dd = newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200))).replace(' ', '').replace(' ', '')
+      let dd = substr(index('Д', 200) + 17, index(' ', index('Д', 200))).replace(' ', '').replace(' ', '')
       let mm_now = today.getMonth() + 1 // January is 0!
-      let mm = month[newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200) + 17)).replace(' ', '')] //In 'replace' - non-breaking space
+      let mm = month[substr(index('Д', 200) + 17, index(' ', index('Д', 200) + 17)).replace(' ', '')] //In 'replace' - non-breaking space
       let yyyy = today.getFullYear()
       if (dd < 10) dd = '0' + dd
       if (mm_now > mm) yyyy += 1
 
       when_start = yyyy + '-' + mm + '-' + dd
-      let time = newID.substring(newID.indexOf('Н', 250) + 17, newID.indexOf('b', newID.indexOf('Н', 250) + 17) - 1)
+      let time = substr(index('Н', 250) + 17, index('b', index('Н', 250) + 17) - 1)
       if (time.length < 6) {
         when_start += ' ' + time
       } else {
@@ -109,11 +116,9 @@ while (num >= 0) {
       break
   }
 
-  /**
-   * Send event to EventMonkey
-   */
+  // Send event to EventMonkey
   let body = JSON.stringify({
-    title: '_T_E_S_T_ 3' + title,
+    title: '_T_E_S_T_ ' + adress[adr][0] + ' ' + title,
     agenda: agenda,
     social: '',
     place: place,
@@ -121,13 +126,13 @@ while (num >= 0) {
     image_url: image_url,
     level: 'NONE',
     when_start: when_start,
-    when_end: when_start, // ОБОВ’ЯЗКОВЕ ПОЛЕ, МАТЬ ЙОГО!
+    when_end: when_start, // Required field... Need change in API
     only_date: only_date,
     team: 'ITKPI',
     submitter_email: 'vm@itkpi.pp.ua'
   })
 
-  let request = new http.ClientRequest({
+  let options = {
     hostname: 'eventsmonkey.itkpi.pp.ua',
     port: 80,
     path: '/api/v1/suggested_events',
@@ -136,16 +141,27 @@ while (num >= 0) {
       'Content-Type': 'application/json; charset=utf-8',
       'Content-Length': Buffer.byteLength(body)
     }
+  }
+  let req = http.request(options, (res) => {
+    if (res.statusCode !== 201) {
+      _log_(`HEADERS: ${JSON.stringify(res.headers)}`)
+      res.setEncoding('utf8')
+      res.on('data', (chunk) => { _log_(`BODY: ${chunk}`) })
+      res.on('end', () => { _log_('No more data in response. \n') })
+    }
   })
+  req.on('error', (e) => { _log_(`problem with request: ${e.message}`) })
 
-  request.end(body)
+  req.write(body)
+  req.end()
   num -= 1
 }
-_log_('Done all')
+_log_(adress[adr][0] + ': Done add all events \n')
 
 function _log_ (log) {
   let d = new Date()
   let date = d.getDate()
-  fs.ensureFileSync(__dirname + '/logs/' + date + '.txt')
-  fs.appendFileSync(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n')
+  fs.appendFile(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n', (err) => {
+    if (err) throw err
+  })
 }

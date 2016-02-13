@@ -14,6 +14,7 @@ let adr = 0 // TODO: for-cycle
 /**
  * Get xml-data from sources
  */
+fs.ensureFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml')
 let res = request('GET', adress[adr][1])
 fs.writeFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml', res.getBody())
 

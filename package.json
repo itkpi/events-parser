@@ -1,6 +1,6 @@
 {
   "name": "events-parser",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Events parser. Parsing events from dou.ua, ain.ua, meetup.com and other",
   "main": "app.js",
   "repository": {

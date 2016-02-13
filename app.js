@@ -146,7 +146,6 @@ _log_('Done all')
 function _log_ (log) {
   let d = new Date()
   let date = d.getDate()
-  fs.appendFile(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n', (err) => {
-    if (err) throw err
-  })
+  fs.ensureFileSync(__dirname + '/logs/' + date + '.txt')
+  fs.appendFileSync(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n')
 }

@@ -10,33 +10,6 @@ let adress = [ // xml-file name, link
 ]
 let adr = 0 // TODO: for-cycle
 
-// /**
-//  * Get xml-data from sources
-//  */
-// http.get(adress[adr][1], (res) => {
-//   _log_(`Got response: ${res.statusCode}`)
-//   fs.writeFile(__dirname + '/xml/' + adress[adr][0] + '.xml', '', (err) => {
-//     if (err) throw err
-//     _log_('fs clean')
-//   })
-
-//   res.on('data', function (chunk) {
-//     fs.appendFile(__dirname + '/xml/' + adress[adr][0] + '.xml', chunk, (err) => {
-//       if (err) throw err
-//       _log_('fs.appendFile')
-//     })
-//   })
-
-//   /**
-//   * Save old file
-//   */
-//   fs.copy(__dirname + '/json/new_' + adress[adr][0] + '.json',
-//           __dirname + '/json/old_' + adress[adr][0] + '.json',
-//   (err) => {
-//     if (err) throw err
-//     _log_('Save old file 1-2')
-//   })
-
   /**
   * XML to JSON
   */
@@ -151,9 +124,6 @@ let adr = 0 // TODO: for-cycle
     num -= 1
     _log_('Done')
   }
-// }).on('error', (e) => {
-//   _log_(`Got error: ${e.message}`)
-// })
 
 function _log_ (log) {
   let d = new Date()
@@ -161,14 +131,4 @@ function _log_ (log) {
   fs.appendFile(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n', (err) => {
     if (err) throw err
   })
-
-  // // delete old
-  // // TODO: need optomization
-  // if (date - 7 < 1) date += 30
-  // fs.writeFile(__dirname + '/logs/' + (date - 7) + '.txt', '', (err) => {
-  //   if (err) throw err
-  // })
-  // fs.unlink(__dirname + '/logs/' + (date - 7) + '.txt', (err) => {
-  //   if (err) throw err
-  // })
 }

@@ -3,3 +3,5 @@
 .vscode/*
 jsconfig.json
 node_modules/*
+/json/*
+/xml/*

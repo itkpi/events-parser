@@ -20,6 +20,8 @@ fs.writeFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml', res.getBody())
 /**
  * Save old file
  */
+fs.ensureFileSync(__dirname + '/json/new_' + adress[adr][0] + '.json')
+fs.ensureFileSync(__dirname + '/json/old_' + adress[adr][0] + '.json')
 fs.copySync(__dirname + '/json/new_' + adress[adr][0] + '.json', __dirname + '/json/old_' + adress[adr][0] + '.json')
 
 /**
@@ -28,6 +30,9 @@ fs.copySync(__dirname + '/json/new_' + adress[adr][0] + '.json', __dirname + '/j
 let data = fs.readFileSync(__dirname + '/xml/' + adress[adr][0] + '.xml')
 let result = xml2json.toJson(data, {sanitize: false})
 fs.writeFileSync(__dirname + '/json/new_' + adress[adr][0] + '.json', result)
+
+data = fs.readFileSync(__dirname + '/json/old_' + adress[adr][0] + '.json')
+if (data == '') return _log_('INIT') // not rewrite to '==='
 
 /**
  * Add new event
@@ -85,9 +90,9 @@ while (num >= 0) {
         декабря: '12'
       }
       let today = new Date()
-      let dd = newID.substring(newID.indexOf('Д', 200) + 15, newID.indexOf(' ', newID.indexOf('Д', 200) + 15))
+      let dd = newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200))).replace(' ', '').replace(' ', '')
       let mm_now = today.getMonth() + 1 // January is 0!
-      let mm = month[newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200) + 17))]
+      let mm = month[newID.substring(newID.indexOf('Д', 200) + 17, newID.indexOf(' ', newID.indexOf('Д', 200) + 17)).replace(' ', '')] //In 'replace' - non-breaking space
       let yyyy = today.getFullYear()
       if (dd < 10) dd = '0' + dd
       if (mm_now > mm) yyyy += 1

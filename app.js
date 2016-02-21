@@ -75,7 +75,7 @@ for (let adr = 0; adr < adress.length; adr++) {
       case 'http://dou.ua/calendar/':
         title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
 
-        agenda = substr(index('h', 70), index('"', 150)) + // mini picture
+        agenda = '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' + substr(index('h', 70), index('"', 150)) + '" target="_blank">IMAGE</a><br/>' + // picture
                   substr(index('p', index('М', 250)) + 4) // other
 
         place = substr(index('М', 250) + 27, index('p', index('М', 250)) - 2)

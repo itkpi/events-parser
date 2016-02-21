@@ -77,6 +77,7 @@ for (let adr = 0; adr < adress.length; adr++) {
 
         agenda = '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' + substr(index('h', 70), index('"', 150)) + '" target="_blank">IMAGE</a><br/>' + // picture
                   substr(index('p', index('М', 250)) + 4) // other
+        agenda = agenda.replace(/(h4>)/g, 'b>')
 
         place = substr(index('М', 250) + 27, index('p', index('М', 250)) - 2)
         if (place.toLowerCase() === 'online') place = 'Онлайн'

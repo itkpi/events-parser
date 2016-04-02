@@ -172,7 +172,8 @@ function _log_ (log) {
   })
 }
 
-if (date < 10) date += 10
+if (date < 10) date += 30
+
 remove()
 
 function remove () {

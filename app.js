@@ -137,7 +137,7 @@ for (let adr = 0; adr < adress.length; adr++) {
             yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
               if (err) throw err
               place = res.text
-              return ya.resolve()
+              return resolve()
             })
           })
         })
@@ -145,7 +145,7 @@ for (let adr = 0; adr < adress.length; adr++) {
 
       ya.then(() => { // Send event to EventMonkey
         let body = JSON.stringify({
-          title: '_T_E_S_T_ ' + adress[adr][0] + ' ' + title.toString(),
+          title: adress[adr][0] + ' ' + title.toString(),
           agenda: agenda.toString(),
           social: social.toString(),
           place: place.toString(),
@@ -181,11 +181,11 @@ for (let adr = 0; adr < adress.length; adr++) {
 
         req.write(body)
         req.end()
-        return ya.resolve()
+        return Promise.resolve()
       })
       num -= 1
     }
-    return Promise.resolve()
+    return ya.resolve()
   })
   p.then(() => { return _log_(adress[adr][0] + ': Done add all events') })
 }

@@ -4,6 +4,7 @@ const fs = require('fs-extra')
 const xml2json = require('xml2json')
 const http = require('http')
 const request = require('sync-request')
+const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 
 fs.ensureDirSync(__dirname + '/logs/')
 _log_('\n')
@@ -75,14 +76,16 @@ for (let adr = 0; adr < adress.length; adr++) {
         return newID.substring(foo, bar)
       }
 
-      let title, agenda, place, registration_url, image_url, only_date, when_start
+      let title, agenda, place, registration_url, image_url, only_date, when_start, social
       switch (newData.rss.channel.link) {
         case 'http://dou.ua/calendar/':
           title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
 
-         agenda = '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' + substr(index('h', 70), index('"', 150)) + '" target="_blank">IMAGE</a><br/>' + // picture
-                   substr(index('p', index('М', 250)) + 4) // other
-          agenda = agenda.replace(/(h4>)/g, 'b>')
+          agenda = substr(index('p', index('М', 250)) + 4).replace(/(h4>)/g, 'b>')
+
+          social = title + '\n <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' +
+                   substr(index('h', 70), index('"', 150)) + '" target="_blank">IMAGE</a><br/>' + // picture
+                   agenda
 
           place = substr(index('М', 250) + 27, index('p', index('М', 250)) - 2)
           if (place.toLowerCase() === 'online') place = 'Онлайн'
@@ -124,12 +127,28 @@ for (let adr = 0; adr < adress.length; adr++) {
           break
       }
 
-        // Send event to EventMonkey
+      let ya = new Promise((resolve, reject) => { // TODO: Refactor
+        yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
+          if (err) throw err
+          agenda = res.text
+          yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
+            if (err) throw err
+            title = res.text
+            yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
+              if (err) throw err
+              place = res.text
+              return ya.resolve()
+            })
+          })
+        })
+      })
+
+      ya.then(() => { // Send event to EventMonkey
         let body = JSON.stringify({
-          title: '_T_E_S_T_ ' + adress[adr][0] + ' ' + title,
-          agenda: agenda,
-          social: '',
-          place: place,
+          title: '_T_E_S_T_ ' + adress[adr][0] + ' ' + title.toString(),
+          agenda: agenda.toString(),
+          social: social.toString(),
+          place: place.toString(),
           registration_url: registration_url,
           image_url: image_url,
           level: 'NONE',
@@ -162,7 +181,9 @@ for (let adr = 0; adr < adress.length; adr++) {
 
         req.write(body)
         req.end()
-        num -= 1
+        return ya.resolve()
+      })
+      num -= 1
     }
     return Promise.resolve()
   })

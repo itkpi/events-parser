@@ -1,0 +1,13 @@
+containers:
+  eventsparser:
+    setup:
+    - !Alpine v3.3
+    - !Install [python]
+    - !NpmDependencies
+      file: package.json
+    environ:
+      NODE_PATH: /usr/lib/node_modules
+commands:
+  run: !Command
+    container: eventsparser
+    run: node app.js

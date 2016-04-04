@@ -127,6 +127,10 @@ for (let adr = 0; adr < adress.length; adr++) {
           break
       }
 
+      // Delete superfluous words
+      title = title.replace(/(бесплат|вебин)+[а-я]*\s/ig, '')
+      agenda = agenda.replace(/(бесплат)+[а-я]*\s/ig, '')
+
       let ya = new Promise((resolve, reject) => { // TODO: Refactor
         yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err

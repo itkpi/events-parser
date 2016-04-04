@@ -33,7 +33,7 @@ for (let adr = 0; adr < adress.length; adr++) {
   })
 
   p.then(() => { // Save old file
-    return fs.copy(newJSON, oldJSON, (err) => { if (err) throw err })
+    return fs.copySync(newJSON, oldJSON)
   })
 
   p.then(() => { // XML to JSON

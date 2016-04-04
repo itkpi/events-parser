@@ -83,9 +83,10 @@ for (let adr = 0; adr < adress.length; adr++) {
 
           agenda = substr(index('p', index('М', 250)) + 4).replace(/(h4>)/g, 'b>')
 
-          social = title + '\n <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' +
-                   substr(index('h', 70), index('"', 150)) + '" target="_blank">IMAGE</a><br/>' + // picture
-                   agenda
+          social = '<a href="' + newI[num].link + '">ORIGINAL POST</a> | ' + // link on original post
+                   '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' +
+                   substr(index('h', 70), index('"', 150)) + '" target="_blank">SEARCH IMAGE</a><br/>' + // picture
+                   title + '<br/>' + agenda
 
           place = substr(index('М', 250) + 27, index('p', index('М', 250)) - 2)
           if (place.toLowerCase() === 'online') place = 'Онлайн'
@@ -129,9 +130,12 @@ for (let adr = 0; adr < adress.length; adr++) {
 
       // Delete superfluous words
       title = title.replace(/(бесплат|вебин)+[а-я]*\s/ig, '')
+                   .replace(/[",«,‘,“,„]+(.{0,})+[",»,’,”,“]/, '$1') // Quotation mark
       agenda = agenda.replace(/(бесплат)+[а-я]*\s/ig, '')
+                     .replace(/(<p>?)<img.+>(<br>)?(<\/p>)?/g, '') // Images
+      social = social.replace(/(<img src=")(.{0,})(")(>)/g, '$1$2$3 width="623"$4<br/>$2<br/>') // Images. width="623" - as on site
 
-      let ya = new Promise((resolve, reject) => { // TODO: Refactor
+      let ya = new Promise((resolve, reject) => { // Translate
         yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err
           agenda = res.text
@@ -149,9 +153,9 @@ for (let adr = 0; adr < adress.length; adr++) {
 
       ya.then(() => { // Send event to EventMonkey
         let body = JSON.stringify({
-          title: adress[adr][0] + ' ' + title.toString(),
+          title: title.toString(),
           agenda: agenda.toString(),
-          social: social.toString(),
+          social: '<i>From: ' + adress[adr][0] + '</i> ' + social.toString(),
           place: place.toString(),
           registration_url: registration_url,
           image_url: image_url,
@@ -160,7 +164,7 @@ for (let adr = 0; adr < adress.length; adr++) {
           when_end: when_start, // Required field... Need change in API
           only_date: only_date,
           team: 'ITKPI',
-          submitter_email: 'vm@itkpi.pp.ua'
+          submitter_email: 'VM@ITKPI.PP.UA'
         })
 
         let options = {

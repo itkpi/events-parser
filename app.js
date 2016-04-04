@@ -200,9 +200,10 @@ for (let adr = 0; adr < adress.length; adr++) {
 
 var date
 function _log_ (log) {
-  let d = new Date()
-  date = d.getDate()
-  fs.appendFile(__dirname + '/logs/' + date + '.txt', d.toTimeString() + ': ' + log + '\n', (err) => {
+  let d = new Date().toLocaleString('uk-UA', {timeZone: 'Europe/Kiev', hour12: false})
+  date = d.replace(/(.{0,2})\/(.{0,})/, '$1')
+  let time = d.replace(/(.{0,},\s)(.{0,})/, '$2')
+  fs.appendFile(__dirname + '/logs/' + date + '.txt', time + ': ' + log + '\n', (err) => {
     if (err) throw err
   })
 }

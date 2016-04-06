@@ -7,6 +7,7 @@ containers:
       file: package.json
     environ:
       NODE_PATH: /usr/lib/node_modules
+      HOSTNAME_URL: eventsmonkey.itkpi.pp.ua
 commands:
   run: !Command
     container: eventsparser

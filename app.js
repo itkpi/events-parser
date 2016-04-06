@@ -170,7 +170,7 @@ for (let adr = 0; adr < adress.length; adr++) {
         })
 
         let options = {
-          hostname: 'eventsmonkey.itkpi.pp.ua',
+          hostname: process.env.HOSTNAME_URL,
           port: 80,
           path: '/api/v1/suggested_events',
           method: 'POST',

@@ -88,7 +88,7 @@ for (let adr = 0; adr < adress.length; adr++) {
                    substr(index('h', 70), index('"', 150)) + '" target="_blank">SEARCH IMAGE</a><br/>' + // picture
                    title + '<br/>' + agenda
 
-          place = substr(index('М', 250) + 27, index('p', index('М', 250)) - 2)
+          place = newID.replace(/.{0,}Место:<\/strong>\s(.{0,100})<\/p>.{0,}/, '$1').replace(/(.{0,100})(\n*.{0,})*/, '$1')
           if (place.toLowerCase() === 'online') place = 'Онлайн'
 
           registration_url = 'http://ITKPI.PP.UA/'

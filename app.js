@@ -134,9 +134,10 @@ for (let adr = 0; adr < adress.length; adr++) {
                    .replace(/(.{0,})(\.{1,})/, '$1')
       agenda = agenda.replace(/(бесплат)+[а-я]*\s/ig, '')
                      .replace(/(<p>?)<img.+>(<br>)?(<\/p>)?/g, '') // Images
-                                     .replace(/h[1-4]{1}>/g, 'b>')
-      social = social.replace(/(<img src=")(.{0,})"\sstyle.{0,}"?(")(>)/g, '$1$2$3 width="623"$4<br/>$2<br/>') // width="623" - as on site
-      
+                     .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
+                     .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
+      social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
+
       let ya = new Promise((resolve, reject) => { // Translate
         yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err

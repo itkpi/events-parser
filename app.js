@@ -138,19 +138,32 @@ for (let adr = 0; adr < adress.length; adr++) {
                      .replace(/(<p>?)<img.+>(<br>)?(<\/p>)?/g, '') // Images
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
+                     .replace(/\n/g, '')
       social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
 
+      let agenda1 = '<h1>Too many. We really need it?</h1>'
+      let agenda2 = ''
+      if (agenda.length < 14000) {
+        agenda1 = agenda.replace(/(.{0,7000}\s).{0,}/, '$1')
+        agenda2 = agenda.replace(/(.{0,7000}\s)(.{0,})/, '$2')
+      }
+
       let ya = new Promise((resolve, reject) => { // Translate
-        yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
+
+        yandex.translate(agenda1, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err
-          agenda = res.text
-          yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
+          agenda1 = res.text
+          yandex.translate(agenda2, { from: 'ru', to: 'uk' }, (err, res) => {
             if (err) throw err
-            title = res.text
-            yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
+            agenda2 = res.text
+            yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
               if (err) throw err
-              place = res.text
-              return resolve()
+              title = res.text
+              yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
+                if (err) throw err
+                place = res.text
+                return resolve()
+              })
             })
           })
         })
@@ -159,7 +172,7 @@ for (let adr = 0; adr < adress.length; adr++) {
       ya.then(() => { // Send event to EventMonkey
         let body = JSON.stringify({
           title: title.toString(),
-          agenda: agenda.toString(),
+          agenda: agenda1.toString() + agenda2.toString(),
           social: '<i>From: ' + adress[adr][0] + '</i> ' + social.toString(),
           place: place.toString(),
           registration_url: registration_url,

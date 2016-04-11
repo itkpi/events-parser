@@ -81,7 +81,7 @@ for (let adr = 0; adr < adress.length; adr++) {
         case 'http://dou.ua/calendar/':
           title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
 
-          agenda = substr(index('p', index('М', 250)) + 4)
+          agenda = substr(index('p', index('М', 250)) + 4).replace(/<(\/)?div>/g, '')
 
           social = '<a href="' + newI[num].link + '">ORIGINAL POST</a> | ' + // link on original post
                    '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' +
@@ -134,9 +134,9 @@ for (let adr = 0; adr < adress.length; adr++) {
                    .replace(/(.{0,})(\.{1,})/, '$1')
       agenda = agenda.replace(/(бесплат)+[а-я]*\s/ig, '')
                      .replace(/(<p>?)<img.+>(<br>)?(<\/p>)?/g, '') // Images
-                     .replace(/h[1-4]{1}>/g, 'b>')
+                                     .replace(/h[1-4]{1}>/g, 'b>')
       social = social.replace(/(<img src=")(.{0,})"\sstyle.{0,}"?(")(>)/g, '$1$2$3 width="623"$4<br/>$2<br/>') // width="623" - as on site
-
+      
       let ya = new Promise((resolve, reject) => { // Translate
         yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err

@@ -66,6 +66,8 @@ for (let adr = 0; adr < adress.length; adr++) {
 
   // RSS to API
     while (num >= 0) {
+      _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
+
       let newID = newI[num].description
 
       function index (foo, bar) {
@@ -195,18 +197,17 @@ for (let adr = 0; adr < adress.length; adr++) {
         return Promise.resolve()
       })
       num -= 1
+      _log_(adress[adr][0] + ': ' + newI[num].link + ' end')
     }
     return ya.resolve()
   })
-  p.then(() => { return _log_(adress[adr][0] + ': Done add all events') })
 }
 
 var date
 function _log_ (log) {
-  let d = new Date().toLocaleString('uk-UA', {timeZone: 'Europe/Kiev', hour12: false})
-  date = d.replace(/(.{0,2})\/(.{0,})/, '$1')
-  let time = d.replace(/(.{0,},\s)(.{0,})/, '$2')
-  fs.appendFile(__dirname + '/logs/' + date + '.txt', time + ': ' + log + '\n', (err) => {
+  let d = new Date()
+  date = d.getDate()
+  fs.appendFile(__dirname + '/logs/' + date, d.toTimeString() + ': ' + log + '\n', (err) => {
     if (err) throw err
   })
 }

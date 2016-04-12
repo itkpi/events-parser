@@ -6,7 +6,7 @@ const http = require('http')
 const request = require('sync-request')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 
-fs.ensureDirSync(__dirname + '/logs/')
+fs.ensureDirSync('./logs/')
 _log_('\n')
 
 let adress = [ // xml-file name, link
@@ -16,9 +16,9 @@ let adress = [ // xml-file name, link
 
 for (let adr = 0; adr < adress.length; adr++) {
   // Paths to auxiliary files
-  let xml = __dirname + '/xml/' + adress[adr][0] + '.xml'
-  let newJSON = __dirname + '/json/new_' + adress[adr][0] + '.json'
-  let oldJSON = __dirname + '/json/old_' + adress[adr][0] + '.json'
+  let xml = './xml/' + adress[adr][0] + '.xml'
+  let newJSON = './json/new_' + adress[adr][0] + '.json'
+  let oldJSON = './json/old_' + adress[adr][0] + '.json'
 
   let p = new Promise((resolve, reject) => { // Check for the existence files
     fs.ensureFile(xml, (err) => { if (err) throw err })
@@ -68,29 +68,21 @@ for (let adr = 0; adr < adress.length; adr++) {
     while (num >= 0) {
       _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
 
-      let newID = newI[num].description
-
-      function index (foo, bar) {
-        return newID.indexOf(foo, bar)
-      }
-
-      function substr (foo, bar) {
-        return newID.substring(foo, bar)
-      }
+      let newID = newI[num].description.replace(/\n/g, '')
 
       let title, agenda, place, registration_url, image_url, only_date, when_start, social
       switch (newData.rss.channel.link) {
         case 'http://dou.ua/calendar/':
           title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
 
-          agenda = substr(index('p', index('М', 250)) + 4).replace(/<(\/)?div>/g, '')
+          agenda = newID.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
 
           social = '<a href="' + newI[num].link + '">ORIGINAL POST</a> | ' + // link on original post
                    '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' +
-                   substr(index('h', 70), index('"', 150)) + '" target="_blank">SEARCH IMAGE</a><br/>' + // picture
+                   newID.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1') + '" target="_blank">SEARCH IMAGE</a><br/>' + // picture
                    title + '<br/>' + agenda
 
-          place = newID.replace(/.{0,}Место:<\/strong>\s(.{0,100})<\/p>.{0,}/, '$1').replace(/(.{0,100})(\n*.{0,})*/, '$1')
+          place = newID.replace(/.+?Место:<\/strong>\s(.+?)<\/p>.+/, '$1')
           if (place.toLowerCase() === 'online') place = 'Онлайн'
 
           registration_url = 'http://ITKPI.PP.UA/'
@@ -112,15 +104,15 @@ for (let adr = 0; adr < adress.length; adr++) {
             декабря: '12'
           }
           let today = new Date()
-          let dd = substr(index('Д', 200) + 17, index(' ', index('Д', 200))).replace(' ', '').replace(' ', '')
+          let dd = newID.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
           let mm_now = today.getMonth() + 1 // January is 0!
-          let mm = month[substr(index('Д', 200) + 17, index(' ', index('Д', 200) + 17)).replace(' ', '')] // In 'replace' - non-breaking space
+          let mm = month[newID.replace(/.+?Дата:<\/strong>\s\d{1,2}\s([а-я]+).+/, '$1')]
           let yyyy = today.getFullYear()
           if (dd < 10) dd = '0' + dd
           if (mm_now > mm) yyyy += 1
 
           when_start = yyyy + '-' + mm + '-' + dd
-          let time = substr(index('Н', 250) + 17, index('b', index('Н', 250) + 17) - 1)
+          let time = newID.replace(/.+?Время:<\/strong>\s(\d{2}:\d{2}).+/, '$1')
           if (time.length < 6) {
             when_start += ' ' + time
           } else {
@@ -138,12 +130,11 @@ for (let adr = 0; adr < adress.length; adr++) {
                      .replace(/<img.+">(<br>)?/g, '')
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
-                     .replace(/\n/g, '')
                      .replace(/<p>([—,-,•,●]\s?|(\d{2}.\d{2}).{1,10}(\d{2}.\d{2}))(.+?)[.,;,\,]?<\/p>/, '<ul><li>$2 ‒ $3$4</li></ul>')
                      .replace(/(<br>([—,-,•,●]\s?|(\d{2}.\d{2}).{1,10}(\d{2}.\d{2}))(.+?)[.,;,\,]?)+/g, '</li><li>$3 ‒ $4$5')
       social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
       place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
-      let agenda1 = '<h1>Too many. We really need it?</h1>'
+      let agenda1 = '<h1>Too many. Do we really need this?</h1>'
       let agenda2 = ''
       if (agenda.length < 14000) {
         agenda1 = agenda.replace(/(.{0,7000}\s).{0,}/, '$1')
@@ -222,7 +213,7 @@ var date
 function _log_ (log) {
   let d = new Date()
   date = d.getDate()
-  fs.appendFile(__dirname + '/logs/' + date, d.toTimeString() + ': ' + log + '\n', (err) => {
+  fs.appendFile('./logs/' + date, d.toTimeString() + ': ' + log + '\n', (err) => {
     if (err) throw err
   })
 }
@@ -232,7 +223,7 @@ if (date < 10) date += 30
 remove()
 
 function remove () {
-  fs.remove(__dirname + '/logs/' + (date - 10) + '.txt', (err) => {
+  fs.remove('./logs/' + (date - 10) + '.txt', (err) => {
     if (err) throw err
   })
 }

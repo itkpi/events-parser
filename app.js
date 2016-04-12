@@ -135,12 +135,14 @@ for (let adr = 0; adr < adress.length; adr++) {
                    .replace(/[",«,‘,“,„]+(.{0,})+[",»,’,”,“]/, '$1') // Quotation mark
                    .replace(/(.{0,})(\.{1,})/, '$1')
       agenda = agenda.replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
-                     .replace(/(<p>?)<img.+>(<br>)?(<\/p>)?/g, '') // Images
+                     .replace(/<img.+">(<br>)?/g, '')
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
                      .replace(/\n/g, '')
+                     .replace(/<p>([—,-,•,●]\s?|(\d{2}.\d{2}).{1,10}(\d{2}.\d{2}))(.+?)[.,;,\,]?<\/p>/, '<ul><li>$2 ‒ $3$4</li></ul>')
+                     .replace(/(<br>([—,-,•,●]\s?|(\d{2}.\d{2}).{1,10}(\d{2}.\d{2}))(.+?)[.,;,\,]?)+/g, '</li><li>$3 ‒ $4$5')
       social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
-
+      place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
       let agenda1 = '<h1>Too many. We really need it?</h1>'
       let agenda2 = ''
       if (agenda.length < 14000) {

@@ -131,10 +131,10 @@ for (let adr = 0; adr < adress.length; adr++) {
       }
 
       // Delete superfluous words
-      title = title.replace(/(бесплат|вебин)+[а-я]*\s/ig, '')
+      title = title.replace(/(бесплат|вебин|безкоштовн|вебін)[а-я]+\s/ig, '')
                    .replace(/[",«,‘,“,„]+(.{0,})+[",»,’,”,“]/, '$1') // Quotation mark
                    .replace(/(.{0,})(\.{1,})/, '$1')
-      agenda = agenda.replace(/(бесплат)+[а-я]*\s/ig, '')
+      agenda = agenda.replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
                      .replace(/(<p>?)<img.+>(<br>)?(<\/p>)?/g, '') // Images
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')

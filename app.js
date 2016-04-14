@@ -112,7 +112,7 @@ for (let adr = 0; adr < adress.length; adr++) {
           if (mm_now > mm) yyyy += 1
 
           when_start = yyyy + '-' + mm + '-' + dd
-          let time = newID.replace(/.+?Время:<\/strong>\s(\d{2}:\d{2}).+/, '$1')
+          let time = newID.replace(/.+?Начало:<\/strong>\s(\d{2}:\d{2}).+/, '$1')
           if (time.length < 6) {
             when_start += ' ' + time
           } else {

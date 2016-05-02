@@ -131,8 +131,12 @@ for (let adr = 0; adr < adress.length; adr++) {
                      .replace(/<img.+">(<br>)?/g, '')
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
-                     .replace(/<p>([—,-,•,●]\s?|(\d{2}.\d{2}).{1,10}(\d{2}.\d{2}))(.+?)[.,;,\,]?<\/p>/, '<ul><li>$2 ‒ $3$4</li></ul>')
-                     .replace(/(<br>([—,-,•,●]\s?|(\d{2}.\d{2}).{1,10}(\d{2}.\d{2}))(.+?)[.,;,\,]?)+/g, '</li><li>$3 ‒ $4$5')
+
+                     // unordered lists
+                     .replace(/<p>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,\,]?<\/p>/g, '<ul><li>$2$3</li></ul>')
+                     .replace(/(<br>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,\,]?)+/g, '</li><li>$3$4')
+                     .replace(/(:)<\/li>(<li>.+?)(<\/p>)/g, '$1<ul>$2</li></ul>$3')
+
       social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
       place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
       let agenda1 = '<h1>Too many. Do we really need this?</h1>'

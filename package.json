@@ -16,9 +16,10 @@
     "node": ">= 4.0.0"
   },
   "dependencies": {
-    "xml2json": "~0.9.0",
     "fs-extra": "~0.26.5",
+    "moment": "2.13.0",
     "sync-request": "~3.0.0",
+    "xml2json": "~0.9.0",
     "yandex-translate": "~2.1.0"
   }
 }

@@ -5,6 +5,7 @@ const xml2json = require('xml2json')
 const http = require('http')
 const request = require('sync-request')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
+const moment = require('moment')
 
 fs.ensureDirSync('./logs/')
 _log_('\n')
@@ -89,26 +90,26 @@ for (let adr = 0; adr < adress.length; adr++) {
           image_url = ''
           only_date = false
 
-          let month = {
-            января: '01',
-            февраля: '02',
-            марта: '03',
-            апреля: '04',
-            мая: '05',
-            июня: '06',
-            июля: '07',
-            августа: '08',
-            сентября: '09',
-            октября: '10',
-            ноября: '11',
-            декабря: '12'
-          }
           let today = new Date()
           let dd = newID.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
           let mm_now = today.getMonth() + 1 // January is 0!
-          let mm = month[newID.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')]
+
+          let mm = newID.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
+
+          moment.locale('ru')
+          if (!isNaN(moment(mm, 'MMMM').get('month'))) {
+            mm = moment(mm, 'MMMM').get('month') + 1
+          } else {
+            moment.locale('uk')
+            if (!isNaN(moment(mm, 'MMMM').get('month'))) {
+              mm = moment(mm, 'MMMM').get('month') + 1
+            } else {
+              moment.locale('en')
+              mm = moment(mm, 'MMMM').get('month') + 1
+            }
+          }
+
           let yyyy = today.getFullYear()
-          if (dd < 10) dd = '0' + dd
           if (mm_now > mm) yyyy += 1
 
           when_start = yyyy + '-' + mm + '-' + dd

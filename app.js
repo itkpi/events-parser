@@ -129,7 +129,7 @@ for (let adr = 0; adr < adress.length; adr++) {
                    .replace(/(.{0,})(\.{1,})/, '$1')
       agenda = agenda.replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
                      .replace(/<img.+?">(<br>)?/g, '')
-                     .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b>')
+                     .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b><br>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
 
                      // unordered lists

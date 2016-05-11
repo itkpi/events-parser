@@ -69,11 +69,11 @@ for (let adr = 0; adr < adress.length; adr++) {
     while (num >= 0) {
       _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
 
-      let newID = newI[num].description.replace(/\n/g, '')
+      let newID = newI[num].description.replace(/[\n,\u2028]/g, '')
 
       let title, agenda, place, registration_url, image_url, only_date, when_start, social
       switch (newData.rss.channel.link) {
-        case 'http://dou.ua/calendar/':
+        case 'https://dou.ua/calendar/':
           title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
 
           agenda = newID.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
@@ -95,7 +95,7 @@ for (let adr = 0; adr < adress.length; adr++) {
           let mm_now = today.getMonth() + 1 // January is 0!
 
           let mm = newID.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
-
+          
           moment.locale('ru')
           if (!isNaN(moment(mm, 'MMMM').get('month'))) {
             mm = moment(mm, 'MMMM').get('month') + 1
@@ -150,16 +150,16 @@ for (let adr = 0; adr < adress.length; adr++) {
 
         yandex.translate(agenda1, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err
-          agenda1 = res.text
+          agenda1 = res.text 
           yandex.translate(agenda2, { from: 'ru', to: 'uk' }, (err, res) => {
             if (err) throw err
-            agenda2 = res.text
+            agenda2 = res.text 
             yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
               if (err) throw err
-              title = res.text
+              title = res.text 
               yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
                 if (err) throw err
-                place = res.text
+                place = res.text 
                 return resolve()
               })
             })

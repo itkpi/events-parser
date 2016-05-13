@@ -67,60 +67,140 @@ for (let adr = 0; adr < adress.length; adr++) {
 
   // RSS to API
     while (num >= 0) {
-      _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
+      function parseTitle (site) {
+        switch (site) {
+          case 'dou.ua': return newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseTitle`)
+            return 'TITLE (parser error)'
+        }
+      }
 
-      let newID = newI[num].description.replace(/[\n,\u2028]/g, '')
+      function parseAgenda (site) {
+        switch (site) {
+          case 'dou.ua': return newID.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseAgenda`)
+            return 'AGENDA (parser error)'
+        }
+      }
 
-      let title, agenda, place, registration_url, image_url, only_date, when_start, social
-      switch (newData.rss.channel.link) {
-        case 'https://dou.ua/calendar/':
-          title = newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+      function parseSocial (site) {
+        switch (site) {
+          case 'dou.ua':
+            return `<a href="${newI[num].link}">ORIGINAL POST</a> | \
+<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
+&image_url=${newID.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
+target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseSocial`)
+            return 'SOCIAL (parser error)'
+        }
+      }
 
-          agenda = newID.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
+      function parsePlace (site) {
+        let place
+        switch (site) {
+          case 'dou.ua': place = newID.replace(/.+?Место:<\/strong>\s(.+?)<\/p>.+/, '$1'); break
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parsePlace`)
+            return 'PLACE (parser error)'
+        }
 
-          social = '<a href="' + newI[num].link + '">ORIGINAL POST</a> | ' + // link on original post
-                   '<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url=' +
-                   newID.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1') + '" target="_blank">SEARCH IMAGE</a><br/>' + // picture
-                   title + '<br/>' + agenda
+        if (place.toLowerCase() === 'online') place = 'Онлайн'
 
-          place = newID.replace(/.+?Место:<\/strong>\s(.+?)<\/p>.+/, '$1')
-          if (place.toLowerCase() === 'online') place = 'Онлайн'
+        return place
+      }
 
-          registration_url = 'http://ITKPI.PP.UA/'
-          image_url = ''
-          only_date = false
+      function parseRegUrl (site) {
+        switch (site) {
+          case 'dou.ua': return 'http://ITKPI.PP.UA/'
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseRegUrl`)
+            return 'http://PARSER.ERROR/RegUrl'
+        }
+      }
 
-          let today = new Date()
-          let dd = newID.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
-          let mm_now = today.getMonth() + 1 // January is 0!
+      function parseImgUrl (site) {
+        switch (site) {
+          case 'dou.ua': return ''
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseImgUrl`)
+            return 'http://PARSER.ERROR/ImgUrl'
+        }
+      }
 
-          let mm = newID.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
-          
-          moment.locale('ru')
+      function parseWhenStart (site) {
+        let today = new Date()
+        let mmNow = today.getMonth() + 1 // January is 0!
+        let yyyy = today.getFullYear()
+        let dd, mm, whenStart
+
+        switch (site) {
+          case 'dou.ua':
+            dd = newID.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
+            mm = newID.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
+            break
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseWhenStart`)
+            return '1970-01-01 00:00'
+        }
+
+        moment.locale('ru')
+        if (!isNaN(moment(mm, 'MMMM').get('month'))) {
+          mm = moment(mm, 'MMMM').get('month') + 1
+        } else {
+          moment.locale('uk')
           if (!isNaN(moment(mm, 'MMMM').get('month'))) {
             mm = moment(mm, 'MMMM').get('month') + 1
           } else {
-            moment.locale('uk')
-            if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-              mm = moment(mm, 'MMMM').get('month') + 1
-            } else {
-              moment.locale('en')
-              mm = moment(mm, 'MMMM').get('month') + 1
-            }
+            moment.locale('en')
+            mm = moment(mm, 'MMMM').get('month') + 1
           }
+        }
 
-          let yyyy = today.getFullYear()
-          if (mm_now > mm) yyyy += 1
+        if (mmNow > mm) yyyy += 1
 
-          when_start = yyyy + '-' + mm + '-' + dd
-          let time = newID.replace(/.+?Начало:<\/strong>\s(\d{2}:\d{2}).+/, '$1')
-          if (time.length < 6) {
-            when_start += ' ' + time
-          } else {
-            only_date = true
-          }
+        whenStart = `${yyyy}-${mm}-${dd}`
 
-          break
+        return whenStart
+      }
+
+      function parseTime (site) {
+        let time
+        switch (site) {
+          case 'dou.ua': time = newID.replace(/.+?Начало:<\/strong>\s(\d{2}:\d{2}).+/, '$1'); break
+          default:
+            _log_(`ERROR: NOT FOUND ${site} in parseTime`)
+            return '1970-01-01 00:00'
+
+        }
+
+        if (time.length < 6) return ` ${time}`
+
+        return true
+      }
+
+      _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
+
+      let newID = newI[num].description.replace(/[\n,\u2028]/g, '')
+      let site = {
+        'https://dou.ua/calendar/': 'dou.ua'
+      }
+      let link = site[newData.rss.channel.link]
+
+      // Parse event description
+      let title = parseTitle(link)
+      let agenda = parseAgenda(link)
+      let social = parseSocial(link)
+      let place = parsePlace(link)
+      let regUrl = parseRegUrl(link)
+      let imgUrl = parseImgUrl(link)
+      let whenStart = parseWhenStart(link)
+      let onlyDate = parseTime(link)
+      if (onlyDate !== true) {
+        onlyDate = false
+        whenStart += parseTime(link)
       }
 
       // Delete superfluous words
@@ -131,14 +211,15 @@ for (let adr = 0; adr < adress.length; adr++) {
                      .replace(/<img.+?">(<br>)?/g, '')
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b><br>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
-
-                     // unordered lists
-                     .replace(/<p>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,\,]?<\/p>/g, '<ul><li>$2$3</li></ul>')
-                     .replace(/(<br>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,\,]?)+/g, '</li><li>$3$4')
-                     .replace(/(:)<\/li>(<li>.+?)(<\/p>)/g, '$1<ul>$2</li></ul>$3')
+        // unordered lists
+        .replace(/<p>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,]?<\/p>/g, '<ul><li>$2$3</li></ul>')
+        .replace(/(<br>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,]?)+/g, '</li><li>$3$4')
+        .replace(/(:)<\/li>(<li>.+?)(<\/p>)/g, '$1<ul>$2</li></ul>$3')
 
       social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
+
       place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
+
       let agenda1 = '<h1>Too many. Do we really need this?</h1>'
       let agenda2 = ''
       if (agenda.length < 14000) {
@@ -147,19 +228,18 @@ for (let adr = 0; adr < adress.length; adr++) {
       }
 
       let ya = new Promise((resolve, reject) => { // Translate
-
         yandex.translate(agenda1, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err
-          agenda1 = res.text 
+          agenda1 = res.text
           yandex.translate(agenda2, { from: 'ru', to: 'uk' }, (err, res) => {
             if (err) throw err
-            agenda2 = res.text 
+            agenda2 = res.text
             yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
               if (err) throw err
-              title = res.text 
+              title = res.text
               yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
                 if (err) throw err
-                place = res.text 
+                place = res.text
                 return resolve()
               })
             })
@@ -173,12 +253,12 @@ for (let adr = 0; adr < adress.length; adr++) {
           agenda: agenda1.toString() + agenda2.toString(),
           social: '<i>From: ' + adress[adr][0] + '</i> ' + social.toString(),
           place: place.toString(),
-          registration_url: registration_url,
-          image_url: image_url,
+          registration_url: regUrl,
+          image_url: imgUrl,
           level: 'NONE',
-          when_start: when_start,
-          when_end: when_start, // Required field... Need change in API
-          only_date: only_date,
+          when_start: whenStart,
+          when_end: whenStart, // Required field... Need change in API
+          only_date: onlyDate,
           team: 'ITKPI',
           submitter_email: 'VM@ITKPI.PP.UA'
         })

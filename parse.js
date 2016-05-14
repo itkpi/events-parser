@@ -37,7 +37,8 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
 exports.place = (site, src) => {
   let place
   switch (site) {
-    case 'dou.ua': place = src.replace(/.+?Место:<\/strong>\s(.+?)<\/p>.+/, '$1'); break
+    case 'dou.ua':
+      place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2'); break
     default:
       _log_(`ERROR: NOT FOUND ${site} in parse.place`)
       return 'PLACE (parser error)'
@@ -105,7 +106,8 @@ exports.whenStart = (site, src) => {
 exports.time = (site, src) => {
   let time
   switch (site) {
-    case 'dou.ua': time = src.replace(/.+?Начало:<\/strong>\s(\d{2}:\d{2}).+/, '$1'); break
+    case 'dou.ua':
+      time = src.replace(/.+?(Начало|Time|Час):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
     default:
       _log_(`ERROR: NOT FOUND ${site} in parse.time`)
       return '1970-01-01 00:00'

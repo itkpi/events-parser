@@ -5,7 +5,9 @@ const xml2json = require('xml2json')
 const http = require('http')
 const request = require('sync-request')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
+
 const parse = require('./parse.js')
+const locale = require('./locale.js')
 const log = require('./log.js')
 const _log_ = log._log_
 
@@ -116,23 +118,27 @@ for (let adr = 0; adr < adress.length; adr++) {
       }
 
       let ya = new Promise((resolve, reject) => { // Translate
-        yandex.translate(agenda1, { from: 'ru', to: 'uk' }, (err, res) => {
-          if (err) throw err
-          agenda1 = res.text
-          yandex.translate(agenda2, { from: 'ru', to: 'uk' }, (err, res) => {
+        if (locale.lang === 'ru') {
+          yandex.translate(agenda1, { from: 'ru', to: 'uk' }, (err, res) => {
             if (err) throw err
-            agenda2 = res.text
-            yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
+            agenda1 = res.text
+            yandex.translate(agenda2, { from: 'ru', to: 'uk' }, (err, res) => {
               if (err) throw err
-              title = res.text
-              yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
+              agenda2 = res.text
+              yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
                 if (err) throw err
-                place = res.text
-                return resolve()
+                title = res.text
+                yandex.translate(place, { from: 'ru', to: 'uk' }, (err, res) => {
+                  if (err) throw err
+                  place = res.text
+                  return resolve()
+                })
               })
             })
           })
-        })
+        } else {
+          agenda1 = agenda
+        }
       })
 
       ya.then(() => { // Send event to EventMonkey
@@ -178,7 +184,6 @@ for (let adr = 0; adr < adress.length; adr++) {
       num -= 1
       _log_(adress[adr][0] + ': ' + newI[num].link + ' end')
     }
-    return ya.resolve()
   })
 }
 

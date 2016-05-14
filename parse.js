@@ -1,7 +1,9 @@
 'use strict'
 
 const moment = require('moment')
+
 const _log_ = require('./log.js')._log_
+const locale = require('./locale.js').locale
 
 exports.title = (site, src) => {
   switch (site) {
@@ -83,18 +85,8 @@ exports.whenStart = (site, src) => {
       return '1970-01-01 00:00'
   }
 
-  moment.locale('ru')
-  if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-    mm = moment(mm, 'MMMM').get('month') + 1
-  } else {
-    moment.locale('uk')
-    if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-      mm = moment(mm, 'MMMM').get('month') + 1
-    } else {
-      moment.locale('en')
-      mm = moment(mm, 'MMMM').get('month') + 1
-    }
-  }
+  moment.locale(locale(mm))
+  mm = moment(mm, 'MMMM').get('month') + 1
 
   if (mmNow > mm) yyyy += 1
 

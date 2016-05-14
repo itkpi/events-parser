@@ -5,7 +5,9 @@ const xml2json = require('xml2json')
 const http = require('http')
 const request = require('sync-request')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
-const moment = require('moment')
+const parse = require('./parse.js')
+const log = require('./log.js')
+const _log_ = log._log_
 
 fs.ensureDirSync('./logs/')
 _log_('\n')
@@ -67,120 +69,6 @@ for (let adr = 0; adr < adress.length; adr++) {
 
   // RSS to API
     while (num >= 0) {
-      function parseTitle (site) {
-        switch (site) {
-          case 'dou.ua': return newI[num].title.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseTitle`)
-            return 'TITLE (parser error)'
-        }
-      }
-
-      function parseAgenda (site) {
-        switch (site) {
-          case 'dou.ua': return newID.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseAgenda`)
-            return 'AGENDA (parser error)'
-        }
-      }
-
-      function parseSocial (site) {
-        switch (site) {
-          case 'dou.ua':
-            return `<a href="${newI[num].link}">ORIGINAL POST</a> | \
-<a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
-&image_url=${newID.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
-target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseSocial`)
-            return 'SOCIAL (parser error)'
-        }
-      }
-
-      function parsePlace (site) {
-        let place
-        switch (site) {
-          case 'dou.ua': place = newID.replace(/.+?Место:<\/strong>\s(.+?)<\/p>.+/, '$1'); break
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parsePlace`)
-            return 'PLACE (parser error)'
-        }
-
-        if (place.toLowerCase() === 'online') place = 'Онлайн'
-
-        return place
-      }
-
-      function parseRegUrl (site) {
-        switch (site) {
-          case 'dou.ua': return 'http://ITKPI.PP.UA/'
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseRegUrl`)
-            return 'http://PARSER.ERROR/RegUrl'
-        }
-      }
-
-      function parseImgUrl (site) {
-        switch (site) {
-          case 'dou.ua': return ''
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseImgUrl`)
-            return 'http://PARSER.ERROR/ImgUrl'
-        }
-      }
-
-      function parseWhenStart (site) {
-        let today = new Date()
-        let mmNow = today.getMonth() + 1 // January is 0!
-        let yyyy = today.getFullYear()
-        let dd, mm, whenStart
-
-        switch (site) {
-          case 'dou.ua':
-            dd = newID.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
-            mm = newID.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
-            break
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseWhenStart`)
-            return '1970-01-01 00:00'
-        }
-
-        moment.locale('ru')
-        if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-          mm = moment(mm, 'MMMM').get('month') + 1
-        } else {
-          moment.locale('uk')
-          if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-            mm = moment(mm, 'MMMM').get('month') + 1
-          } else {
-            moment.locale('en')
-            mm = moment(mm, 'MMMM').get('month') + 1
-          }
-        }
-
-        if (mmNow > mm) yyyy += 1
-
-        whenStart = `${yyyy}-${mm}-${dd}`
-
-        return whenStart
-      }
-
-      function parseTime (site) {
-        let time
-        switch (site) {
-          case 'dou.ua': time = newID.replace(/.+?Начало:<\/strong>\s(\d{2}:\d{2}).+/, '$1'); break
-          default:
-            _log_(`ERROR: NOT FOUND ${site} in parseTime`)
-            return '1970-01-01 00:00'
-
-        }
-
-        if (time.length < 6) return ` ${time}`
-
-        return true
-      }
-
       _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
 
       let newID = newI[num].description.replace(/[\n,\u2028]/g, '')
@@ -190,17 +78,17 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
       let link = site[newData.rss.channel.link]
 
       // Parse event description
-      let title = parseTitle(link)
-      let agenda = parseAgenda(link)
-      let social = parseSocial(link)
-      let place = parsePlace(link)
-      let regUrl = parseRegUrl(link)
-      let imgUrl = parseImgUrl(link)
-      let whenStart = parseWhenStart(link)
-      let onlyDate = parseTime(link)
+      let title = parse.title(link, newI[num].title)
+      let agenda = parse.agenda(link, newID)
+      let social = parse.social(link, newID, newI[num].link, title, agenda)
+      let place = parse.place(link, newID)
+      let regUrl = parse.regUrl(link, newID)
+      let imgUrl = parse.imgUrl(link, newID)
+      let whenStart = parse.whenStart(link, newID)
+      let onlyDate = parse.time(link, newID)
       if (onlyDate !== true) {
         onlyDate = false
-        whenStart += parseTime(link)
+        whenStart += parse.time(link, newID)
       }
 
       // Delete superfluous words
@@ -294,21 +182,4 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
   })
 }
 
-var date
-function _log_ (log) {
-  let d = new Date()
-  date = d.getDate()
-  fs.appendFile('./logs/' + date, d.toTimeString() + ': ' + log + '\n', (err) => {
-    if (err) throw err
-  })
-}
-
-if (date < 10) date += 30
-
-remove()
-
-function remove () {
-  fs.remove('./logs/' + (date - 10) + '.txt', (err) => {
-    if (err) throw err
-  })
-}
+log.removeOld()

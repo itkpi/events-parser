@@ -101,12 +101,14 @@ for (let adr = 0; adr < adress.length; adr++) {
                      .replace(/<img.+?">(<br>)?/g, '')
                      .replace(/h[1-4]{1}(\sstyle=".{0,}")?>/g, 'b><br>')
                      .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
+                     .replace(/<span.+?>(.+?)<\/span>(<br>)?/g, '<p>$2</p>')
+                     .replace(/<p>—{3,}<\/p>/g, '<hr>')
         // unordered lists
-        .replace(/<p>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,]?<\/p>/g, '<ul><li>$2$3</li></ul>')
-        .replace(/(<br>([—,-,•,●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.,;,]?)+/g, '</li><li>$3$4')
+        .replace(/<p>([—-•●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.;\,]?<\/p>/g, '<ul><li>$2$3</li></ul>')
+        .replace(/(<br>([—-•●](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.;\,]?)+/g, '</li><li>$3$4')
         .replace(/(:)<\/li>(<li>.+?)(<\/p>)/g, '$1<ul>$2</li></ul>$3')
 
-      social = social.replace(/(<img)(\sstyle=".{0,50}")?(\ssrc="(.{0,200})")(\sstyle=".{0,50}")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
+      social = social.replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
 
       place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
 

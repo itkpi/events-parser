@@ -111,6 +111,7 @@ for (let adr = 0; adr < adress.length; adr++) {
       social = social.replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
 
       place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
+                   .replace(/(.*?)<.+?>(.+?)/g, '$1$2')
 
       let agenda1 = '<h1>Too many. Do we really need this?</h1>'
       let agenda2 = ''

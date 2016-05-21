@@ -46,7 +46,12 @@ exports.place = (site, src) => {
       return 'PLACE (parser error)'
   }
 
-  if (place.toLowerCase() === 'online') place = 'Онлайн'
+  if (place.toLowerCase() === 'online' || place.toLowerCase() === 'онлайн') return 'Онлайн'
+
+  if (place.toLowerCase().indexOf('online') + 1 ||
+      place.toLowerCase().indexOf('онлайн') + 1) {
+    place = place.replace(/(O|o)nline|(О|о)нлайн/, "Онлайн + $`$'")
+  }
 
   return place
 }

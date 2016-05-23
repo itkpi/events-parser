@@ -2,19 +2,11 @@
 
 const fs = require('fs-extra')
 
-var date
-exports._log_ = (log) => {
+exports._log_ = (log, name) => {
   let d = new Date()
-  date = d.getDate()
-  fs.appendFile('./logs/' + date, d.toTimeString() + ': ' + log + '\n', (err) => {
-    if (err) throw err
-  })
-}
+  if (!name) name = d.getMonth()
 
-exports.removeOld = () => {
-  if (date < 10) date += 30
-
-  fs.remove('./logs/' + (date - 10), (err) => {
+  fs.appendFile(`./logs/${d.getFullYear()}_${name}`, `${d}: ${log}\n`, (err) => {
     if (err) throw err
   })
 }

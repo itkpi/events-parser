@@ -8,11 +8,9 @@ const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 
 const parse = require('./parse.js')
 const locale = require('./locale.js')
-const log = require('./log.js')
-const _log_ = log._log_
+const _log_ = require('./log.js')._log_
 
 fs.ensureDirSync('./logs/')
-_log_('\n')
 
 let adress = [ // xml-file name, link
   ['dou_ua_online', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online'],
@@ -55,8 +53,8 @@ for (let adr = 0; adr < adress.length; adr++) {
     let newData = fs.readJsonSync(newJSON, {throws: false})
     let oldData = fs.readJsonSync(oldJSON, {throws: false})
 
-    if (newData.rss.channel.item[0].title ===
-        oldData.rss.channel.item[0].title) { _log_(adress[adr][0] + ': UP TO DATE'); /*continue*/ }
+    // if (newData.rss.channel.item[0].title ===
+    //     oldData.rss.channel.item[0].title) { /*continue*/ } // UP TO DATE
 
     let newI = newData.rss.channel.item
     let oldI = oldData.rss.channel.item
@@ -71,7 +69,7 @@ for (let adr = 0; adr < adress.length; adr++) {
 
   // RSS to API
     while (num >= 0) {
-      _log_(adress[adr][0] + ': ' + newI[num].link + ' start')
+      _log_(`${adress[adr][0]}: ${newI[num].link} start\n`)
 
       let newID = newI[num].description.replace(/[\n,\u2028]/g, '')
       let site = {
@@ -185,9 +183,6 @@ for (let adr = 0; adr < adress.length; adr++) {
         return Promise.resolve()
       })
       num -= 1
-      _log_(adress[adr][0] + ': ' + newI[num].link + ' end')
     }
   })
 }
-
-log.removeOld()

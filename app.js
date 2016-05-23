@@ -9,6 +9,7 @@ const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 const parse = require('./parse.js')
 const locale = require('./locale.js')
 const _log_ = require('./log.js')._log_
+const inBlackList = require('./blackList.js').inBlackList
 
 fs.ensureDirSync('./logs/')
 
@@ -80,6 +81,12 @@ for (let adr = 0; adr < adress.length; adr++) {
       // Parse event description
       let title = parse.title(link, newI[num].title)
       let agenda = parse.agenda(link, newID)
+
+      if (inBlackList(title, agenda, `${newI[num].link}\n${newI[num].title}`)) {
+        num -= 1
+        continue
+      }
+
       let social = parse.social(link, newID, newI[num].link, title, agenda)
       let place = parse.place(link, newID)
       let regUrl = parse.regUrl(link, newID)

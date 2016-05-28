@@ -22,7 +22,8 @@ for (let adr = 0; adr < adress.length; adr++) {
   let newJSON = `./json/new_${adress[adr][0]}.json`
   let oldJSON = `./json/old_${adress[adr][0]}.json`
 
-  getNewData(adress[adr][0], adress[adr][1], adress[adr][2], newJSON, oldJSON)
+  let _getNewData = getNewData(adress[adr][0], adress[adr][1], adress[adr][2], newJSON, oldJSON)
+  if (!_getNewData) continue
 
   // Add new event
   let newData = fs.readJsonSync(newJSON, {throws: false})

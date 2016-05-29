@@ -5,44 +5,50 @@ const moment = require('moment')
 const _log_ = require('./log.js')._log_
 const locale = require('./locale.js').locale
 
-exports.title = (site, src) => {
-  switch (site) {
-    case 'dou.ua': return src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+exports.title = (srcName, src) => {
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
+      return src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.title`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.title`)
       return 'TITLE (parser error)'
   }
 }
 
-exports.agenda = (site, src) => {
-  switch (site) {
-    case 'dou.ua': return src.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
+exports.agenda = (srcName, src) => {
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
+      return src.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.agenda`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.agenda`)
       return 'AGENDA (parser error)'
   }
 }
 
-exports.social = (site, src, link, title, agenda) => {
-  switch (site) {
-    case 'dou.ua':
+exports.social = (srcName, src, link, title, agenda) => {
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
       return `<a href="${link}">ORIGINAL POST</a> | \
 <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
 &image_url=${src.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
 target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.social`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.social`)
       return 'SOCIAL (parser error)'
   }
 }
 
-exports.place = (site, src) => {
+exports.place = (srcName, src) => {
   let place
-  switch (site) {
-    case 'dou.ua':
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
       place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2'); break
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.place`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.place`)
       return 'PLACE (parser error)'
   }
 
@@ -56,37 +62,42 @@ exports.place = (site, src) => {
   return place
 }
 
-exports.regUrl = (site, src) => {
-  switch (site) {
-    case 'dou.ua': return 'http://ITKPI.PP.UA/'
+exports.regUrl = (srcName, src) => {
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
+      return 'http://ITKPI.PP.UA/'
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.regUrl`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.regUrl`)
       return 'http://PARSER.ERROR/RegUrl'
   }
 }
 
-exports.imgUrl = (site, src) => {
-  switch (site) {
-    case 'dou.ua': return ''
+exports.imgUrl = (srcName, src) => {
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
+      return ''
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.imgUrl`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.imgUrl`)
       return 'http://PARSER.ERROR/ImgUrl'
   }
 }
 
-exports.whenStart = (site, src) => {
+exports.whenStart = (srcName, src) => {
   let today = new Date()
   let mmNow = today.getMonth() + 1 // January is 0!
   let yyyy = today.getFullYear()
   let dd, mm, whenStart
 
-  switch (site) {
-    case 'dou.ua':
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
       dd = src.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
       mm = src.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
       break
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.whenStart`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.whenStart`)
       return '1970-01-01 00:00'
   }
 
@@ -100,13 +111,14 @@ exports.whenStart = (site, src) => {
   return whenStart
 }
 
-exports.time = (site, src) => {
+exports.time = (srcName, src) => {
   let time
-  switch (site) {
-    case 'dou.ua':
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
       time = src.replace(/.+?(Начало|Time|Час):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
     default:
-      _log_(`ERROR: NOT FOUND ${site} in parse.time`)
+      _log_(`ERROR: NOT FOUND ${srcName} in parse.time`)
       return '1970-01-01 00:00'
 
   }

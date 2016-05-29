@@ -8,7 +8,7 @@ const parse = require('./parse.js')
 const locale = require('./locale.js')
 const _log_ = require('./log.js')._log_
 const inBlackList = require('./blackList.js').inBlackList
-const getNewData = require('./getNewData.js').getNewData
+const getData = require('./getData.js')
 
 fs.ensureDirSync('./logs/')
 
@@ -18,56 +18,46 @@ let adress = [ // srcName, srcType, srcLink
 ]
 
 for (let adr = 0; adr < adress.length; adr++) {
+  let srcName = adress[adr][0]
+
   // Paths to auxiliary files
-  let newJSON = `./json/new_${adress[adr][0]}.json`
-  let oldJSON = `./json/old_${adress[adr][0]}.json`
+  let newJSON = `./json/new_${srcName}.json`
+  let oldJSON = `./json/old_${srcName}.json`
 
-  let _getNewData = getNewData(adress[adr][0], adress[adr][1], adress[adr][2], newJSON, oldJSON)
-  if (!_getNewData) continue
+  let getNewData = getData.get(srcName, adress[adr][1], adress[adr][2], newJSON, oldJSON)
+  if (!getNewData) continue
 
-  // Add new event
-  let newData = fs.readJsonSync(newJSON, {throws: false})
-  let oldData = fs.readJsonSync(oldJSON, {throws: false})
+  // Read data
+  let newI = getData.read(srcName, fs.readJsonSync(newJSON, {throws: false}))
+  let oldI = getData.read(srcName, fs.readJsonSync(oldJSON, {throws: false}))
 
-  let newI = newData.rss.channel.item
-  let oldI = oldData.rss.channel.item
-
-  let num = 0 // # the last new entry
-  for (num; num < oldI.length; num++) {
-    if (oldI[0].link === newI[num].link) {
-      num -= 1
-      break
-    }
-  }
+  // Find new events
+  let eventsPosition = getData.eventsPosition(srcName, newI, oldI)
 
   // RSS to API
-  while (num >= 0) {
-    _log_(`${adress[adr][0]}: ${newI[num].link} start\n`)
+  while (eventsPosition.length > 0) {
+    _log_(`${srcName}: ${newI[eventsPosition[0]].link} start\n`)
 
-    let newID = newI[num].description.replace(/[\n,\u2028]/g, '')
-    let site = {
-      'https://dou.ua/calendar/': 'dou.ua'
-    }
-    let link = site[newData.rss.channel.link]
+    let newID = newI[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
 
     // Parse event description
-    let title = parse.title(link, newI[num].title)
-    let agenda = parse.agenda(link, newID)
+    let title = parse.title(srcName, newI[eventsPosition[0]].title)
+    let agenda = parse.agenda(srcName, newID)
 
-    if (inBlackList(title, agenda, `${newI[num].link}\n${newI[num].title}`)) {
-      num -= 1
+    if (inBlackList(title, agenda, `${newI[eventsPosition[0]].link}\n${newI[eventsPosition[0]].title}`)) {
+      eventsPosition.shift()
       continue
     }
 
-    let social = parse.social(link, newID, newI[num].link, title, agenda)
-    let place = parse.place(link, newID)
-    let regUrl = parse.regUrl(link, newID)
-    let imgUrl = parse.imgUrl(link, newID)
-    let whenStart = parse.whenStart(link, newID)
-    let onlyDate = parse.time(link, newID)
+    let social = parse.social(srcName, newID, newI[eventsPosition[0]].link, title, agenda)
+    let place = parse.place(srcName, newID)
+    let regUrl = parse.regUrl(srcName, newID)
+    let imgUrl = parse.imgUrl(srcName, newID)
+    let whenStart = parse.whenStart(srcName, newID)
+    let onlyDate = parse.time(srcName, newID)
     if (onlyDate !== true) {
       onlyDate = false
-      whenStart += parse.time(link, newID)
+      whenStart += parse.time(srcName, newID)
     }
 
     // Delete superfluous words
@@ -125,7 +115,7 @@ for (let adr = 0; adr < adress.length; adr++) {
       let body = JSON.stringify({
         title: title.toString(),
         agenda: agenda1.toString() + agenda2.toString(),
-        social: '<i>From: ' + adress[adr][0] + '</i> ' + social.toString(),
+        social: `<i>From: ${srcName}</i> ${social.toString()}`,
         place: place.toString(),
         registration_url: regUrl,
         image_url: imgUrl,
@@ -161,6 +151,6 @@ for (let adr = 0; adr < adress.length; adr++) {
       req.end()
       return Promise.resolve()
     })
-    num -= 1
+    eventsPosition.shift()
   }
 }

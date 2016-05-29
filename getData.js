@@ -5,7 +5,7 @@ const request = require('sync-request')
 const xml2json = require('xml2json')
 const _log_ = require('./log.js')._log_
 
-exports.getNewData = (srcName, srcType, srcLink, newJSON, oldJSON) => {
+exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   // Check for the existence files
   fs.ensureFileSync(newJSON)
   fs.ensureFileSync(oldJSON)
@@ -32,4 +32,32 @@ exports.getNewData = (srcName, srcType, srcLink, newJSON, oldJSON) => {
     return false
   }
   return true
+}
+
+exports.read = (srcName, data) => {
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
+      return (data = data.rss.channel.item)
+    default:
+      _log_(`ERROR: NOT FOUND ${srcName} in getData.read`)
+      return ''
+  }
+}
+
+exports.eventsPosition = (srcName, newI, oldI) => {
+  let eventsPosition = []
+  switch (srcName) {
+    case 'dou_ua_online':
+    case 'dou_ua_kyiv':
+      for (let i = 0; i < oldI.length; i++) {
+        if (oldI[0].link === newI[i].link) break
+
+        eventsPosition.push(i)
+      }
+      break
+    default:
+      _log_(`ERROR: NOT FOUND ${srcName} in getData.eventsPosition`)
+  }
+  return eventsPosition
 }

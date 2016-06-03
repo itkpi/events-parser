@@ -12,4 +12,6 @@ exports._log_ = (log, name) => {
   fs.appendFile(`./logs/${d.getFullYear()}_${name}`, `${d}: ${log}\n`, (err) => {
     if (err) throw err
   })
+
+  console.log(log)
 }

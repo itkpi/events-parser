@@ -17,14 +17,20 @@ exports.title = (srcName, src) => {
 }
 
 exports.agenda = (srcName, src) => {
+  let agenda
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      return src.replace(/.+?Место:<\/strong>.+?<\/p>(.+)<\/div>/, '$1')
+      agenda = src.replace(/.+?(Место|Місце|Place):<\/strong>.+?<\/p>(.+)<\/div>/, '$2')
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.agenda`)
       return 'AGENDA (parser error)'
   }
+  if (agenda.length !== src.length) return agenda
+
+  _log_(`ERROR: ${srcName} have parsing problem in parse.agenda\n${src}`)
+  return 'AGENDA (parser error)'
 }
 
 exports.social = (srcName, src, link, title, agenda) => {
@@ -59,7 +65,10 @@ exports.place = (srcName, src) => {
     place = place.replace(/(O|o)nline|(О|о)нлайн/, "Онлайн + $`$'")
   }
 
-  return place
+  if (place.length !== src.length) return place
+
+  _log_(`ERROR: ${srcName} have parsing problem in parse.place\n${src}`)
+  return 'PLACE (parser error)'
 }
 
 exports.regUrl = (srcName, src) => {
@@ -101,6 +110,11 @@ exports.whenStart = (srcName, src) => {
       return '1970-01-01 00:00'
   }
 
+  if (dd.length === src.length || mm.length === src.length) {
+    _log_(`ERROR: ${srcName} have parsing problem in parse.whenStart\n${src}`)
+    return '1970-01-01'
+  }
+
   moment.locale(locale(mm))
   mm = moment(mm, 'MMMM').get('month') + 1
 
@@ -116,13 +130,17 @@ exports.time = (srcName, src) => {
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      time = src.replace(/.+?(Начало|Time|Час):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
+      time = src.replace(/.+?(Начало|Time|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.time`)
       return '1970-01-01 00:00'
 
   }
 
+  if (time.length === src.length) {
+    _log_(`ERROR: ${srcName} have parsing problem in parse.time\n${src}`)
+    return '1970-01-01 00:00'
+  }
   if (time.length < 6) return ` ${time}`
 
   return true

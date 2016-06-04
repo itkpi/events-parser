@@ -80,21 +80,23 @@ for (let adr = 0; adr < adress.length; adr++) {
     place = place.replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
                   .replace(/(.*?)<.+?>(.+?)/g, '$1$2')
 
-    let agenda1 = '<h1>Too many. Do we really need this?</h1>'
-    let agenda2 = ''
-    if (agenda.length < 14000) {
-      agenda1 = agenda.replace(/(.{0,7000}\s).{0,}/, '$1')
-      agenda2 = agenda.replace(/(.{0,7000}\s)(.{0,})/, '$2')
+    if (agenda.length > 14000) {
+      agenda = '<h1>Too many. Do we really need this?</h1>'
     }
+    let agenda2 = ''
 
     let ya = new Promise((resolve, reject) => { // Translate
       if (locale.lang === 'ru') {
-        yandex.translate(agenda1, { from: 'ru', to: 'uk' }, (err, res) => {
+        if (agenda.length < 14000) {
+          agenda2 = agenda.replace(/(.{0,7000}\s)(.{0,})/, '$2')
+          agenda = agenda.replace(/(.{0,7000}\s).{0,}/, '$1')
+        }
+        yandex.translate(agenda, { from: 'ru', to: 'uk' }, (err, res) => {
           if (err) throw err
-          agenda1 = res.text
+          agenda = res.text
           yandex.translate(agenda2, { from: 'ru', to: 'uk' }, (err, res) => {
             if (err) throw err
-            agenda2 = res.text
+            agenda += res.text
             yandex.translate(title, { from: 'ru', to: 'uk' }, (err, res) => {
               if (err) throw err
               title = res.text
@@ -107,14 +109,14 @@ for (let adr = 0; adr < adress.length; adr++) {
           })
         })
       } else {
-        agenda1 = agenda
+        return resolve()
       }
     })
 
     ya.then(() => { // Send event to EventMonkey
       let body = JSON.stringify({
         title: title.toString(),
-        agenda: agenda1.toString() + agenda2.toString(),
+        agenda: agenda.toString(),
         social: `<i>From: ${srcName}</i> ${social.toString()}`,
         place: place.toString(),
         registration_url: regUrl,

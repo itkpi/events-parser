@@ -58,8 +58,8 @@ for (let adr = 0; adr < adress.length; adr++) {
     let whenStart = parse.whenStart(srcName, newID)
     let onlyDate = parse.time(srcName, newID)
     if (onlyDate !== true) {
+      whenStart += onlyDate
       onlyDate = false
-      whenStart += parse.time(srcName, newID)
     }
 
     // Delete superfluous words

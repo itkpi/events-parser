@@ -130,7 +130,7 @@ exports.time = (srcName, src) => {
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      time = src.replace(/.+?(Начало|Time|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
+      time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.time`)
       return '1970-01-01 00:00'

@@ -10,6 +10,7 @@ const _log_ = require('./log.js')._log_
 const inBlackList = require('./blackList.js').inBlackList
 const getData = require('./getData.js')
 
+console.info('Start')
 fs.ensureDirSync('./logs/')
 
 let adress = [ // srcName, srcType, srcLink
@@ -19,6 +20,7 @@ let adress = [ // srcName, srcType, srcLink
 
 for (let adr = 0; adr < adress.length; adr++) {
   let srcName = adress[adr][0]
+  console.info(`Start ${srcName}`)
 
   // Paths to auxiliary files
   let newJSON = `./json/new_${srcName}.json`
@@ -156,3 +158,4 @@ for (let adr = 0; adr < adress.length; adr++) {
     eventsPosition.shift()
   }
 }
+console.info('End')

@@ -39,6 +39,8 @@ exports.read = (srcName, data) => {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
       return (data = data.rss.channel.item)
+    case 'meetup_open_events':
+      return (data = data.results)
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in getData.read`)
       return ''
@@ -52,6 +54,13 @@ exports.eventsPosition = (srcName, newI, oldI) => {
     case 'dou_ua_kyiv':
       for (let i = 0; i < oldI.length; i++) {
         if (oldI[0].link === newI[i].link) break
+
+        eventsPosition.push(i)
+      }
+      break
+    case 'meetup_open_events':
+      for (let i = 0; i < oldI.length; i++) {
+        if (oldI[0].name === newI[i].name) break
 
         eventsPosition.push(i)
       }

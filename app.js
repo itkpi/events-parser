@@ -15,7 +15,8 @@ fs.ensureDirSync('./logs/')
 
 let adress = [ // srcName, srcType, srcLink
   ['dou_ua_online', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online'],
-  ['dou_ua_kyiv', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']
+  ['dou_ua_kyiv', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2'],
+  ['meetup_open_events', 'json', process.env.MEETUP_OPEN_EVENTS]
 ]
 
 for (let adr = 0; adr < adress.length; adr++) {
@@ -38,20 +39,34 @@ for (let adr = 0; adr < adress.length; adr++) {
 
   // RSS to API
   while (eventsPosition.length > 0) {
-    _log_(`${srcName}: ${newI[eventsPosition[0]].link} start\n`)
-
-    let newID = newI[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
+    let eventTitle, eventLink, newID
+    switch (srcName) {
+      case 'dou_ua_kyiv':
+      case 'dou_ua_online':
+        eventTitle = newI[eventsPosition[0]].title
+        eventLink = newI[eventsPosition[0]].link
+        newID = newI[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
+        break
+      case 'meetup_open_events':
+        eventTitle = newI[eventsPosition[0]].name
+        eventLink = newI[eventsPosition[0]].event_url
+        newID = JSON.stringify(newI[eventsPosition[0]])
+        break
+      default:
+        _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
+    }
+    _log_(`${srcName}: ${eventLink} start\n`)
 
     // Parse event description
-    let title = parse.title(srcName, newI[eventsPosition[0]].title)
+    let title = parse.title(srcName, eventTitle)
     let agenda = parse.agenda(srcName, newID)
 
-    if (inBlackList(title, agenda, `${newI[eventsPosition[0]].link}\n${newI[eventsPosition[0]].title}`)) {
+    if (inBlackList(title, agenda, `${eventLink}\n${eventTitle}`)) {
       eventsPosition.shift()
       continue
     }
 
-    let social = parse.social(srcName, newID, newI[eventsPosition[0]].link, title, agenda)
+    let social = parse.social(srcName, newID, eventLink, title, agenda)
     let place = parse.place(srcName, newID)
     let regUrl = parse.regUrl(srcName, newID)
     let imgUrl = parse.imgUrl(srcName, newID)

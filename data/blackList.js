@@ -1,6 +1,6 @@
 'use strict'
 
-const _log_ = require('./log.js')._log_
+const _log_ = require('../utils.js')._log_
 
 let inTitle = new RegExp(process.env.BAN_IN_TITLE ||
 _log_('Not found eviroment variable BAN_IN_TITLE', 'blackList') || 'Default variable', 'i')
@@ -13,7 +13,6 @@ _log_('Not found eviroment variable BAN_COURSE_TITLE', 'blackList') || 'Default 
 
 let courseCompany = new RegExp(process.env.BAN_COURSE_COMPANY ||
 _log_('Not found eviroment variable BAN_COURSE_COMPANY', 'blackList') || 'Default variable', 'i')
-
 
 exports.inBlackList = (title, agenda, banInfo) => {
   if (title.search(inTitle) + 1) {

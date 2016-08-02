@@ -1,9 +1,15 @@
+/**
+ * These functions parse info from source.
+ */
+
 'use strict'
 
 const moment = require('moment')
 
-const _log_ = require('./log.js')._log_
-const locale = require('./locale.js').locale
+const _log_ = require('../utils.js')._log_
+const locale = require('../utils.js').locale
+
+
 
 exports.title = (srcName, src) => {
   switch (srcName) {
@@ -45,7 +51,7 @@ exports.social = (srcName, src, link, title, agenda) => {
 &image_url=${src.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
 target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
     case 'meetup_open_events':
-      /////////TODO image_url
+      // TODO: image_url
       return `<a href="${link}">ORIGINAL POST</a> | \
 <br/>${title}<br/>${agenda}`
     default:

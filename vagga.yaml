@@ -11,4 +11,4 @@ containers:
 commands:
   run: !Command
     container: eventsparser
-    run: timeout -t 600 node app.js || echo "KILLED BY TIMEOUT"
+    run: timeout -t 600 node main.js || echo "KILLED BY TIMEOUT"

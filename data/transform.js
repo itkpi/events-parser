@@ -1,6 +1,6 @@
 /**
  * These functions are transforming the text.
- * By removing or replacing text is achieved a single design style of all events.
+ * By removing or replacing text achieved a single design style of all events.
  */
 
 'use strict'
@@ -11,7 +11,7 @@ exports.title = (data) => {
     .replace(/(бесплат|вебин|безкоштовн|вебін)[а-я]+\s/ig, '')
     // Remove quotation mark
     .replace(/[",«,‘,“,„]+(.{0,})+[",»,’,”,“]/, '$1')
-    // Remove dots on the end
+    // Remove dots in the end
     .replace(/(.{0,})(\.{1,})/, '$1')
 
   return data
@@ -19,7 +19,7 @@ exports.title = (data) => {
 
 exports.agenda = (data) => {
   data = data
-    // Remove words 'free'
+    // Remove word 'free'
     .replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
     // Remove images
     .replace(/<img.+?">(<br>)?/g, '')
@@ -41,7 +41,7 @@ exports.agenda = (data) => {
 
 exports.social = (data) => {
   data = data
-    // Change images width
+    // Change image width
     .replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
 
   return data
@@ -51,7 +51,7 @@ exports.place = (data) => {
   data = data
     // Remove 'Kyiv' from the field
     .replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
-    // Remove html tags // FIX ME: It's look like a crutch. Need rewrite.
+    // Remove html tags // FIX ME: It looks like a bug. Need rewrite.
     .replace(/(.*?)<.+?>(.+?)/g, '$1$2')
 
   return data

@@ -10,7 +10,6 @@ const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
 
 
-
 exports.title = (srcName, src) => {
   switch (srcName) {
     case 'dou_ua_online':
@@ -20,26 +19,31 @@ exports.title = (srcName, src) => {
       return src
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.title`)
+
       return 'TITLE (parser error)'
   }
 }
 
 exports.agenda = (srcName, src) => {
+  let agenda = 'AGENDA (parser error)'
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      let agenda = src.replace(/.+?(Место|Місце|Place):<\/strong>.+?<\/p>(.+)<\/div>/, '$2')
-      if (agenda.length !== src.length) return agenda
+      agenda = src.replace(/.+?(Место|Місце|Place):<\/strong>.+?<\/p>(.+)<\/div>/, '$2')
       break
     case 'meetup_open_events':
       return JSON.parse(src).description
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.agenda`)
-      return 'AGENDA (parser error)'
+
+      return agenda
+  }
+  if (agenda.length === src.length) {
+    _log_(`ERROR: ${srcName} have parsing problem in parse.agenda\n${src}`)
   }
 
-  _log_(`ERROR: ${srcName} have parsing problem in parse.agenda\n${src}`)
-  return 'AGENDA (parser error)'
+  return agenda
 }
 
 exports.social = (srcName, src, link, title, agenda) => {
@@ -56,34 +60,39 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
 <br/>${title}<br/>${agenda}`
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.social`)
+
       return 'SOCIAL (parser error)'
   }
 }
 
 exports.place = (srcName, src) => {
-  let place
+  let place = 'PLACE (parser error)'
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2'); break
+      place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2')
+      break
     case 'meetup_open_events':
       return `${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.place`)
-      return 'PLACE (parser error)'
+
+      return place
   }
 
   if (place.toLowerCase() === 'online' || place.toLowerCase() === 'онлайн') return 'Онлайн'
 
   if (place.toLowerCase().indexOf('online') + 1 ||
       place.toLowerCase().indexOf('онлайн') + 1) {
-    place = place.replace(/(O|o)nline|(О|о)нлайн/, "Онлайн + $`$'")
+    place = place.replace(/(O|o)nline|(О|о)нлайн/, 'Онлайн + $`$\'')
   }
 
-  if (place.length !== src.length) return place
+  if (place.length === src.length) {
+    _log_(`ERROR: ${srcName} have parsing problem in parse.place\n${src}`)
+  }
 
-  _log_(`ERROR: ${srcName} have parsing problem in parse.place\n${src}`)
-  return 'PLACE (parser error)'
+  return place
 }
 
 exports.regUrl = (srcName, src) => {
@@ -100,6 +109,7 @@ exports.regUrl = (srcName, src) => {
 }
 
 exports.imgUrl = (srcName, src) => {
+  // TODO: find image_url
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
@@ -149,7 +159,8 @@ exports.whenStart = (srcName, src) => {
 }
 
 exports.time = (srcName, src) => {
-  let time
+  let time = '1970-01-01 00:00'
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
@@ -160,13 +171,15 @@ exports.time = (srcName, src) => {
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.time`)
-      return '1970-01-01 00:00'
+
+      return time
 
   }
 
   if (time.length === src.length) {
     _log_(`ERROR: ${srcName} have parsing problem in parse.time\n${src}`)
-    return '1970-01-01 00:00'
+
+    return time
   }
   if (time.length < 6) return ` ${time}`
 

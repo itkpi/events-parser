@@ -51,7 +51,7 @@ exports.place = (data) => {
   data = data
     // Remove 'Kyiv' from the field
     .replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
-    // Remove html tags // FIX ME: It looks like a bug. Need rewrite.
+    // Remove html tags // FIX ME: It looks like a crutch. Need rewrite.
     .replace(/(.*?)<.+?>(.+?)/g, '$1$2')
 
   return data

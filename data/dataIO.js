@@ -27,19 +27,24 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   switch (srcType) {
     case 'xml':
-      let result = xml2json.toJson(res.getBody(), {sanitize: false})
-      fs.writeFileSync(newJSON, result)
+      res = xml2json.toJson(res.getBody(), {sanitize: false})
+      fs.writeFileSync(newJSON, res)
       break
     case 'json':
       fs.writeFileSync(newJSON, res.getBody())
       break
+    default:
+      _log_(`ERROR: NOT FOUND ${srcName} in get.get`)
   }
 
-  let old = fs.readFileSync(oldJSON)
+  const old = fs.readFileSync(oldJSON)
+
   if (old == '') { // not rewrite to '==='
     _log_(`${srcName}: INIT`)
+
     return false
   }
+
   return true
 }
 
@@ -48,18 +53,23 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * Return JSON only with events.
  */
 exports.read = (srcName, data) => {
+  // FIX ME: Look like bug
   fs.readJsonSync(data, {throws: false})
-  console.log(data)
+  let data = ''
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      return (data = data.rss.channel.item)
+      data = data.rss.channel.item
+      break
     case 'meetup_open_events':
-      return (data = data.results)
+      data = data.results
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in get.read`)
-      return ''
   }
+
+  return data
 }
 
 /**
@@ -68,6 +78,7 @@ exports.read = (srcName, data) => {
  */
 exports.eventsPosition = (srcName, newI, oldI) => {
   let eventsPosition = []
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
@@ -87,6 +98,7 @@ exports.eventsPosition = (srcName, newI, oldI) => {
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in get.eventsPosition`)
   }
+
   return eventsPosition
 }
 
@@ -94,45 +106,63 @@ exports.eventsPosition = (srcName, newI, oldI) => {
  * Returns path to event title.
  */
 exports.eventTitle = (srcName, newI, eventsPosition) => {
+  let eventTitle = 'TITLE (dataIO error)'
+
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      return newI[eventsPosition[0]].title
+      eventTitle = newI[eventsPosition[0]].title
+      break
     case 'meetup_open_events':
-      return newI[eventsPosition[0]].name
+      eventTitle = newI[eventsPosition[0]].name
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
   }
+
+  return eventTitle
 }
 
 /**
  * Returns path to link of the event.
  */
 exports.eventLink = (srcName, newI, eventsPosition) => {
+  let eventLink = 'LINK (dataIO error)'
+
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      return newI[eventsPosition[0]].link
+      eventLink = newI[eventsPosition[0]].link
+      break
     case 'meetup_open_events':
-      return newI[eventsPosition[0]].event_url
+      eventLink = newI[eventsPosition[0]].event_url
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
   }
+
+  return eventLink
 }
 
 /**
  * Returns path to description of the event.
  */
 exports.newID = (srcName, newI, eventsPosition) => {
+  let newID = 'DESCRIPTION (dataIO error)'
+
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      return newI[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
+      newID = newI[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
+      break
     case 'meetup_open_events':
-      return JSON.stringify(newI[eventsPosition[0]])
+      newID = JSON.stringify(newI[eventsPosition[0]])
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
   }
+
+  return newID
 }
 
 /**

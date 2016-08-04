@@ -6,12 +6,14 @@
 
 const fs = require('fs-extra')
 const moment = require('moment')
+const cronLog = require('console').Console
 
 /**
  * Custom logging tool. Save logs to file and print them to console (for cron logs)
  */
 exports._log_ = (log, name) => {
-  let d = new Date()
+  const d = new Date()
+
   if (!name) {
     name = d.getMonth() + 1
     if (name < 10) name = `0${name}`
@@ -21,7 +23,7 @@ exports._log_ = (log, name) => {
     if (err) throw err
   })
 
-  console.log(log)
+  cronLog(log)
 }
 
 /**

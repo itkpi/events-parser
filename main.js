@@ -1,5 +1,5 @@
 /**
- * Main file which distributes tasks to all other.
+ * Main file which distributes tasks.
  */
 
 'use strict'

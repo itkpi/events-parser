@@ -1,5 +1,5 @@
 /**
- * These functions work with data input/output or pick part of their.
+ * These functions work with data input/output or pick part of it.
  */
 
 'use strict'
@@ -12,7 +12,7 @@ const _log_ = require('../utils.js')._log_
 
 /**
  * Get new data from sources.
- * Return 'true' if have new events. Otherwise return 'false'.
+ * Return 'true' if new events are present. Otherwise return 'false'.
  */
 exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   // Check for the existence files
@@ -44,7 +44,7 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 }
 
 /**
- * Read JSON-file.
+ * Read JSON file.
  * Return JSON only with events.
  */
 exports.read = (srcName, data) => {
@@ -91,7 +91,7 @@ exports.eventsPosition = (srcName, newI, oldI) => {
 }
 
 /**
- * Returns path to title of the event.
+ * Returns path to event title.
  */
 exports.eventTitle = (srcName, newI, eventsPosition) => {
   switch (srcName) {
@@ -148,7 +148,7 @@ exports.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, on
     image_url: imgUrl,
     level: 'NONE',
     when_start: whenStart,
-    when_end: whenStart, // Required field... // TODO: Need change in API
+    when_end: whenStart, // Required field... // TODO: Need to change API
     only_date: onlyDate,
     team: 'ITKPI',
     submitter_email: 'VM@ITKPI.PP.UA'

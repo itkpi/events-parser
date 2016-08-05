@@ -98,6 +98,7 @@ for (let adr = 0; adr < address.length; adr++) {
             yandex.translate(place, {'from': 'ru', 'to': 'uk'}, (err, res) => {
               if (err) throw err
               place = res.text
+
               return resolve()
             })
           })

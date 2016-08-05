@@ -184,10 +184,10 @@ exports.imgUrl = (srcName, src) => {
  * @returns {string} date when start.
  */
 exports.date = (srcName, src) => {
-  let date = '1970-01-01 00:00'
+  let date = '1970-01-01'
 
-  let today = new Date()
-  let mmNow = today.getMonth() + 1 // January is 0!
+  const today = new Date()
+  const mmNow = today.getMonth() + 1 // January is 0!
   let yyyy = today.getFullYear()
   let dd, mm
 
@@ -229,7 +229,7 @@ exports.date = (srcName, src) => {
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
 exports.time = (srcName, src) => {
-  let time = '1970-01-01 00:00'
+  let time = '00:00'
 
   switch (srcName) {
     case 'dou_ua_online':
@@ -237,7 +237,7 @@ exports.time = (srcName, src) => {
       time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2')
       break
     case 'meetup_open_events':
-      let t = new Date(JSON.parse(src).time % 86400000)
+      const t = new Date(JSON.parse(src).time % 86400000)
       time = `${t.getUTCHours()}:${t.getUTCMinutes()}`
       break
     default:

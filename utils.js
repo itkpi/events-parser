@@ -10,6 +10,8 @@ const cronLog = require('console').Console
 
 /**
  * Custom logging tool. Save logs to file and print them to console (for cron logs)
+ * @param {string} log - message which need logging.
+ * @param {string} name - custom file name for current log.
  */
 exports._log_ = (log, name) => {
   const d = new Date()
@@ -37,13 +39,16 @@ exports._log_ = (log, name) => {
 exports.locale = (mm) => {
   moment.locale('ru')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-    return (exports.lang = 'ru')
+    exports.lang = 'ru'
+    return exports.lang
   }
 
   moment.locale('uk')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-    return (exports.lang = 'uk')
+    exports.lang = 'uk'
+    return exports.lang
   }
 
-  return (exports.lang = 'en')
+  exports.lang = 'en'
+  return exports.lang
 }

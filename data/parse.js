@@ -209,15 +209,16 @@ exports.date = (srcName, src) => {
     case 'meetup_open_events':
       dd = new Date(JSON.parse(src).time).getDate()
       mm = new Date(JSON.parse(src).time).getMonth()
-
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.whenStart`)
+
       return date
   }
 
   if (dd.length === src.length || mm.length === src.length) {
     _log_(`ERROR: ${srcName} have parsing problem in parse.whenStart\n${src}`)
+
     return date
   }
 

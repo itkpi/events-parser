@@ -117,8 +117,11 @@ exports.place = (srcName, src) => {
 
   if (place.toLowerCase() === 'online' || place.toLowerCase() === 'онлайн') return 'Онлайн'
 
-  if (place.toLowerCase().indexOf('online') + 1 ||
-      place.toLowerCase().indexOf('онлайн') + 1) {
+  // 0 == false, if str.indexOf('s') not found 's' - return -1
+  const giveFalse = 1
+
+  if (place.toLowerCase().indexOf('online') + giveFalse ||
+      place.toLowerCase().indexOf('онлайн') + giveFalse) {
     place = place.replace(/(O|o)nline|(О|о)нлайн/, 'Онлайн + $`$\'')
   }
 
@@ -187,9 +190,12 @@ exports.date = (srcName, src) => {
   let date = '1970-01-01'
 
   const today = new Date()
-  const mmNow = today.getMonth() + 1 // January is 0!
   let yyyy = today.getFullYear()
   let dd, mm
+  // January is 0!
+  const mmStartFromZero = 1
+  const mmNow = today.getMonth() + mmStartFromZero
+
 
   switch (srcName) {
     case 'dou_ua_online':
@@ -237,7 +243,9 @@ exports.time = (srcName, src) => {
       time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2')
       break
     case 'meetup_open_events':
-      const t = new Date(JSON.parse(src).time % 86400000)
+      const dayInMilliseconds = 86400000
+      const t = new Date(JSON.parse(src).time % dayInMilliseconds)
+
       time = `${t.getUTCHours()}:${t.getUTCMinutes()}`
       break
     default:
@@ -251,7 +259,10 @@ exports.time = (srcName, src) => {
 
     return time
   }
-  if (time.length < 6) return ` ${time}`
+
+  const validTimeLength = 5
+
+  if (time.length <= validTimeLength) return ` ${time}`
 
   return true
 }

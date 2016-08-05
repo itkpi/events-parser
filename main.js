@@ -82,7 +82,10 @@ for (let adr = 0; adr < address.length; adr++) {
     social = transform.social(social)
     place = transform.place(place)
 
-    if (agenda.length > 7000) {
+    // Yandex Translate can translate a little more 7000 symbols per request.
+    const translateMax = 7000
+
+    if (agenda.length > translateMax) {
       agenda = '<h1>Too many. Do we really need this?</h1>'
     }
 

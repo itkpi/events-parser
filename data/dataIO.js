@@ -10,6 +10,8 @@ const xml2json = require('xml2json')
 const http = require('http')
 const _log_ = require('../utils.js')._log_
 
+const firstEvent = 0
+
 /**
  * Get new data from sources.
  * @param {string} srcName - name of source, which is currently being processed.
@@ -93,14 +95,14 @@ exports.eventsPosition = (srcName, newSrc, oldSrc) => {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
       for (let i = 0; i < oldSrc.length; i++) {
-        if (oldSrc[0].link === newSrc[i].link) break
+        if (oldSrc[firstEvent].link === newSrc[i].link) break
 
         eventsPosition.push(i)
       }
       break
     case 'meetup_open_events':
       for (let i = 0; i < oldSrc.length; i++) {
-        if (oldSrc[0].name === newSrc[i].name) break
+        if (oldSrc[firstEvent].name === newSrc[i].name) break
 
         eventsPosition.push(i)
       }
@@ -125,10 +127,10 @@ exports.title = (srcName, src, eventsPosition) => {
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      title = src[eventsPosition[0]].title
+      title = src[eventsPosition[firstEvent]].title
       break
     case 'meetup_open_events':
-      title = src[eventsPosition[0]].name
+      title = src[eventsPosition[firstEvent]].name
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in dataIO.title`)
@@ -150,10 +152,10 @@ exports.link = (srcName, src, eventsPosition) => {
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      link = src[eventsPosition[0]].link
+      link = src[eventsPosition[firstEvent]].link
       break
     case 'meetup_open_events':
-      link = src[eventsPosition[0]].event_url
+      link = src[eventsPosition[firstEvent]].event_url
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in dataIO.link`)
@@ -175,10 +177,10 @@ exports.data = (srcName, src, eventsPosition) => {
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      data = src[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
+      data = src[eventsPosition[firstEvent]].description.replace(/[\n,\u2028]/g, '')
       break
     case 'meetup_open_events':
-      data = JSON.stringify(src[eventsPosition[0]])
+      data = JSON.stringify(src[eventsPosition[firstEvent]])
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in dataIO.data`)
@@ -216,6 +218,7 @@ exports.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, on
       'Content-Length': Buffer.byteLength(body)
     }
   }
+
   const req = http.request(options, (res) => {
     if (res.statusCode !== 201) {
       _log_(`HEADERS: ${JSON.stringify(res.headers)}`)

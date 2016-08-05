@@ -15,7 +15,10 @@ exports._log_ = (log, name) => {
   const d = new Date()
 
   if (!name) {
-    name = d.getMonth() + 1
+    // January is 0!
+    const mmStartFromZero = 1
+
+    name = d.getMonth() + mmStartFromZero
     if (name < 10) name = `0${name}`
   }
 

@@ -136,7 +136,7 @@ exports.place = (srcName, src) => {
  * Find Registration url of the event.
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
- * @returns {string} registration url.
+ * @returns {string} regUrl - registration url.
  */
 exports.regUrl = (srcName, src) => {
   let regUrl = 'http://PARSER.ERROR/RegUrl'
@@ -161,7 +161,7 @@ exports.regUrl = (srcName, src) => {
  * Find Image url of the event.
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
- * @returns {string} image url.
+ * @returns {string} imgUrl - image url.
  */
 exports.imgUrl = (srcName, src) => {
   let imgUrl = 'http://PARSER.ERROR/ImgUrl'

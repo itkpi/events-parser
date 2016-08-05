@@ -59,7 +59,7 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * Read JSON file.
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {string} file - path to JSON file with data of current iteration.
- * @returns {JSON} JSON only with events.
+ * @returns {JSON} data - JSON only with events.
  */
 exports.read = (srcName, file) => {
   // FIX ME: Look like bug
@@ -86,7 +86,7 @@ exports.read = (srcName, file) => {
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} newSrc - JSON file with actual state of information.
  * @param {JSON} oldSrc - JSON file with previous state of information.
- * @returns {Array} with position of new events.
+ * @returns {Array} eventsPosition - position of new events.
  */
 exports.eventsPosition = (srcName, newSrc, oldSrc) => {
   let eventsPosition = []
@@ -119,7 +119,7 @@ exports.eventsPosition = (srcName, newSrc, oldSrc) => {
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} src - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
- * @returns {string} event title.
+ * @returns {string} title - event title.
  */
 exports.title = (srcName, src, eventsPosition) => {
   let title = 'TITLE (dataIO error)'
@@ -144,7 +144,7 @@ exports.title = (srcName, src, eventsPosition) => {
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} src - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
- * @returns {string} link of the event.
+ * @returns {string} link - link of the event.
  */
 exports.link = (srcName, src, eventsPosition) => {
   let link = 'https://LINK.dataIO/error/'
@@ -169,7 +169,7 @@ exports.link = (srcName, src, eventsPosition) => {
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} src - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
- * @returns {string} information of the event.
+ * @returns {string} data - information of the event.
  */
 exports.data = (srcName, src, eventsPosition) => {
   let data = 'DATA (dataIO error)'

@@ -52,18 +52,18 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * Read JSON file.
  * Return JSON only with events.
  */
-exports.read = (srcName, data) => {
+exports.read = (srcName, file) => {
   // FIX ME: Look like bug
-  fs.readJsonSync(data, {throws: false})
+  fs.readJsonSync(file, {throws: false})
   let data = ''
 
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      data = data.rss.channel.item
+      data = file.rss.channel.item
       break
     case 'meetup_open_events':
-      data = data.results
+      data = file.results
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in get.read`)

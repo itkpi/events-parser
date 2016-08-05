@@ -12,6 +12,11 @@ const _log_ = require('../utils.js')._log_
 
 /**
  * Get new data from sources.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcType - datatype of current source.
+ * @param {string} srcLink - link to actual data of source.
+ * @param {string} newJSON - path to JSON file with data of current iteration.
+ * @param {string} oldJSON - path to JSON file with data of previous iteration.
  * @returns {boolean} 'true' if new events are present. Otherwise return 'false'.
  */
 exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
@@ -27,7 +32,7 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   switch (srcType) {
     case 'xml':
-      res = xml2json.toJson(res.getBody(), {sanitize: false})
+      res = xml2json.toJson(res.getBody(), {'sanitize': false})
       fs.writeFileSync(newJSON, res)
       break
     case 'json':
@@ -50,11 +55,13 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
 /**
  * Read JSON file.
- * @returns {string} JSON only with events.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} file - path to JSON file with data of current iteration.
+ * @returns {JSON} JSON only with events.
  */
 exports.read = (srcName, file) => {
   // FIX ME: Look like bug
-  fs.readJsonSync(file, {throws: false})
+  fs.readJsonSync(file, {'throws': false})
   let data = ''
 
   switch (srcName) {
@@ -74,23 +81,26 @@ exports.read = (srcName, file) => {
 
 /**
  * Search position of new events.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} newSrc - JSON file with actual state of information.
+ * @param {JSON} oldSrc - JSON file with previous state of information.
  * @returns {Array} with position of new events.
  */
-exports.eventsPosition = (srcName, newI, oldI) => {
+exports.eventsPosition = (srcName, newSrc, oldSrc) => {
   let eventsPosition = []
 
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      for (let i = 0; i < oldI.length; i++) {
-        if (oldI[0].link === newI[i].link) break
+      for (let i = 0; i < oldSrc.length; i++) {
+        if (oldSrc[0].link === newSrc[i].link) break
 
         eventsPosition.push(i)
       }
       break
     case 'meetup_open_events':
-      for (let i = 0; i < oldI.length; i++) {
-        if (oldI[0].name === newI[i].name) break
+      for (let i = 0; i < oldSrc.length; i++) {
+        if (oldSrc[0].name === newSrc[i].name) break
 
         eventsPosition.push(i)
       }
@@ -103,66 +113,78 @@ exports.eventsPosition = (srcName, newI, oldI) => {
 }
 
 /**
+ * Return title of event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON source file.
+ * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} event title.
  */
-exports.eventTitle = (srcName, newI, eventsPosition) => {
-  let eventTitle = 'TITLE (dataIO error)'
+exports.title = (srcName, src, eventsPosition) => {
+  let title = 'TITLE (dataIO error)'
 
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      eventTitle = newI[eventsPosition[0]].title
+      title = src[eventsPosition[0]].title
       break
     case 'meetup_open_events':
-      eventTitle = newI[eventsPosition[0]].name
+      title = src[eventsPosition[0]].name
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
+      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.title`)
   }
 
-  return eventTitle
+  return title
 }
 
 /**
+ * Return link to source of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON source file.
+ * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} link of the event.
  */
-exports.eventLink = (srcName, newI, eventsPosition) => {
-  let eventLink = 'LINK (dataIO error)'
+exports.link = (srcName, src, eventsPosition) => {
+  let link = 'https://LINK.dataIO/error/'
 
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      eventLink = newI[eventsPosition[0]].link
+      link = src[eventsPosition[0]].link
       break
     case 'meetup_open_events':
-      eventLink = newI[eventsPosition[0]].event_url
+      link = src[eventsPosition[0]].event_url
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
+      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.link`)
   }
 
-  return eventLink
+  return link
 }
 
 /**
- * @returns {string} description of the event.
+ * Return information about one event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON source file.
+ * @param {Array} eventsPosition - array with position of new events.
+ * @returns {string} information of the event.
  */
-exports.newID = (srcName, newI, eventsPosition) => {
-  let newID = 'DESCRIPTION (dataIO error)'
+exports.data = (srcName, src, eventsPosition) => {
+  let data = 'DATA (dataIO error)'
 
   switch (srcName) {
     case 'dou_ua_kyiv':
     case 'dou_ua_online':
-      newID = newI[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
+      data = src[eventsPosition[0]].description.replace(/[\n,\u2028]/g, '')
       break
     case 'meetup_open_events':
-      newID = JSON.stringify(newI[eventsPosition[0]])
+      data = JSON.stringify(src[eventsPosition[0]])
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in eventLink`)
+      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.data`)
   }
 
-  return newID
+  return data
 }
 
 /**

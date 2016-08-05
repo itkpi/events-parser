@@ -10,6 +10,9 @@ const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
 
 /**
+ * Find Title field of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string} title.
  */
 exports.title = (srcName, src) => {
@@ -31,6 +34,9 @@ exports.title = (srcName, src) => {
 }
 
 /**
+ * Find Agenda field of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string} agenda.
  */
 exports.agenda = (srcName, src) => {
@@ -56,6 +62,12 @@ exports.agenda = (srcName, src) => {
 }
 
 /**
+ * Create Social field of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
+ * @param {string} link - link to source event.
+ * @param {string} title - title field of the event.
+ * @param {string} agenda - agenda field of the event.
  * @returns {string} social.
  */
 exports.social = (srcName, src, link, title, agenda) => {
@@ -82,6 +94,9 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
 }
 
 /**
+ * Find Place field of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string} place.
  */
 exports.place = (srcName, src) => {
@@ -115,6 +130,9 @@ exports.place = (srcName, src) => {
 }
 
 /**
+ * Find Registration url of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string} registration url.
  */
 exports.regUrl = (srcName, src) => {
@@ -137,6 +155,9 @@ exports.regUrl = (srcName, src) => {
 }
 
 /**
+ * Find Image url of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string} image url.
  */
 exports.imgUrl = (srcName, src) => {
@@ -157,6 +178,9 @@ exports.imgUrl = (srcName, src) => {
 }
 
 /**
+ * Find Date of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string} date when start.
  */
 exports.date = (srcName, src) => {
@@ -199,6 +223,9 @@ exports.date = (srcName, src) => {
 }
 
 /**
+ * Find Time of the event.
+ * @param {string} srcName - name of source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
 exports.time = (srcName, src) => {

@@ -41,35 +41,35 @@ for (let adr = 0; adr < address.length; adr++) {
   if (!getNewData) continue
 
   // Read data
-  const newI = dataIO.read(srcName, newJSON)
-  const oldI = dataIO.read(srcName, oldJSON)
+  const newSrc = dataIO.read(srcName, newJSON)
+  const oldSrc = dataIO.read(srcName, oldJSON)
 
   // Find new events
-  let eventsPosition = dataIO.eventsPosition(srcName, newI, oldI)
+  let eventsPosition = dataIO.eventsPosition(srcName, newSrc, oldSrc)
 
   // RSS to API
   while (eventsPosition.length) {
-    const eventTitle = dataIO.eventTitle(srcName, newI, eventsPosition)
-    const eventLink = dataIO.eventLink(srcName, newI, eventsPosition)
-    const newID = dataIO.newID(srcName, newI, eventsPosition)
+    let title = dataIO.title(srcName, newSrc, eventsPosition)
+    const link = dataIO.link(srcName, newSrc, eventsPosition)
+    const data = dataIO.data(srcName, newSrc, eventsPosition)
 
-    _log_(`${srcName}: ${eventLink} start\n`)
+    _log_(`${srcName}: ${link} start\n`)
 
     // Parse event description
-    let title = parse.title(srcName, eventTitle)
-    let agenda = parse.agenda(srcName, newID)
+    title = parse.title(srcName, title)
+    let agenda = parse.agenda(srcName, data)
 
-    if (inBlackList(title, agenda, `${eventLink}\n${eventTitle}`)) {
+    if (inBlackList(title, agenda, `${link}\n${title}`)) {
       eventsPosition.shift()
       continue
     }
 
-    let social = parse.social(srcName, newID, eventLink, title, agenda)
-    let place = parse.place(srcName, newID)
-    const regUrl = parse.regUrl(srcName, newID)
-    const imgUrl = parse.imgUrl(srcName, newID)
-    let whenStart = parse.date(srcName, newID)
-    let onlyDate = parse.time(srcName, newID)
+    let social = parse.social(srcName, data, link, title, agenda)
+    let place = parse.place(srcName, data)
+    const regUrl = parse.regUrl(srcName, data)
+    const imgUrl = parse.imgUrl(srcName, data)
+    let whenStart = parse.date(srcName, data)
+    let onlyDate = parse.time(srcName, data)
 
     if (onlyDate !== true) {
       whenStart += onlyDate

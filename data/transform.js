@@ -6,7 +6,9 @@
 'use strict'
 
 /**
- * @returns {string}
+ * Title field style unification.
+ * @param {string} data - title from source.
+ * @returns {string} title of the event.
  */
 exports.title = (data) => {
   const title = data
@@ -21,7 +23,9 @@ exports.title = (data) => {
 }
 
 /**
- * @returns {string}
+ * Agenda field style unification.
+ * @param {string} data - agenda from source.
+ * @returns {string} agenda of the event.
  */
 exports.agenda = (data) => {
   const agenda = data
@@ -46,7 +50,9 @@ exports.agenda = (data) => {
 }
 
 /**
- * @returns {string}
+ * Social field style unification.
+ * @param {string} data - combine field with external information for moderators.
+ * @returns {string} social of the event.
  */
 exports.social = (data) => {
   const social = data
@@ -57,7 +63,9 @@ exports.social = (data) => {
 }
 
 /**
- * @returns {string}
+ * Place field style unification.
+ * @param {string} data - place from source.
+ * @returns {string} place of the event.
  */
 exports.place = (data) => {
   const place = data

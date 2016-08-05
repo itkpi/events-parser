@@ -20,7 +20,7 @@ const locale = require('./utils.js').locale
 cronLog('Start')
 fs.ensureDirSync('./logs/')
 
-let address = [
+const address = [
   // srcName, srcType, srcLink
   ['dou_ua_online', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online'],
   ['dou_ua_kyiv', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2'],
@@ -28,15 +28,16 @@ let address = [
 ]
 
 for (let adr = 0; adr < address.length; adr++) {
-  let srcName = address[adr][0]
+  const srcName = address[adr][0]
 
   cronLog(`Start ${srcName}`)
 
   // Paths to auxiliary files
-  let newJSON = path.join(__dirname, 'json', `new_${srcName}.json`)
-  let oldJSON = path.join(__dirname, 'json', `old_${srcName}.json`)
+  const newJSON = path.join(__dirname, 'json', `new_${srcName}.json`)
+  const oldJSON = path.join(__dirname, 'json', `old_${srcName}.json`)
 
   const getNewData = dataIO.get(srcName, address[adr][1], address[adr][2], newJSON, oldJSON)
+
   if (!getNewData) continue
 
   // Read data
@@ -67,8 +68,9 @@ for (let adr = 0; adr < address.length; adr++) {
     let place = parse.place(srcName, newID)
     const regUrl = parse.regUrl(srcName, newID)
     const imgUrl = parse.imgUrl(srcName, newID)
-    let whenStart = parse.whenStart(srcName, newID)
+    let whenStart = parse.date(srcName, newID)
     let onlyDate = parse.time(srcName, newID)
+
     if (onlyDate !== true) {
       whenStart += onlyDate
       onlyDate = false
@@ -87,13 +89,13 @@ for (let adr = 0; adr < address.length; adr++) {
     // Translate
     let ya = new Promise((resolve, reject) => {
       if (locale.lang === 'ru') {
-        yandex.translate(agenda, {from: 'ru', to: 'uk'}, (err, res) => {
+        yandex.translate(agenda, {'from': 'ru', 'to': 'uk'}, (err, res) => {
           if (err) throw err
           agenda = res.text
-          yandex.translate(title, {from: 'ru', to: 'uk'}, (err, res) => {
+          yandex.translate(title, {'from': 'ru', 'to': 'uk'}, (err, res) => {
             if (err) throw err
             title = res.text
-            yandex.translate(place, {from: 'ru', to: 'uk'}, (err, res) => {
+            yandex.translate(place, {'from': 'ru', 'to': 'uk'}, (err, res) => {
               if (err) throw err
               place = res.text
               return resolve()

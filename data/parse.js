@@ -9,21 +9,30 @@ const moment = require('moment')
 const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
 
-
+/**
+ * @returns {string} title.
+ */
 exports.title = (srcName, src) => {
+  let title = 'TITLE (parser error)'
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      return src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+      title = src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
+      break
     case 'meetup_open_events':
-      return src
+      title = src
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.title`)
-
-      return 'TITLE (parser error)'
   }
+
+  return title
 }
 
+/**
+ * @returns {string} agenda.
+ */
 exports.agenda = (srcName, src) => {
   let agenda = 'AGENDA (parser error)'
 
@@ -46,25 +55,35 @@ exports.agenda = (srcName, src) => {
   return agenda
 }
 
+/**
+ * @returns {string} social.
+ */
 exports.social = (srcName, src, link, title, agenda) => {
+  let social = 'SOCIAL (parser error)'
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      return `<a href="${link}">ORIGINAL POST</a> | \
+      social = `<a href="${link}">ORIGINAL POST</a> | \
 <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
 &image_url=${src.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
 target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
+      break
     case 'meetup_open_events':
       // TODO: image_url
-      return `<a href="${link}">ORIGINAL POST</a> | \
+      social = `<a href="${link}">ORIGINAL POST</a> | \
 <br/>${title}<br/>${agenda}`
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.social`)
-
-      return 'SOCIAL (parser error)'
   }
+
+  return social
 }
 
+/**
+ * @returns {string} place.
+ */
 exports.place = (srcName, src) => {
   let place = 'PLACE (parser error)'
 
@@ -95,37 +114,58 @@ exports.place = (srcName, src) => {
   return place
 }
 
+/**
+ * @returns {string} registration url.
+ */
 exports.regUrl = (srcName, src) => {
+  let regUrl = 'http://PARSER.ERROR/RegUrl'
+
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      return 'http://ITKPI.PP.UA/'
+      // TODO: find registration url
+      regUrl = 'http://ITKPI.PP.UA/'
+      break
     case 'meetup_open_events':
-      return JSON.parse(src).event_url
+      regUrl = JSON.parse(src).event_url
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.regUrl`)
-      return 'http://PARSER.ERROR/RegUrl'
   }
+
+  return regUrl
 }
 
+/**
+ * @returns {string} image url.
+ */
 exports.imgUrl = (srcName, src) => {
+  let imgUrl = 'http://PARSER.ERROR/ImgUrl'
+
   // TODO: find image_url
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
     case 'meetup_open_events':
-      return ''
+      imgUrl = ''
+      break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.imgUrl`)
-      return 'http://PARSER.ERROR/ImgUrl'
   }
+
+  return imgUrl
 }
 
-exports.whenStart = (srcName, src) => {
+/**
+ * @returns {string} date when start.
+ */
+exports.date = (srcName, src) => {
+  let date = '1970-01-01 00:00'
+
   let today = new Date()
   let mmNow = today.getMonth() + 1 // January is 0!
   let yyyy = today.getFullYear()
-  let dd, mm, whenStart
+  let dd, mm
 
   switch (srcName) {
     case 'dou_ua_online':
@@ -143,28 +183,32 @@ exports.whenStart = (srcName, src) => {
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.whenStart`)
-      return '1970-01-01 00:00'
+      return date
   }
 
   if (dd.length === src.length || mm.length === src.length) {
     _log_(`ERROR: ${srcName} have parsing problem in parse.whenStart\n${src}`)
-    return '1970-01-01'
+    return date
   }
 
   if (mmNow > mm) yyyy += 1
 
-  whenStart = `${yyyy}-${mm}-${dd}`
+  date = `${yyyy}-${mm}-${dd}`
 
-  return whenStart
+  return date
 }
 
+/**
+ * @returns {string|boolean} time when start. If event have only date - return true.
+ */
 exports.time = (srcName, src) => {
   let time = '1970-01-01 00:00'
 
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2'); break
+      time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2')
+      break
     case 'meetup_open_events':
       let t = new Date(JSON.parse(src).time % 86400000)
       time = `${t.getUTCHours()}:${t.getUTCMinutes()}`
@@ -173,7 +217,6 @@ exports.time = (srcName, src) => {
       _log_(`ERROR: NOT FOUND ${srcName} in parse.time`)
 
       return time
-
   }
 
   if (time.length === src.length) {

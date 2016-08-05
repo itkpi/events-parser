@@ -5,8 +5,11 @@
 
 'use strict'
 
+/**
+ * @returns {string}
+ */
 exports.title = (data) => {
-  data = data
+  const title = data
     // Remove words 'free' and 'webinar'
     .replace(/(бесплат|вебин|безкоштовн|вебін)[а-я]+\s/ig, '')
     // Remove quotation mark
@@ -14,11 +17,14 @@ exports.title = (data) => {
     // Remove dots in the end
     .replace(/(.{0,})(\.{1,})/, '$1')
 
-  return data
+  return title
 }
 
+/**
+ * @returns {string}
+ */
 exports.agenda = (data) => {
-  data = data
+  const agenda = data
     // Remove word 'free'
     .replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
     // Remove images
@@ -36,23 +42,29 @@ exports.agenda = (data) => {
     .replace(/(<br>([—-•●∙](?:\s|&nbsp;)?|(\d{2}.\d{2}.{1,10}\d{2}.\d{2}))(.+?)[.;\,]?)+/g, '</li><li>$3$4')
     .replace(/(:)<\/li>(<li>.+?)(<\/p>)/g, '$1<ul>$2</li></ul>$3')
 
-  return data
+  return agenda
 }
 
+/**
+ * @returns {string}
+ */
 exports.social = (data) => {
-  data = data
+  const social = data
     // Change image width
     .replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
 
-  return data
+  return social
 }
 
+/**
+ * @returns {string}
+ */
 exports.place = (data) => {
-  data = data
+  const place = data
     // Remove 'Kyiv' from the field
     .replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
     // Remove html tags // FIX ME: It looks like a crutch. Need rewrite.
     .replace(/(.*?)<.+?>(.+?)/g, '$1$2')
 
-  return data
+  return place
 }

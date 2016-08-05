@@ -28,6 +28,8 @@ exports._log_ = (log, name) => {
 
 /**
  * Determination of language of the event by title of the month.
+ * Have exports value: lang.
+ * @returns {string} language.
  */
 exports.locale = (mm) => {
   moment.locale('ru')

@@ -6,14 +6,16 @@
 
 const fs = require('fs-extra')
 const moment = require('moment')
-const cronLog = require('console').Console
 
 /**
- * Custom logging tool. Save logs to file and print them to console (for cron logs)
+ * Custom logging tool. Print logs to cron and save them to file (if name !== 'onlyCron')
  * @param {string} log - message which need logging.
  * @param {string} name - custom file name for current log.
  */
 exports._log_ = (log, name) => {
+  console.log(log)
+  if (name === 'onlyCron') return
+
   const d = new Date()
 
   if (!name) {
@@ -27,8 +29,6 @@ exports._log_ = (log, name) => {
   fs.appendFile(`./logs/${d.getFullYear()}_${name}`, `${d}: ${log}\n`, (err) => {
     if (err) throw err
   })
-
-  cronLog(log)
 }
 
 /**
@@ -36,6 +36,7 @@ exports._log_ = (log, name) => {
  * Have exports value: lang.
  * @returns {string} language.
  */
+// TODo: Rewrite through iterator
 exports.locale = (mm) => {
   moment.locale('ru')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {

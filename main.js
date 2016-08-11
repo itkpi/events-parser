@@ -7,7 +7,6 @@
 const fs = require('fs-extra')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 const path = require('path')
-const cronLog = require('console').Console
 
 const parse = require('./data/parse.js')
 const inBlackList = require('./data/blackList.js').inBlackList
@@ -17,7 +16,7 @@ const transform = require('./data/transform.js')
 const _log_ = require('./utils.js')._log_
 const locale = require('./utils.js').locale
 
-cronLog('Start')
+_log_('Start', 'onlyCron')
 fs.ensureDirSync('./logs/')
 
 const address = [
@@ -30,7 +29,7 @@ const address = [
 for (let adr = 0; adr < address.length; adr++) {
   const srcName = address[adr][0]
 
-  cronLog(`Start ${srcName}`)
+  _log_(`Start ${srcName}`, 'onlyCron')
 
   // Paths to auxiliary files
   const newJSON = path.join(__dirname, 'json', `new_${srcName}.json`)
@@ -120,4 +119,4 @@ for (let adr = 0; adr < address.length; adr++) {
     eventsPosition.shift()
   }
 }
-cronLog('End')
+_log_('End', 'onlyCron')

@@ -62,17 +62,15 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * @returns {JSON} data - JSON only with events.
  */
 exports.read = (srcName, file) => {
-  // FIX ME: Look like bug
-  fs.readJsonSync(file, {'throws': false})
-  let data = ''
+  let data = fs.readJsonSync(file, {'throws': false})
 
   switch (srcName) {
     case 'dou_ua_online':
     case 'dou_ua_kyiv':
-      data = file.rss.channel.item
+      data = data.rss.channel.item
       break
     case 'meetup_open_events':
-      data = file.results
+      data = data.results
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in get.read`)
@@ -205,7 +203,7 @@ exports.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, on
     'when_end': whenStart, // Required field... // TODO: Need to change API
     'only_date': onlyDate,
     'team': 'ITKPI',
-    'submitter_email': 'VM@ITKPI.PP.UA'
+    'submitter_email': 'TEST_VM@ITKPI.PP.UA'
   })
 
   const options = {

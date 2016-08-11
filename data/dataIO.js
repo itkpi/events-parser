@@ -10,6 +10,9 @@ const xml2json = require('xml2json')
 const http = require('http')
 const _log_ = require('../utils.js')._log_
 
+const dataIO = {}
+module.exports = dataIO
+
 const firstEvent = 0
 
 /**
@@ -21,7 +24,7 @@ const firstEvent = 0
  * @param {string} oldJSON - path to JSON file with data of previous iteration.
  * @returns {boolean} 'true' if new events are present. Otherwise return 'false'.
  */
-exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
+dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   // Check for the existence files
   fs.ensureFileSync(newJSON)
   fs.ensureFileSync(oldJSON)
@@ -61,7 +64,7 @@ exports.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * @param {string} file - path to JSON file with data of current iteration.
  * @returns {JSON} data - JSON only with events.
  */
-exports.read = (srcName, file) => {
+dataIO.read = (srcName, file) => {
   let data = fs.readJsonSync(file, {'throws': false})
 
   switch (srcName) {
@@ -86,7 +89,7 @@ exports.read = (srcName, file) => {
  * @param {JSON} oldSrc - JSON file with previous state of information.
  * @returns {Array} eventsPosition - position of new events.
  */
-exports.eventsPosition = (srcName, newSrc, oldSrc) => {
+dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
   let eventsPosition = []
 
   switch (srcName) {
@@ -119,7 +122,7 @@ exports.eventsPosition = (srcName, newSrc, oldSrc) => {
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} title - event title.
  */
-exports.title = (srcName, src, eventsPosition) => {
+dataIO.title = (srcName, src, eventsPosition) => {
   let title = 'TITLE (dataIO error)'
 
   switch (srcName) {
@@ -144,7 +147,7 @@ exports.title = (srcName, src, eventsPosition) => {
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} link - link of the event.
  */
-exports.link = (srcName, src, eventsPosition) => {
+dataIO.link = (srcName, src, eventsPosition) => {
   let link = 'https://LINK.dataIO/error/'
 
   switch (srcName) {
@@ -169,7 +172,7 @@ exports.link = (srcName, src, eventsPosition) => {
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} data - information of the event.
  */
-exports.data = (srcName, src, eventsPosition) => {
+dataIO.data = (srcName, src, eventsPosition) => {
   let data = 'DATA (dataIO error)'
 
   switch (srcName) {
@@ -190,7 +193,7 @@ exports.data = (srcName, src, eventsPosition) => {
 /**
  * Send event to API.
  */
-exports.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onlyDate, srcName) => {
+dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onlyDate, srcName) => {
   const body = JSON.stringify({
     'title': title.toString(),
     'agenda': agenda.toString(),
@@ -203,7 +206,7 @@ exports.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, on
     'when_end': whenStart, // Required field... // TODO: Need to change API
     'only_date': onlyDate,
     'team': 'ITKPI',
-    'submitter_email': 'TEST_VM@ITKPI.PP.UA'
+    'submitter_email': 'VM@ITKPI.PP.UA'
   })
 
   const options = {

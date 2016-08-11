@@ -7,12 +7,15 @@
 const fs = require('fs-extra')
 const moment = require('moment')
 
+const utils = {}
+module.exports = utils
+
 /**
  * Custom logging tool. Print logs to cron and save them to file (if name !== 'onlyCron')
  * @param {string} log - message which need logging.
  * @param {string} name - custom file name for current log.
  */
-exports._log_ = (log, name) => {
+utils._log_ = (log, name) => {
   console.log(log)
   if (name === 'onlyCron') return
 
@@ -37,19 +40,19 @@ exports._log_ = (log, name) => {
  * @returns {string} language.
  */
 // TODo: Rewrite through iterator
-exports.locale = (mm) => {
+utils.locale = (mm) => {
   moment.locale('ru')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-    exports.lang = 'ru'
-    return exports.lang
+    utils.lang = 'ru'
+    return utils.lang
   }
 
   moment.locale('uk')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {
-    exports.lang = 'uk'
-    return exports.lang
+    utils.lang = 'uk'
+    return utils.lang
   }
 
-  exports.lang = 'en'
-  return exports.lang
+  utils.lang = 'en'
+  return utils.lang
 }

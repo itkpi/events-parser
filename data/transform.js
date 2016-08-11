@@ -5,12 +5,15 @@
 
 'use strict'
 
+const transform = {}
+module.exports = transform
+
 /**
  * Title field style unification.
  * @param {string} data - title from source.
  * @returns {string} title of the event.
  */
-exports.title = (data) => {
+transform.title = (data) => {
   const title = data
     // Remove words 'free' and 'webinar'
     .replace(/(бесплат|вебин|безкоштовн|вебін)[а-я]+\s/ig, '')
@@ -27,7 +30,7 @@ exports.title = (data) => {
  * @param {string} data - agenda from source.
  * @returns {string} agenda of the event.
  */
-exports.agenda = (data) => {
+transform.agenda = (data) => {
   const agenda = data
     // Remove word 'free'
     .replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
@@ -54,7 +57,7 @@ exports.agenda = (data) => {
  * @param {string} data - combine field with external information for moderators.
  * @returns {string} social of the event.
  */
-exports.social = (data) => {
+transform.social = (data) => {
   const social = data
     // Change image width
     .replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
@@ -67,7 +70,7 @@ exports.social = (data) => {
  * @param {string} data - place from source.
  * @returns {string} place of the event.
  */
-exports.place = (data) => {
+transform.place = (data) => {
   const place = data
     // Remove 'Kyiv' from the field
     .replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')

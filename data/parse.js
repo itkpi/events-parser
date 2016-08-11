@@ -9,13 +9,16 @@ const moment = require('moment')
 const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
 
+const parse = {}
+module.exports = parse
+
 /**
  * Find Title field of the event.
  * @param {string} srcName - name of source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} title.
  */
-exports.title = (srcName, src) => {
+parse.title = (srcName, src) => {
   let title = 'TITLE (parser error)'
 
   switch (srcName) {
@@ -39,7 +42,7 @@ exports.title = (srcName, src) => {
  * @param {JSON} src - JSON of current event.
  * @returns {string} agenda.
  */
-exports.agenda = (srcName, src) => {
+parse.agenda = (srcName, src) => {
   let agenda = 'AGENDA (parser error)'
 
   switch (srcName) {
@@ -70,7 +73,7 @@ exports.agenda = (srcName, src) => {
  * @param {string} agenda - agenda field of the event.
  * @returns {string} social.
  */
-exports.social = (srcName, src, link, title, agenda) => {
+parse.social = (srcName, src, link, title, agenda) => {
   let social = 'SOCIAL (parser error)'
 
   switch (srcName) {
@@ -99,7 +102,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
  * @param {JSON} src - JSON of current event.
  * @returns {string} place.
  */
-exports.place = (srcName, src) => {
+parse.place = (srcName, src) => {
   let place = 'PLACE (parser error)'
 
   switch (srcName) {
@@ -138,7 +141,7 @@ exports.place = (srcName, src) => {
  * @param {JSON} src - JSON of current event.
  * @returns {string} regUrl - registration url.
  */
-exports.regUrl = (srcName, src) => {
+parse.regUrl = (srcName, src) => {
   let regUrl = 'http://PARSER.ERROR/RegUrl'
 
   switch (srcName) {
@@ -163,7 +166,7 @@ exports.regUrl = (srcName, src) => {
  * @param {JSON} src - JSON of current event.
  * @returns {string} imgUrl - image url.
  */
-exports.imgUrl = (srcName, src) => {
+parse.imgUrl = (srcName, src) => {
   let imgUrl = 'http://PARSER.ERROR/ImgUrl'
 
   // TODO: find image_url
@@ -186,7 +189,7 @@ exports.imgUrl = (srcName, src) => {
  * @param {JSON} src - JSON of current event.
  * @returns {string} date when start.
  */
-exports.date = (srcName, src) => {
+parse.date = (srcName, src) => {
   let date = '1970-01-01'
 
   const today = new Date()
@@ -235,7 +238,7 @@ exports.date = (srcName, src) => {
  * @param {JSON} src - JSON of current event.
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
-exports.time = (srcName, src) => {
+parse.time = (srcName, src) => {
   let time = '00:00'
 
   switch (srcName) {

@@ -1,37 +1,44 @@
 'use strict'
 
-const _log_ = require('./log.js')._log_
+const _log_ = require('../utils.js')._log_
 
-let inTitle = new RegExp(process.env.BAN_IN_TITLE ||
+const inTitle = new RegExp(process.env.BAN_IN_TITLE ||
 _log_('Not found eviroment variable BAN_IN_TITLE', 'blackList') || 'Default variable', 'i')
 
-let inTitleOrAgenda = new RegExp(process.env.BAN_IN_TITLE_OR_AGENDA ||
+const inTitleOrAgenda = new RegExp(process.env.BAN_IN_TITLE_OR_AGENDA ||
 _log_('Not found eviroment variable BAN_IN_TITLE_OR_AGENDA', 'blackList') || 'Default variable', 'i')
 
-let courseTitle = new RegExp(process.env.BAN_COURSE_TITLE ||
+const courseTitle = new RegExp(process.env.BAN_COURSE_TITLE ||
 _log_('Not found eviroment variable BAN_COURSE_TITLE', 'blackList') || 'Default variable', 'i')
 
-let courseCompany = new RegExp(process.env.BAN_COURSE_COMPANY ||
+const courseCompany = new RegExp(process.env.BAN_COURSE_COMPANY ||
 _log_('Not found eviroment variable BAN_COURSE_COMPANY', 'blackList') || 'Default variable', 'i')
 
-
 exports.inBlackList = (title, agenda, banInfo) => {
-  if (title.search(inTitle) + 1) {
+  // 0 == false, if str.search('s') not found 's' - return -1
+  const giveFalse = 1
+
+  if (title.search(inTitle) + giveFalse) {
     _log_(`inTitle: ${banInfo}\n`, 'blackList')
+
     return true
   }
-  if (title.search(inTitleOrAgenda) + 1) {
+  if (title.search(inTitleOrAgenda) + giveFalse) {
     _log_(`inTitleOrAgenda (Title): ${banInfo}\n`, 'blackList')
+
     return true
   }
-  if (agenda.search(inTitleOrAgenda) + 1) {
+  if (agenda.search(inTitleOrAgenda) + giveFalse) {
     _log_(`inTitleOrAgenda (Agenda): ${banInfo}\n`, 'blackList')
+
     return true
   }
-  if (title.search(courseTitle) + 1 &&
-      agenda.search(courseCompany) + 1) {
+  if (title.search(courseTitle) + giveFalse &&
+      agenda.search(courseCompany) + giveFalse) {
     _log_(`Course: ${banInfo}\n`, 'blackList')
+
     return true
   }
+
   return false
 }

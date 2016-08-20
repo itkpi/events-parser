@@ -125,7 +125,7 @@ parse.place = (srcName, src) => {
 
   if (place.toLowerCase().indexOf('online') + giveFalse ||
       place.toLowerCase().indexOf('онлайн') + giveFalse) {
-    place = place.replace(/(O|o)nline|(О|о)нлайн/, 'Онлайн + $`$\'')
+    place = place.replace(/(.*),? ?((O|o)nline|(О|о)нлайн)(.*)/, 'Онлайн + $1$5')
   }
 
   if (place.length === src.length) {

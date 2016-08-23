@@ -22,11 +22,10 @@ parse.title = (srcName, src) => {
   let title = 'TITLE (parser error)'
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       title = src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
       break
-    case 'meetup_open_events':
+    case 'meetup':
       title = src
       break
     default:
@@ -46,11 +45,10 @@ parse.agenda = (srcName, src) => {
   let agenda = 'AGENDA (parser error)'
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       agenda = src.replace(/.+?(Место|Місце|Place):<\/strong>.+?<\/p>(.+)<\/div>/, '$2')
       break
-    case 'meetup_open_events':
+    case 'meetup':
       return JSON.parse(src).description
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.agenda`)
@@ -77,14 +75,13 @@ parse.social = (srcName, src, link, title, agenda) => {
   let social = 'SOCIAL (parser error)'
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       social = `<a href="${link}">ORIGINAL POST</a> | \
 <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
 &image_url=${src.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
 target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
       break
-    case 'meetup_open_events':
+    case 'meetup':
       // TODO: image_url
       social = `<a href="${link}">ORIGINAL POST</a> | \
 <br/>${title}<br/>${agenda}`
@@ -106,11 +103,10 @@ parse.place = (srcName, src) => {
   let place = 'PLACE (parser error)'
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2')
       break
-    case 'meetup_open_events':
+    case 'meetup':
       return `${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`
     default:
       _log_(`ERROR: NOT FOUND ${srcName} in parse.place`)
@@ -145,12 +141,11 @@ parse.regUrl = (srcName, src) => {
   let regUrl = 'http://PARSER.ERROR/RegUrl'
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       // TODO: find registration url
       regUrl = 'http://ITKPI.PP.UA/'
       break
-    case 'meetup_open_events':
+    case 'meetup':
       regUrl = JSON.parse(src).event_url
       break
     default:
@@ -171,9 +166,8 @@ parse.imgUrl = (srcName, src) => {
 
   // TODO: find image_url
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
-    case 'meetup_open_events':
+    case 'dou':
+    case 'meetup':
       imgUrl = ''
       break
     default:
@@ -201,15 +195,14 @@ parse.date = (srcName, src) => {
 
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       dd = src.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
       mm = src.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
 
       moment.locale(locale(mm))
       mm = moment(mm, 'MMMM').get('month') + 1
       break
-    case 'meetup_open_events':
+    case 'meetup':
       dd = new Date(JSON.parse(src).time).getDate()
       mm = new Date(JSON.parse(src).time).getMonth()
       break
@@ -242,11 +235,10 @@ parse.time = (srcName, src) => {
   let time = '00:00'
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2')
       break
-    case 'meetup_open_events':
+    case 'meetup':
       const dayInMilliseconds = 86400000
       const t = new Date(JSON.parse(src).time % dayInMilliseconds)
 

@@ -27,7 +27,7 @@ const address = [
 ]
 
 for (let adr = 0; adr < address.length; adr++) {
-  const srcName = address[adr][0]
+  const srcName = address[adr][0].slice(0, address[adr][0].indexOf('_'))
 
   _log_(`Start ${srcName}`, 'onlyCron')
 

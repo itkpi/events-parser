@@ -68,11 +68,10 @@ dataIO.read = (srcName, file) => {
   let data = fs.readJsonSync(file, {'throws': false})
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       data = data.rss.channel.item
       break
-    case 'meetup_open_events':
+    case 'meetup':
       data = data.results
       break
     default:
@@ -93,15 +92,14 @@ dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
   let eventsPosition = []
 
   switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
+    case 'dou':
       for (let i = 0; i < oldSrc.length; i++) {
         if (oldSrc[firstEvent].link === newSrc[i].link) break
 
         eventsPosition.push(i)
       }
       break
-    case 'meetup_open_events':
+    case 'meetup':
       for (let i = 0; i < oldSrc.length; i++) {
         if (oldSrc[firstEvent].name === newSrc[i].name) break
 
@@ -126,11 +124,10 @@ dataIO.title = (srcName, src, eventsPosition) => {
   let title = 'TITLE (dataIO error)'
 
   switch (srcName) {
-    case 'dou_ua_kyiv':
-    case 'dou_ua_online':
+    case 'dou':
       title = src[eventsPosition[firstEvent]].title
       break
-    case 'meetup_open_events':
+    case 'meetup':
       title = src[eventsPosition[firstEvent]].name
       break
     default:
@@ -151,11 +148,10 @@ dataIO.link = (srcName, src, eventsPosition) => {
   let link = 'https://LINK.dataIO/error/'
 
   switch (srcName) {
-    case 'dou_ua_kyiv':
-    case 'dou_ua_online':
+    case 'dou':
       link = src[eventsPosition[firstEvent]].link
       break
-    case 'meetup_open_events':
+    case 'meetup':
       link = src[eventsPosition[firstEvent]].event_url
       break
     default:
@@ -176,11 +172,10 @@ dataIO.data = (srcName, src, eventsPosition) => {
   let data = 'DATA (dataIO error)'
 
   switch (srcName) {
-    case 'dou_ua_kyiv':
-    case 'dou_ua_online':
+    case 'dou':
       data = src[eventsPosition[firstEvent]].description.replace(/[\n,\u2028]/g, '')
       break
-    case 'meetup_open_events':
+    case 'meetup':
       data = JSON.stringify(src[eventsPosition[firstEvent]])
       break
     default:

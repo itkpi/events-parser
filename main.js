@@ -14,7 +14,7 @@ const dataIO = require('./data/dataIO.js')
 const transform = require('./data/transform.js')
 
 const _log_ = require('./utils.js')._log_
-const locale = require('./utils.js').locale
+const utils = require('./utils.js')
 
 _log_('Start', 'onlyCron')
 fs.ensureDirSync('./logs/')
@@ -90,7 +90,7 @@ for (let adr = 0; adr < address.length; adr++) {
 
     // Translate
     let ya = new Promise((resolve, reject) => {
-      if (locale.lang === 'ru') {
+      if (utils.lang === 'ru') {
         yandex.translate(agenda, {'from': 'ru', 'to': 'uk'}, (err, res) => {
           if (err) throw err
           agenda = res.text

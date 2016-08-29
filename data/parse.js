@@ -14,14 +14,14 @@ module.exports = parse
 
 /**
  * Find Title field of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} title.
  */
-parse.title = (srcName, src) => {
+parse.title = (srcFrom, src) => {
   let title = 'TITLE (parser error)'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       title = src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
       break
@@ -29,7 +29,7 @@ parse.title = (srcName, src) => {
       title = src
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.title`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.title`)
   }
 
   return title
@@ -37,26 +37,26 @@ parse.title = (srcName, src) => {
 
 /**
  * Find Agenda field of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} agenda.
  */
-parse.agenda = (srcName, src) => {
+parse.agenda = (srcFrom, src) => {
   let agenda = 'AGENDA (parser error)'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       agenda = src.replace(/.+?(Место|Місце|Place):<\/strong>.+?<\/p>(.+)<\/div>/, '$2')
       break
     case 'meetup':
       return JSON.parse(src).description
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.agenda`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.agenda`)
 
       return agenda
   }
   if (agenda.length === src.length) {
-    _log_(`ERROR: ${srcName} have parsing problem in parse.agenda\n${src}`)
+    _log_(`ERROR: ${srcFrom} have parsing problem in parse.agenda\n${src}`)
   }
 
   return agenda
@@ -64,17 +64,17 @@ parse.agenda = (srcName, src) => {
 
 /**
  * Create Social field of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @param {string} link - link to source event.
  * @param {string} title - title field of the event.
  * @param {string} agenda - agenda field of the event.
  * @returns {string} social.
  */
-parse.social = (srcName, src, link, title, agenda) => {
+parse.social = (srcFrom, src, link, title, agenda) => {
   let social = 'SOCIAL (parser error)'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       social = `<a href="${link}">ORIGINAL POST</a> | \
 <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
@@ -87,7 +87,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
 <br/>${title}<br/>${agenda}`
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.social`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.social`)
   }
 
   return social
@@ -95,21 +95,21 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
 
 /**
  * Find Place field of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} place.
  */
-parse.place = (srcName, src) => {
+parse.place = (srcFrom, src) => {
   let place = 'PLACE (parser error)'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2')
       break
     case 'meetup':
       return `${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.place`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.place`)
 
       return place
   }
@@ -125,7 +125,7 @@ parse.place = (srcName, src) => {
   }
 
   if (place.length === src.length) {
-    _log_(`ERROR: ${srcName} have parsing problem in parse.place\n${src}`)
+    _log_(`ERROR: ${srcFrom} have parsing problem in parse.place\n${src}`)
   }
 
   return place
@@ -133,14 +133,14 @@ parse.place = (srcName, src) => {
 
 /**
  * Find Registration url of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} regUrl - registration url.
  */
-parse.regUrl = (srcName, src) => {
+parse.regUrl = (srcFrom, src) => {
   let regUrl = 'http://PARSER.ERROR/RegUrl'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       // TODO: find registration url
       regUrl = 'http://ITKPI.PP.UA/'
@@ -149,7 +149,7 @@ parse.regUrl = (srcName, src) => {
       regUrl = JSON.parse(src).event_url
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.regUrl`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.regUrl`)
   }
 
   return regUrl
@@ -157,21 +157,21 @@ parse.regUrl = (srcName, src) => {
 
 /**
  * Find Image url of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} imgUrl - image url.
  */
-parse.imgUrl = (srcName, src) => {
+parse.imgUrl = (srcFrom, src) => {
   let imgUrl = 'http://PARSER.ERROR/ImgUrl'
 
   // TODO: find image_url
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
     case 'meetup':
       imgUrl = ''
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.imgUrl`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.imgUrl`)
   }
 
   return imgUrl
@@ -179,11 +179,11 @@ parse.imgUrl = (srcName, src) => {
 
 /**
  * Find Date of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string} date when start.
  */
-parse.date = (srcName, src) => {
+parse.date = (srcFrom, src) => {
   let date = '1970-01-01'
 
   const today = new Date()
@@ -194,7 +194,7 @@ parse.date = (srcName, src) => {
   const mmNow = today.getMonth() + mmStartFromZero
 
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       dd = src.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
       mm = src.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
@@ -207,13 +207,13 @@ parse.date = (srcName, src) => {
       mm = new Date(JSON.parse(src).time).getMonth()
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.whenStart`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.whenStart`)
 
       return date
   }
 
   if (dd.length === src.length || mm.length === src.length) {
-    _log_(`ERROR: ${srcName} have parsing problem in parse.whenStart\n${src}`)
+    _log_(`ERROR: ${srcFrom} have parsing problem in parse.whenStart\n${src}`)
 
     return date
   }
@@ -227,14 +227,14 @@ parse.date = (srcName, src) => {
 
 /**
  * Find Time of the event.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
-parse.time = (srcName, src) => {
+parse.time = (srcFrom, src) => {
   let time = '00:00'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2')
       break
@@ -245,13 +245,13 @@ parse.time = (srcName, src) => {
       time = `${t.getUTCHours()}:${t.getUTCMinutes()}`
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in parse.time`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.time`)
 
       return time
   }
 
   if (time.length === src.length) {
-    _log_(`ERROR: ${srcName} have parsing problem in parse.time\n${src}`)
+    _log_(`ERROR: ${srcFrom} have parsing problem in parse.time\n${src}`)
 
     return time
   }

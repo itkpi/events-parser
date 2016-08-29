@@ -17,7 +17,7 @@ const firstEvent = 0
 
 /**
  * Get new data from sources.
- * @param {string} srcName - name of source, which is currently being processed.
+* @param {string} srcName - name of source, which is currently being processed.
  * @param {string} srcType - datatype of current source.
  * @param {string} srcLink - link to actual data of source.
  * @param {string} newJSON - path to JSON file with data of current iteration.
@@ -44,7 +44,7 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
       fs.writeFileSync(newJSON, res.getBody())
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in get.get`)
+      _log_(`ERROR: NOT FOUND ${srcType} in dataIO.get`)
   }
 
   const old = fs.readFileSync(oldJSON)
@@ -60,14 +60,14 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
 /**
  * Read JSON file.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {string} file - path to JSON file with data of current iteration.
  * @returns {JSON} data - JSON only with events.
  */
-dataIO.read = (srcName, file) => {
+dataIO.read = (srcFrom, file) => {
   let data = fs.readJsonSync(file, {'throws': false})
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       data = data.rss.channel.item
       break
@@ -75,7 +75,7 @@ dataIO.read = (srcName, file) => {
       data = data.results
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in get.read`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.read`)
   }
 
   return data
@@ -83,15 +83,15 @@ dataIO.read = (srcName, file) => {
 
 /**
  * Search position of new events.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} newSrc - JSON file with actual state of information.
  * @param {JSON} oldSrc - JSON file with previous state of information.
  * @returns {Array} eventsPosition - position of new events.
  */
-dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
+dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
   let eventsPosition = []
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
       for (let i = 0; i < oldSrc.length; i++) {
         if (oldSrc[firstEvent].link === newSrc[i].link) break
@@ -107,7 +107,7 @@ dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
       }
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in get.eventsPosition`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.eventsPosition`)
   }
 
   return eventsPosition
@@ -115,23 +115,23 @@ dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
 
 /**
  * Return title of event.
- * @param {string} srcName - name of source, which is currently being processed.
- * @param {JSON} src - JSON source file.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} title - event title.
  */
-dataIO.title = (srcName, src, eventsPosition) => {
+dataIO.title = (srcFrom, file, eventsPosition) => {
   let title = 'TITLE (dataIO error)'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
-      title = src[eventsPosition[firstEvent]].title
+      title = file[eventsPosition[firstEvent]].title
       break
     case 'meetup':
-      title = src[eventsPosition[firstEvent]].name
+      title = file[eventsPosition[firstEvent]].name
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.title`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.title`)
   }
 
   return title
@@ -139,23 +139,23 @@ dataIO.title = (srcName, src, eventsPosition) => {
 
 /**
  * Return link to source of the event.
- * @param {string} srcName - name of source, which is currently being processed.
- * @param {JSON} src - JSON source file.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} link - link of the event.
  */
-dataIO.link = (srcName, src, eventsPosition) => {
+dataIO.link = (srcFrom, file, eventsPosition) => {
   let link = 'https://LINK.dataIO/error/'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
-      link = src[eventsPosition[firstEvent]].link
+      link = file[eventsPosition[firstEvent]].link
       break
     case 'meetup':
-      link = src[eventsPosition[firstEvent]].event_url
+      link = file[eventsPosition[firstEvent]].event_url
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.link`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.link`)
   }
 
   return link
@@ -163,23 +163,23 @@ dataIO.link = (srcName, src, eventsPosition) => {
 
 /**
  * Return information about one event.
- * @param {string} srcName - name of source, which is currently being processed.
- * @param {JSON} src - JSON source file.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} data - information of the event.
  */
-dataIO.data = (srcName, src, eventsPosition) => {
+dataIO.data = (srcFrom, file, eventsPosition) => {
   let data = 'DATA (dataIO error)'
 
-  switch (srcName) {
+  switch (srcFrom) {
     case 'dou':
-      data = src[eventsPosition[firstEvent]].description.replace(/[\n,\u2028]/g, '')
+      data = file[eventsPosition[firstEvent]].description.replace(/[\n,\u2028]/g, '')
       break
     case 'meetup':
-      data = JSON.stringify(src[eventsPosition[firstEvent]])
+      data = JSON.stringify(file[eventsPosition[firstEvent]])
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.data`)
+      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.data`)
   }
 
   return data
@@ -201,7 +201,7 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onl
     'when_end': whenStart, // Required field... // TODO: Need to change API
     'only_date': onlyDate,
     'team': 'ITKPI',
-    'submitter_email': 'VM@ITKPI.PP.UA'
+    'submitter_email': '111111111VM@ITKPI.PP.UA'
   })
 
   const options = {

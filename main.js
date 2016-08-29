@@ -8,26 +8,23 @@ const fs = require('fs-extra')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 const path = require('path')
 
-const parse = require('./data/parse.js')
-const inBlackList = require('./data/blackList.js').inBlackList
-const dataIO = require('./data/dataIO.js')
-const transform = require('./data/transform.js')
+const parse = require('./data/parse')
+const inBlackList = require('./data/blackList').inBlackList
+const dataIO = require('./data/dataIO')
+const transform = require('./data/transform')
+const src = require('./src')
 
-const _log_ = require('./utils.js')._log_
-const utils = require('./utils.js')
+const _log_ = require('./utils')._log_
+const utils = require('./utils')
 
 _log_('Start', 'onlyCron')
 fs.ensureDirSync('./logs/')
 
-const address = [
-  // srcName, srcType, srcLink
-  ['dou_ua_online', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online'],
-  ['dou_ua_kyiv', 'xml', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2'],
-  ['meetup_open_events', 'json', process.env.MEETUP_OPEN_EVENTS]
-]
-
-for (let adr = 0; adr < address.length; adr++) {
-  const srcName = address[adr][0].slice(0, address[adr][0].indexOf('_'))
+for (let adr = 0; adr < src.address.length; adr++) {
+  const srcFrom = src.address[adr][0]
+  const srcName = `${srcFrom}_${src.address[adr][1]}`
+  const srcType = src.types[srcFrom]
+  const srcLink = src.address[adr][2]
 
   _log_(`Start ${srcName}`, 'onlyCron')
 
@@ -35,40 +32,40 @@ for (let adr = 0; adr < address.length; adr++) {
   const newJSON = path.join(__dirname, 'json', `new_${srcName}.json`)
   const oldJSON = path.join(__dirname, 'json', `old_${srcName}.json`)
 
-  const getNewData = dataIO.get(srcName, address[adr][1], address[adr][2], newJSON, oldJSON)
+  const getNewData = dataIO.get(srcName, srcType, srcLink, newJSON, oldJSON)
 
   if (!getNewData) continue
 
   // Read data
-  const newSrc = dataIO.read(srcName, newJSON)
-  const oldSrc = dataIO.read(srcName, oldJSON)
+  const newSrc = dataIO.read(srcFrom, newJSON)
+  const oldSrc = dataIO.read(srcFrom, oldJSON)
 
   // Find new events
-  let eventsPosition = dataIO.eventsPosition(srcName, newSrc, oldSrc)
+  let eventsPosition = dataIO.eventsPosition(srcFrom, newSrc, oldSrc)
 
   // RSS to API
   while (eventsPosition.length) {
-    let title = dataIO.title(srcName, newSrc, eventsPosition)
-    const link = dataIO.link(srcName, newSrc, eventsPosition)
-    const data = dataIO.data(srcName, newSrc, eventsPosition)
+    let title = dataIO.title(srcFrom, newSrc, eventsPosition)
+    const link = dataIO.link(srcFrom, newSrc, eventsPosition)
+    const data = dataIO.data(srcFrom, newSrc, eventsPosition)
 
     _log_(`${srcName}: ${link} start\n`)
 
     // Parse event description
-    title = parse.title(srcName, title)
-    let agenda = parse.agenda(srcName, data)
+    title = parse.title(srcFrom, title)
+    let agenda = parse.agenda(srcFrom, data)
 
     if (inBlackList(title, agenda, `${link}\n${title}`)) {
       eventsPosition.shift()
       continue
     }
 
-    let social = parse.social(srcName, data, link, title, agenda)
-    let place = parse.place(srcName, data)
-    const regUrl = parse.regUrl(srcName, data)
-    const imgUrl = parse.imgUrl(srcName, data)
-    let whenStart = parse.date(srcName, data)
-    let onlyDate = parse.time(srcName, data)
+    let social = parse.social(srcFrom, data, link, title, agenda)
+    let place = parse.place(srcFrom, data)
+    const regUrl = parse.regUrl(srcFrom, data)
+    const imgUrl = parse.imgUrl(srcFrom, data)
+    let whenStart = parse.date(srcFrom, data)
+    let onlyDate = parse.time(srcFrom, data)
 
     if (onlyDate !== true) {
       whenStart += onlyDate
@@ -87,7 +84,6 @@ for (let adr = 0; adr < address.length; adr++) {
     if (agenda.length > translateMax) {
       agenda = '<h1>Too many. Do we really need this?</h1>'
     }
-
     // Translate
     let ya = new Promise((resolve, reject) => {
       if (utils.lang === 'ru') {

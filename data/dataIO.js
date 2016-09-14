@@ -201,7 +201,7 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onl
     'when_end': whenStart, // Required field... // TODO: Need to change API
     'only_date': onlyDate,
     'team': 'ITKPI',
-    'submitter_email': '111111111VM@ITKPI.PP.UA'
+    'submitter_email': process.env.EMAIL
   })
 
   const options = {

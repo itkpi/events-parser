@@ -250,10 +250,8 @@ parse.time = (srcFrom, src) => {
       return time
   }
 
-  if (time.length === src.length) {
+  if (time.length === src.length && srcFrom !== 'dou') {
     _log_(`ERROR: ${srcFrom} have parsing problem in parse.time\n${src}`)
-
-    return time
   }
 
   const validTimeLength = 5

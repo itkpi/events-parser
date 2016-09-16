@@ -196,8 +196,8 @@ parse.date = (srcFrom, src) => {
 
   switch (srcFrom) {
     case 'dou':
-      dd = src.replace(/.+?Дата:<\/strong>\s(\d{1,2}).+/, '$1')
-      mm = src.replace(/.+?Дата:<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$2')
+      dd = src.replace(/.+?(Дата|Date):<\/strong>\s(\d{1,2}).+/, '$2')
+      mm = src.replace(/.+?(Дата|Date):<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$3')
 
       moment.locale(locale(mm))
       mm = moment(mm, 'MMMM').get('month') + 1

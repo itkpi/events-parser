@@ -14,9 +14,17 @@ _log_('Not found eviroment variable BAN_COURSE_TITLE', 'blackList') || 'Default 
 const courseCompany = new RegExp(process.env.BAN_COURSE_COMPANY ||
 _log_('Not found eviroment variable BAN_COURSE_COMPANY', 'blackList') || 'Default variable', 'i')
 
-exports.inBlackList = (title, agenda, banInfo) => {
+exports.inBlackList = (title, agenda, time, banInfo) => {
   // 0 == false, if str.search('s') not found 's' - return -1
   const giveFalse = 1
+
+// день ивента - день недели - текущенн время <= 0
+// один месяц
+  // if (time - time.getUTCDay() - new Date().getDate() <= 0) {
+  //   _log_(`Time (${time}): ${banInfo}\n`, 'blackList')
+
+  //   return true
+  // }
 
   if (title.search(inTitle) + giveFalse) {
     _log_(`inTitle: ${banInfo}\n`, 'blackList')

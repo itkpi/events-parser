@@ -54,8 +54,9 @@ for (let adr = 0; adr < src.address.length; adr++) {
     // Parse event description
     title = parse.title(srcFrom, title)
     let agenda = parse.agenda(srcFrom, data)
+    let whenStart = parse.date(srcFrom, data)
 
-    if (inBlackList(title, agenda, `${link}\n${title}`)) {
+    if (inBlackList(title, agenda, whenStart, `${link}\n${title}`)) {
       eventsPosition.shift()
       continue
     }
@@ -64,7 +65,6 @@ for (let adr = 0; adr < src.address.length; adr++) {
     let place = parse.place(srcFrom, data)
     const regUrl = parse.regUrl(srcFrom, data)
     const imgUrl = parse.imgUrl(srcFrom, data)
-    let whenStart = parse.date(srcFrom, data)
     let onlyDate = parse.time(srcFrom, data)
 
     if (onlyDate !== true) {

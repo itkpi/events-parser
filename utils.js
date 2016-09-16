@@ -56,3 +56,10 @@ utils.locale = (mm) => {
   utils.lang = 'en'
   return utils.lang
 }
+
+/**
+ * @returns {number} days in curent month
+ */
+Date.prototype.daysInMonth = function () {
+  return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate()
+}

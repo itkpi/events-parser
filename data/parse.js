@@ -184,7 +184,7 @@ parse.imgUrl = (srcFrom, src) => {
  * @returns {string} date when start.
  */
 parse.date = (srcFrom, src) => {
-  let date = '1970-01-01'
+  let date = '9999-09-09'
 
   const today = new Date()
   let yyyy = today.getFullYear()

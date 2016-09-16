@@ -55,7 +55,7 @@ for (let adr = 0; adr < src.address.length; adr++) {
     title = parse.title(srcFrom, title)
     let agenda = parse.agenda(srcFrom, data)
     let whenStart = parse.date(srcFrom, data)
-    console.log(whenStart)
+
     if (inBlackList(title, agenda, whenStart, `${link}\n${title}`)) {
       eventsPosition.shift()
       continue

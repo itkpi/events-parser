@@ -18,13 +18,18 @@ exports.inBlackList = (title, agenda, time, banInfo) => {
   // 0 == false, if str.search('s') not found 's' - return -1
   const giveFalse = 1
 
-// день ивента - день недели - текущенн время <= 0
-// один месяц
-  // if (time - time.getUTCDay() - new Date().getDate() <= 0) {
-  //   _log_(`Time (${time}): ${banInfo}\n`, 'blackList')
+  const evnt = new Date(time)
+  const now = new Date()
+  const mm = now.getMonth()
+  let dd = now.getDate()
 
-  //   return true
-  // }
+  if (mm !== evnt.getMonth()) dd -= now.daysInMonth()
+
+  if (evnt.getDate() - evnt.getUTCDay() - dd < 0) {
+    _log_(`Time (${time}): ${banInfo}\n`, 'blackList')
+
+    return true
+  }
 
   if (title.search(inTitle) + giveFalse) {
     _log_(`inTitle: ${banInfo}\n`, 'blackList')

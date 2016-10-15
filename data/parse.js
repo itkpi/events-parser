@@ -204,7 +204,7 @@ parse.date = (srcFrom, src) => {
       break
     case 'meetup':
       dd = new Date(JSON.parse(src).time).getDate()
-      mm = new Date(JSON.parse(src).time).getMonth()
+      mm = new Date(JSON.parse(src).time).getMonth() + 1
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcFrom} in parse.whenStart`)

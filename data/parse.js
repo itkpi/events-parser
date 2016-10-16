@@ -19,18 +19,12 @@ module.exports = parse
  * @returns {string} title.
  */
 parse.title = (srcFrom, src) => {
-  let title = 'TITLE (parser error)'
-
-  switch (srcFrom) {
-    case 'dou':
-      title = src.replace(/(,)\s[0-9]{1,2}(.)+/g, '')
-      break
-    case 'meetup':
-      title = src
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.title`)
+  const key = {
+    dou: "src.replace(/(,)\\s[0-9]{1,2}(.)+/g, '')",
+    meetup: 'src'
   }
+
+  let title = eval(key[srcFrom])
 
   return title
 }
@@ -42,22 +36,14 @@ parse.title = (srcFrom, src) => {
  * @returns {string} agenda.
  */
 parse.agenda = (srcFrom, src) => {
-  let agenda = 'AGENDA (parser error)'
-
-  switch (srcFrom) {
-    case 'dou':
-      agenda = src.replace(/.+?(Место|Місце|Place):<\/strong>.+?<\/p>(.+)<\/div>/, '$2')
-      break
-    case 'meetup':
-      return JSON.parse(src).description
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.agenda`)
-
-      return agenda
+  const key = {
+    dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>.+?<\\/p>(.+)<\\/div>/, '$2')",
+    meetup: 'JSON.parse(src).description'
   }
-  if (agenda.length === src.length) {
-    _log_(`ERROR: ${srcFrom} have parsing problem in parse.agenda\n${src}`)
-  }
+
+  let agenda = eval(key[srcFrom])
+
+  if (agenda.length === src.length) _log_(`ERROR: ${srcFrom} have parsing problem in parse.agenda\n${src}`)
 
   return agenda
 }
@@ -72,23 +58,16 @@ parse.agenda = (srcFrom, src) => {
  * @returns {string} social.
  */
 parse.social = (srcFrom, src, link, title, agenda) => {
-  let social = 'SOCIAL (parser error)'
-
-  switch (srcFrom) {
-    case 'dou':
-      social = `<a href="${link}">ORIGINAL POST</a> | \
+  const key = {
+    dou: `<a href="${link}">ORIGINAL POST</a> | \
 <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
-&image_url=${src.replace(/.+?<img src="(.+?)"\sstyle.+/, '$1')}" \
-target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
-      break
-    case 'meetup':
-      // TODO: image_url
-      social = `<a href="${link}">ORIGINAL POST</a> | \
-<br/>${title}<br/>${agenda}`
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.social`)
+&image_url=${src.replace(/.+?<img src="(.+?)"\\sstyle.+/, '$1')}" \
+target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`,
+
+    meetup: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`
   }
+
+  let social = key[srcFrom]
 
   return social
 }
@@ -100,19 +79,12 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`
  * @returns {string} place.
  */
 parse.place = (srcFrom, src) => {
-  let place = 'PLACE (parser error)'
-
-  switch (srcFrom) {
-    case 'dou':
-      place = src.replace(/.+?(Место|Місце|Place):<\/strong>\s(.+?)<\/p>.+/, '$2')
-      break
-    case 'meetup':
-      return `${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.place`)
-
-      return place
+  const key = {
+    dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, '$2')",
+    meetup: '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`'
   }
+
+  let place = eval(key[srcFrom])
 
   if (place.toLowerCase() === 'online' || place.toLowerCase() === 'онлайн') return 'Онлайн'
 
@@ -138,19 +110,12 @@ parse.place = (srcFrom, src) => {
  * @returns {string} regUrl - registration url.
  */
 parse.regUrl = (srcFrom, src) => {
-  let regUrl = 'http://PARSER.ERROR/RegUrl'
-
-  switch (srcFrom) {
-    case 'dou':
-      // TODO: find registration url
-      regUrl = 'http://ITKPI.PP.UA/'
-      break
-    case 'meetup':
-      regUrl = JSON.parse(src).event_url
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.regUrl`)
+  const key = {
+    dou: "'http://ITKPI.PP.UA/'", // TODO: find registration url
+    meetup: 'JSON.parse(src).event_url'
   }
+
+  let regUrl = eval(key[srcFrom])
 
   return regUrl
 }
@@ -162,17 +127,12 @@ parse.regUrl = (srcFrom, src) => {
  * @returns {string} imgUrl - image url.
  */
 parse.imgUrl = (srcFrom, src) => {
-  let imgUrl = 'http://PARSER.ERROR/ImgUrl'
-
-  // TODO: find image_url
-  switch (srcFrom) {
-    case 'dou':
-    case 'meetup':
-      imgUrl = ''
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.imgUrl`)
+  const key = {
+    dou: '',
+    meetup: ''
   }
+
+  let imgUrl = key[srcFrom]
 
   return imgUrl
 }
@@ -184,6 +144,17 @@ parse.imgUrl = (srcFrom, src) => {
  * @returns {string} date when start.
  */
 parse.date = (srcFrom, src) => {
+  const key = {
+    dou:
+      "dd = src.replace(/.+?(Дата|Date):<\\/strong>\\s(\\d{1,2}).+/, '$2')\
+      ;mm = src.replace(/.+?(Дата|Date):<\\/strong>\\s\\d{1,2}(\\s—\\s\\d{1,2})?\\s([а-я,a-z,A-Z,А-Я]+).+/, '$3')\
+      ;moment.locale(locale(mm))\
+      ;mm = moment(mm, 'MMMM').get('month') + mmStartFromZero",
+    meetup:
+      "dd = new Date(JSON.parse(src).time).getDate()\
+      ;mm = new Date(JSON.parse(src).time).getMonth() + mmStartFromZero"
+  }
+
   let date = '9999-09-09'
 
   const today = new Date()
@@ -193,24 +164,7 @@ parse.date = (srcFrom, src) => {
   const mmStartFromZero = 1
   const mmNow = today.getMonth() + mmStartFromZero
 
-
-  switch (srcFrom) {
-    case 'dou':
-      dd = src.replace(/.+?(Дата|Date):<\/strong>\s(\d{1,2}).+/, '$2')
-      mm = src.replace(/.+?(Дата|Date):<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$3')
-
-      moment.locale(locale(mm))
-      mm = moment(mm, 'MMMM').get('month') + 1
-      break
-    case 'meetup':
-      dd = new Date(JSON.parse(src).time).getDate()
-      mm = new Date(JSON.parse(src).time).getMonth() + 1
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.whenStart`)
-
-      return date
-  }
+  eval(key[srcFrom])
 
   if (dd.length === src.length || mm.length === src.length) {
     _log_(`ERROR: ${srcFrom} have parsing problem in parse.whenStart\n${src}`)
@@ -232,23 +186,15 @@ parse.date = (srcFrom, src) => {
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
 parse.time = (srcFrom, src) => {
-  let time = '00:00'
-
-  switch (srcFrom) {
-    case 'dou':
-      time = src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\/strong>\s(\d{2}:\d{2}).+/, '$2')
-      break
-    case 'meetup':
-      const dayInMilliseconds = 86400000
-      const t = new Date(JSON.parse(src).time % dayInMilliseconds)
-
-      time = `${t.getUTCHours()}:${t.getUTCMinutes()}`
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in parse.time`)
-
-      return time
+  const key = {
+    dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
+    meetup:
+      "const dayInMillisec = 86400000\
+      ;const t = new Date(JSON.parse(src).time % dayInMillisec)\
+      ;`${t.getUTCHours()}:${t.getUTCMinutes()}`"
   }
+
+  let time = eval(key[srcFrom])
 
   if (time.length === src.length && srcFrom !== 'dou') {
     _log_(`ERROR: ${srcFrom} have parsing problem in parse.time\n${src}`)

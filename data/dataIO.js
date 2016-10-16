@@ -65,18 +65,13 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * @returns {JSON} data - JSON only with events.
  */
 dataIO.read = (srcFrom, file) => {
-  let data = fs.readJsonSync(file, {'throws': false})
-
-  switch (srcFrom) {
-    case 'dou':
-      data = data.rss.channel.item
-      break
-    case 'meetup':
-      data = data.results
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.read`)
+  const key = {
+    dou: 'data.rss.channel.item',
+    meetup: 'data.results'
   }
+
+  let data = fs.readJsonSync(file, {'throws': false})
+  data = eval(key[srcFrom])
 
   return data
 }
@@ -89,25 +84,17 @@ dataIO.read = (srcFrom, file) => {
  * @returns {Array} eventsPosition - position of new events.
  */
 dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
+  const key = {
+    dou: 'link',
+    meetup: 'name'
+  }
+
   let eventsPosition = []
 
-  switch (srcFrom) {
-    case 'dou':
-      for (let i = 0; i < oldSrc.length; i++) {
-        if (oldSrc[firstEvent].link === newSrc[i].link) break
+  for (let i = 0; i < oldSrc.length; i++) {
+    if (oldSrc[firstEvent][key[srcFrom]] === newSrc[i][key[srcFrom]]) break
 
-        eventsPosition.push(i)
-      }
-      break
-    case 'meetup':
-      for (let i = 0; i < oldSrc.length; i++) {
-        if (oldSrc[firstEvent].name === newSrc[i].name) break
-
-        eventsPosition.push(i)
-      }
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.eventsPosition`)
+    eventsPosition.push(i)
   }
 
   return eventsPosition
@@ -121,18 +108,12 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
  * @returns {string} title - event title.
  */
 dataIO.title = (srcFrom, file, eventsPosition) => {
-  let title = 'TITLE (dataIO error)'
-
-  switch (srcFrom) {
-    case 'dou':
-      title = file[eventsPosition[firstEvent]].title
-      break
-    case 'meetup':
-      title = file[eventsPosition[firstEvent]].name
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.title`)
+  const key = {
+    dou: 'title',
+    meetup: 'name'
   }
+
+  const title = file[eventsPosition[firstEvent]][key[srcFrom]]
 
   return title
 }
@@ -145,18 +126,12 @@ dataIO.title = (srcFrom, file, eventsPosition) => {
  * @returns {string} link - link of the event.
  */
 dataIO.link = (srcFrom, file, eventsPosition) => {
-  let link = 'https://LINK.dataIO/error/'
-
-  switch (srcFrom) {
-    case 'dou':
-      link = file[eventsPosition[firstEvent]].link
-      break
-    case 'meetup':
-      link = file[eventsPosition[firstEvent]].event_url
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.link`)
+  const key = {
+    dou: 'link',
+    meetup: 'event_url'
   }
+
+  let link = file[eventsPosition[firstEvent]][key[srcFrom]]
 
   return link
 }
@@ -169,18 +144,13 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
  * @returns {string} data - information of the event.
  */
 dataIO.data = (srcFrom, file, eventsPosition) => {
-  let data = 'DATA (dataIO error)'
-
-  switch (srcFrom) {
-    case 'dou':
-      data = file[eventsPosition[firstEvent]].description.replace(/[\n,\u2028]/g, '')
-      break
-    case 'meetup':
-      data = JSON.stringify(file[eventsPosition[firstEvent]])
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcFrom} in dataIO.data`)
+  const key = {
+    dou: "data.description.replace(/[\\n\\u2028]/g, '')",
+    meetup: 'JSON.stringify(data)'
   }
+
+  let data = file[eventsPosition[firstEvent]]
+  data = eval(key[srcFrom])
 
   return data
 }

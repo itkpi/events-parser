@@ -21,7 +21,8 @@ module.exports = parse
 parse.title = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/(,)\\s[0-9]{1,2}(.)+/g, '')",
-    meetup: 'src'
+    meetup: 'src',
+    bigCityEvent: 'src'
   }
 
   let title = eval(key[srcFrom])
@@ -38,7 +39,8 @@ parse.title = (srcFrom, src) => {
 parse.agenda = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>.+?<\\/p>(.+)<\\/div>/, '$2')",
-    meetup: 'JSON.parse(src).description'
+    meetup: 'JSON.parse(src).description',
+    bigCityEvent: 'JSON.parse(src).description'
   }
 
   let agenda = eval(key[srcFrom])
@@ -64,7 +66,8 @@ parse.social = (srcFrom, src, link, title, agenda) => {
 &image_url=${src.replace(/.+?<img src="(.+?)"\\sstyle.+/, '$1')}" \
 target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`,
 
-    meetup: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`
+    meetup: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`,
+    bigCityEvent: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`
   }
 
   let social = key[srcFrom]
@@ -81,7 +84,9 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`,
 parse.place = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, '$2')",
-    meetup: '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`'
+    meetup: '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`',
+    // First value can be rudiment: BigCityEvent work only in Kyiv
+    bigCityEvent: '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`'
   }
 
   let place = eval(key[srcFrom])
@@ -112,7 +117,8 @@ parse.place = (srcFrom, src) => {
 parse.regUrl = (srcFrom, src) => {
   const key = {
     dou: "'http://ITKPI.PP.UA/'", // TODO: find registration url
-    meetup: 'JSON.parse(src).event_url'
+    meetup: 'JSON.parse(src).event_url',
+    bigCityEvent: 'JSON.parse(src).link'
   }
 
   let regUrl = eval(key[srcFrom])
@@ -129,7 +135,8 @@ parse.regUrl = (srcFrom, src) => {
 parse.imgUrl = (srcFrom, src) => {
   const key = {
     dou: '',
-    meetup: ''
+    meetup: '',
+    bigCityEvent: ''
   }
 
   let imgUrl = key[srcFrom]
@@ -152,7 +159,10 @@ parse.date = (srcFrom, src) => {
       ;mm = moment(mm, 'MMMM').get('month') + mmStartFromZero",
     meetup:
       "dd = new Date(JSON.parse(src).time).getDate()\
-      ;mm = new Date(JSON.parse(src).time).getMonth() + mmStartFromZero"
+      ;mm = new Date(JSON.parse(src).time).getMonth() + mmStartFromZero",
+    bigCityEvent:
+      "dd = new Date(JSON.parse(src).eventTimestamp).getDate()\
+      ;mm = new Date(JSON.parse(src).eventTimestamp).getMonth() + mmStartFromZero"
   }
 
   let date = '9999-09-09'
@@ -191,6 +201,11 @@ parse.time = (srcFrom, src) => {
     meetup:
       "const dayInMillisec = 86400000\
       ;const t = new Date(JSON.parse(src).time % dayInMillisec)\
+      ;`${t.getUTCHours()}:${t.getUTCMinutes()}`",
+    bigCityEvent:
+      "const dayInMillisec = 86400000\
+      ;const APIdateToMillisec = 1000 \
+      ;const t = new Date((JSON.parse(src).eventTimestamp * APIdateToMillisec) % dayInMillisec)\
       ;`${t.getUTCHours()}:${t.getUTCMinutes()}`"
   }
 

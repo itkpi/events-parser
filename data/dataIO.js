@@ -67,7 +67,8 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 dataIO.read = (srcFrom, file) => {
   const key = {
     dou: 'data.rss.channel.item',
-    meetup: 'data.results'
+    meetup: 'data.results',
+    bigCityEvent: 'data'
   }
 
   let data = fs.readJsonSync(file, {'throws': false})
@@ -86,7 +87,8 @@ dataIO.read = (srcFrom, file) => {
 dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
   const key = {
     dou: 'link',
-    meetup: 'name'
+    meetup: 'name',
+    bigCityEvent: '_id'
   }
 
   let eventsPosition = []
@@ -110,7 +112,8 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
 dataIO.title = (srcFrom, file, eventsPosition) => {
   const key = {
     dou: 'title',
-    meetup: 'name'
+    meetup: 'name',
+    bigCityEvent: 'name'
   }
 
   const title = file[eventsPosition[firstEvent]][key[srcFrom]]
@@ -128,10 +131,13 @@ dataIO.title = (srcFrom, file, eventsPosition) => {
 dataIO.link = (srcFrom, file, eventsPosition) => {
   const key = {
     dou: 'link',
-    meetup: 'event_url'
+    meetup: 'event_url',
+    bigCityEvent: '_id'
   }
 
   let link = file[eventsPosition[firstEvent]][key[srcFrom]]
+
+  if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
 
   return link
 }
@@ -146,7 +152,9 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
 dataIO.data = (srcFrom, file, eventsPosition) => {
   const key = {
     dou: "data.description.replace(/[\\n\\u2028]/g, '')",
-    meetup: 'JSON.stringify(data)'
+    meetup: 'JSON.stringify(data)',
+    bigCityEvent: "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
+                          .getBody().toString('utf-8')"
   }
 
   let data = file[eventsPosition[firstEvent]]

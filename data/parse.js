@@ -21,11 +21,11 @@ module.exports = parse
 parse.title = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/(,)\\s[0-9]{1,2}(.)+/g, '')",
-    meetup: 'src',
+    meetup:       'src',
     bigCityEvent: 'src'
   }
 
-  let title = eval(key[srcFrom])
+  const title = eval(key[srcFrom])
 
   return title
 }
@@ -39,11 +39,11 @@ parse.title = (srcFrom, src) => {
 parse.agenda = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>.+?<\\/p>(.+)<\\/div>/, '$2')",
-    meetup: 'JSON.parse(src).description',
-    bigCityEvent: 'JSON.parse(src).description'
+    meetup:       "byPath(src, 'description')",
+    bigCityEvent: "byPath(src, 'description')"
   }
 
-  let agenda = eval(key[srcFrom])
+  const agenda = eval(key[srcFrom])
 
   if (agenda.length === src.length) _log_(`ERROR: ${srcFrom} have parsing problem in parse.agenda\n${src}`)
 
@@ -70,7 +70,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`,
     bigCityEvent: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`
   }
 
-  let social = key[srcFrom]
+  const social = key[srcFrom]
 
   return social
 }
@@ -84,9 +84,9 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`,
 parse.place = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, '$2')",
-    meetup: '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`',
+    meetup: "`${byPath(src, ['venue', 'address_1'])} (${byPath(src, ['venue', 'name'])})`",
     // First value can be rudiment: BigCityEvent work only in Kyiv
-    bigCityEvent: '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`'
+    bigCityEvent: "`${byPath(src, ['place', 'location', 'city'])}, ${byPath(src, ['place', 'location', 'street'])}`"
   }
 
   let place = eval(key[srcFrom])
@@ -116,12 +116,12 @@ parse.place = (srcFrom, src) => {
  */
 parse.regUrl = (srcFrom, src) => {
   const key = {
-    dou: "'http://ITKPI.PP.UA/'", // TODO: find registration url
-    meetup: 'JSON.parse(src).event_url',
-    bigCityEvent: 'JSON.parse(src).link'
+    dou:          "'http://ITKPI.PP.UA/'",
+    meetup:       "byPath(src, 'event_url')",
+    bigCityEvent: "byPath(src, 'link')"
   }
 
-  let regUrl = eval(key[srcFrom])
+  const regUrl = eval(key[srcFrom])
 
   return regUrl
 }
@@ -139,7 +139,7 @@ parse.imgUrl = (srcFrom, src) => {
     bigCityEvent: ''
   }
 
-  let imgUrl = key[srcFrom]
+  const imgUrl = key[srcFrom]
 
   return imgUrl
 }
@@ -152,29 +152,97 @@ parse.imgUrl = (srcFrom, src) => {
  */
 parse.date = (srcFrom, src) => {
   const key = {
-    dou:
-      "dd = src.replace(/.+?(Дата|Date):<\\/strong>\\s(\\d{1,2}).+/, '$2')\
-      ;mm = src.replace(/.+?(Дата|Date):<\\/strong>\\s\\d{1,2}(\\s—\\s\\d{1,2})?\\s([а-я,a-z,A-Z,А-Я]+).+/, '$3')\
-      ;moment.locale(locale(mm))\
-      ;mm = moment(mm, 'MMMM').get('month') + mmStartFromZero",
-    meetup:
-      "dd = new Date(JSON.parse(src).time).getDate()\
-      ;mm = new Date(JSON.parse(src).time).getMonth() + mmStartFromZero",
-    bigCityEvent:
-      "dd = new Date(JSON.parse(src).eventTimestamp).getDate()\
-      ;mm = new Date(JSON.parse(src).eventTimestamp).getMonth() + mmStartFromZero"
+    dou:          'dateFromDOU(src)',
+    meetup:       "dateFromMilliseconds(src, 'time')",
+    bigCityEvent: "dateFromMilliseconds(src, 'eventTimestamp')"
   }
 
-  let date = '9999-09-09'
+  const date = eval(key[srcFrom])
 
+  return date
+}
+
+/**
+ * Find Time of the event.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string|boolean} time when start. If event have only date - return true.
+ */
+parse.time = (srcFrom, src) => {
+  const key = {
+    dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
+    meetup:       "timeFromMilliseconds(src, 'eventTimestamp')",
+    bigCityEvent: "timeFromMilliseconds(src, 'eventTimestamp', 1000)"
+  }
+
+  let time = eval(key[srcFrom])
+
+  if (time.length === src.length && srcFrom !== 'dou') {
+    _log_(`ERROR: ${srcFrom} have parsing problem in parse.time\n${src}`)
+  }
+
+  const validTimeLength = 5
+
+  if (time.length <= validTimeLength) return ` ${time}`
+
+  return true
+}
+
+/**
+ * Extract data from JSON by path
+ * @param {JSON} src - JSON of current event.
+ * @param {string} path - path to data from root in src
+ * @returns {string} data
+ */
+function byPath (src, path) {
+  let data = JSON.parse(src)
+
+  if (typeof (path) === 'string' ||
+      typeof (path) === 'symbol') return data[path]
+  if (!path) return data
+
+  for (let key of path) {
+    data = data[key]
+  }
+
+  return data
+}
+
+/**
+ * Find date by milliseconds
+ * @param {JSON} src - JSON of current event.
+ * @param {string} path to milliseconds from root in src
+ * @returns {string} date in format yyyy-mm-dd
+ */
+function dateFromMilliseconds (src, path) {
+  const mmStartFromZero = 1 // January is 0!
+  const dd = new Date(byPath(src, path)).getDate()
+  const mm = new Date(byPath(src, path)).getMonth() + mmStartFromZero
+  const yyyy = new Date(byPath(src, path)).getFullYear()
+
+  const date = `${yyyy}-${mm}-${dd}`
+
+  return date
+}
+
+/**
+ * Find date in DOU-event
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} date in format yyyy-mm-dd
+ */
+function dateFromDOU (src) {
+  let date = '9999-09-09'
   const today = new Date()
+
   let yyyy = today.getFullYear()
-  let dd, mm
-  // January is 0!
-  const mmStartFromZero = 1
+  const dd = src.replace(/.+?(Дата|Date):<\/strong>\s(\d{1,2}).+/, '$2')
+  let mm = src.replace(/.+?(Дата|Date):<\/strong>\s\d{1,2}(\s—\s\d{1,2})?\s([а-я,a-z,A-Z,А-Я]+).+/, '$3')
+
+  const mmStartFromZero = 1 // January is 0!
   const mmNow = today.getMonth() + mmStartFromZero
 
-  eval(key[srcFrom])
+  moment.locale(locale(mm))
+  mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
 
   if (dd.length === src.length || mm.length === src.length) {
     _log_(`ERROR: ${srcFrom} have parsing problem in parse.whenStart\n${src}`)
@@ -190,34 +258,15 @@ parse.date = (srcFrom, src) => {
 }
 
 /**
- * Find Time of the event.
- * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
- * @returns {string|boolean} time when start. If event have only date - return true.
+ * @param {string} path - path to data from root in src
+ * @param {} greaterThanMS - how many API time greater than milliseconds
+ * @returns {string} time in format HH:MM 24h
  */
-parse.time = (srcFrom, src) => {
-  const key = {
-    dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
-    meetup:
-      "const dayInMillisec = 86400000\
-      ;const t = new Date(JSON.parse(src).time % dayInMillisec)\
-      ;`${t.getUTCHours()}:${t.getUTCMinutes()}`",
-    bigCityEvent:
-      "const dayInMillisec = 86400000\
-      ;const APIdateToMillisec = 1000 \
-      ;const t = new Date((JSON.parse(src).eventTimestamp * APIdateToMillisec) % dayInMillisec)\
-      ;`${t.getUTCHours()}:${t.getUTCMinutes()}`"
-  }
+function timeFromMilliseconds (src, path, greaterThanMS) {
+  greaterThanMS = greaterThanMS || 1 // Vagga can't in NodeJS 6 -_-.
+  const MSinDay = 86400000
+  const time = new Date((byPath(src, path) * greaterThanMS) % MSinDay)
 
-  let time = eval(key[srcFrom])
-
-  if (time.length === src.length && srcFrom !== 'dou') {
-    _log_(`ERROR: ${srcFrom} have parsing problem in parse.time\n${src}`)
-  }
-
-  const validTimeLength = 5
-
-  if (time.length <= validTimeLength) return ` ${time}`
-
-  return true
+  return time
 }

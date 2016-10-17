@@ -39,7 +39,6 @@ utils._log_ = (log, name) => {
  * Have exports value: lang.
  * @returns {string} language.
  */
-// TODo: Rewrite through iterator
 utils.locale = (mm) => {
   moment.locale('ru')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {

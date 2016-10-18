@@ -143,7 +143,7 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
   let link = file[eventsPosition[firstEvent]][key[srcFrom]]
 
   if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
-  if (srcFrom === 'fb') link = `https://graph.facebook.com/${link}?access_token=${process.env.FB_ACCESS_TOKEN}` 
+  if (srcFrom === 'fb') link = `https://fb.com/${link}`
 
   return link
 }
@@ -173,7 +173,7 @@ dataIO.data = (srcFrom, file, eventsPosition) => {
 /**
  * Send event to API.
  */
-dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onlyDate, srcName) => {
+dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName) => {
   const body = JSON.stringify({
     'title': title.toString(),
     'agenda': agenda.toString(),
@@ -183,7 +183,7 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onl
     'image_url': imgUrl,
     'level': 'NONE',
     'when_start': whenStart,
-    'when_end': whenStart, // Required field... // TODO: Need to change API
+    'when_end': whenEnd, // Required field... // TODO: Need to change API
     'only_date': onlyDate,
     'team': 'ITKPI',
     'submitter_email': process.env.EMAIL

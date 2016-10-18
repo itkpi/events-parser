@@ -29,8 +29,8 @@ for (let adr = 0; adr < src.address.length; adr++) {
   _log_(`Start ${srcName}`, 'onlyCron')
 
   // Paths to auxiliary files
-  const newJSON = path.join(__dirname, 'json', `new_${srcName}.json`)
-  const oldJSON = path.join(__dirname, 'json', `old_${srcName}.json`)
+  const newJSON = path.join(__dirname, 'json', `${srcName}_new.json`)
+  const oldJSON = path.join(__dirname, 'json', `${srcName}_old.json`)
 
   const getNewData = dataIO.get(srcName, srcType, srcLink, newJSON, oldJSON)
 
@@ -55,6 +55,7 @@ for (let adr = 0; adr < src.address.length; adr++) {
     title = parse.title(srcFrom, title)
     let agenda = parse.agenda(srcFrom, data)
     let whenStart = parse.date(srcFrom, data)
+    let whenEnd = parse.date(srcFrom, data)
 
     if (inBlackList(title, agenda, whenStart, `${link}\n${title}`)) {
       eventsPosition.shift()
@@ -69,6 +70,7 @@ for (let adr = 0; adr < src.address.length; adr++) {
 
     if (onlyDate !== true) {
       whenStart += onlyDate
+      whenEnd += parse.time(srcFrom, data)
       onlyDate = false
     }
 
@@ -108,7 +110,7 @@ for (let adr = 0; adr < src.address.length; adr++) {
 
     // Send event to API
     ya.then(() => {
-      dataIO.sendtoAPI(title, agenda, social, place, regUrl, imgUrl, whenStart, onlyDate, srcName)
+      dataIO.sendtoAPI(title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
 
       return Promise.resolve()
     })

@@ -154,9 +154,16 @@ parse.imgUrl = (srcFrom, src) => {
  * Find Date of the event.
  * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
+ * @param {hash} key to find event-time
  * @returns {string} date when start.
  */
-parse.date = (srcFrom, src) => {
+function date (srcFrom, src, key) {
+  const date = eval(key[srcFrom])
+
+  return date
+}
+
+parse.startDate = (srcFrom, src) => {
   const key = {
     dou:          'dateFromDOU(src)',
     meetup:       "dateFromMilliseconds(src, 'time')",
@@ -164,25 +171,33 @@ parse.date = (srcFrom, src) => {
     fb:           "dateFromMilliseconds(src, 'start_time')"
   }
 
-  const date = eval(key[srcFrom])
+  const startDate = date(srcFrom, src, key)
 
-  return date
+  return startDate
+}
+
+
+parse.endDate = (srcFrom, src) => {
+  const key = {
+    dou:          'dateFromDOU(src)',
+    meetup:       "dateFromMilliseconds(src, 'time')",
+    bigCityEvent: "dateFromMilliseconds(src, 'eventTimestamp')",
+    fb:           "dateFromMilliseconds(src, 'end_time')"
+  }
+
+  const endDate = date(srcFrom, src, key)
+
+  return endDate
 }
 
 /**
  * Find Time of the event.
  * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
+ * @param {hash} key to find event-time
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
-parse.time = (srcFrom, src) => {
-  const key = {
-    dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
-    meetup:       "timeFromMilliseconds(src, 'eventTimestamp')",
-    bigCityEvent: "timeFromMilliseconds(src, 'eventTimestamp', 1000)",
-    fb:           "timeFromMilliseconds(src, 'start_time')"
-  }
-
+function time (srcFrom, src, key) {
   let time = eval(key[srcFrom])
 
   if (time.length === src.length && srcFrom !== 'dou') {
@@ -194,6 +209,32 @@ parse.time = (srcFrom, src) => {
   if (time.length <= validTimeLength) return ` ${time}`
 
   return true
+}
+
+parse.startTime = (srcFrom, src) => {
+  const key = {
+    dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
+    meetup:       "timeFromMilliseconds(src, 'time')",
+    bigCityEvent: "timeFromMilliseconds(src, 'eventTimestamp', 1000)",
+    fb:           "timeFromMilliseconds(src, 'start_time')"
+  }
+
+  const startTime = time(srcFrom, src, key)
+
+  return startTime
+}
+
+parse.endTime = (srcFrom, src) => {
+  const key = {
+    dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
+    meetup:       "timeFromMilliseconds(src, 'time')",
+    bigCityEvent: "timeFromMilliseconds(src, 'eventTimestamp', 1000)",
+    fb:           "timeFromMilliseconds(src, 'end_time')"
+  }
+
+  const endTime = time(srcFrom, src, key)
+
+  return endTime
 }
 
 /**

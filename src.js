@@ -4,7 +4,6 @@ const src = {}
 module.exports = src
 
 const priceTo = 200
-const accessToken = process.env.FB_ACCESS_TOKEN
 
 src.types = {
   dou: 'xml',
@@ -22,5 +21,5 @@ src.address = [
   ['bigCityEvent', 'CONFERENCE_EVENT', 'http://bigcityevent.com/api/v1/events/?tag=CONFERENCE_EVENT'],
   ['bigCityEvent', 'MEETUP', `http://bigcityevent.com/api/v1/events/?tag=MEETUP&priceTo=${priceTo}`],
   ['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`],
-  ['fb', 'Projector', `https://graph.facebook.com/prjctrcomua/events?access_token=${accessToken}`]
+  ['fb', 'Projector', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]
 ]

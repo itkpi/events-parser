@@ -41,7 +41,8 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
       fs.writeFileSync(newJSON, res)
       break
     case 'json':
-      fs.writeFileSync(newJSON, res.getBody())
+      const readableBody = JSON.stringify(JSON.parse(res.getBody()))
+      fs.writeFileSync(newJSON, readableBody)
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcType} in dataIO.get`)

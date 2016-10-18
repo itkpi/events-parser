@@ -42,6 +42,8 @@ transform.agenda = (data) => {
     .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
     // Replace spans to paragraph
     .replace(/<span.+?>(.+?)<\/span>(<br>)?/g, '<p>$1</p>')
+    // Replace \n to <br>
+    .replace(/\n/g, '<br>')
     // Replace paragraph with custom line to horizontal rule
     .replace(/<p>—{3,}<\/p>/g, '<hr>')
     // Replace custom unordered lists to html  // TODO: Rewrite this

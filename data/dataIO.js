@@ -14,7 +14,6 @@ const dataIO = {}
 module.exports = dataIO
 
 const firstEvent = 0
-const accessToken = '305896496426277%7CLkD-5VFOcD5fcF8DE8Zfta2_saI'
 
 /**
  * Get new data from sources.
@@ -69,8 +68,7 @@ dataIO.read = (srcFrom, file) => {
   const key = {
     dou: 'data.rss.channel.item',
     meetup: 'data.results',
-    bigCityEvent: 'data',
-    fb: 'data.data'
+    bigCityEvent: 'data'
   }
 
   let data = fs.readJsonSync(file, {'throws': false})
@@ -90,8 +88,7 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
   const key = {
     dou: 'link',
     meetup: 'name',
-    bigCityEvent: '_id',
-    fb: 'id'
+    bigCityEvent: '_id'
   }
 
   let eventsPosition = []
@@ -116,8 +113,7 @@ dataIO.title = (srcFrom, file, eventsPosition) => {
   const key = {
     dou: 'title',
     meetup: 'name',
-    bigCityEvent: 'name',
-    fb: 'name'
+    bigCityEvent: 'name'
   }
 
   const title = file[eventsPosition[firstEvent]][key[srcFrom]]
@@ -136,14 +132,12 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
   const key = {
     dou: 'link',
     meetup: 'event_url',
-    bigCityEvent: '_id',
-    fb: 'id'
+    bigCityEvent: '_id'
   }
 
   let link = file[eventsPosition[firstEvent]][key[srcFrom]]
 
   if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
-  if (srcFrom === 'fb') link = `https://graph.facebook.com/${link}?access_token=${accessToken}` 
 
   return link
 }
@@ -160,8 +154,7 @@ dataIO.data = (srcFrom, file, eventsPosition) => {
     dou: "data.description.replace(/[\\n\\u2028]/g, '')",
     meetup: 'JSON.stringify(data)',
     bigCityEvent: "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
-                          .getBody().toString('utf-8')",
-    fb: 'JSON.stringify(data)'
+                          .getBody().toString('utf-8')"
   }
 
   let data = file[eventsPosition[firstEvent]]

@@ -40,8 +40,7 @@ parse.agenda = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>.+?<\\/p>(.+)<\\/div>/, '$2')",
     meetup:       "byPath(src, 'description')",
-    bigCityEvent: "byPath(src, 'description')",
-    fb:           "byPath(src, 'description')"
+    bigCityEvent: "byPath(src, 'description')"
   }
 
   const agenda = eval(key[srcFrom])
@@ -68,8 +67,7 @@ parse.social = (srcFrom, src, link, title, agenda) => {
 target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`,
 
     meetup: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`,
-    bigCityEvent: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`,
-    fb: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`
+    bigCityEvent: `<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`
   }
 
   const social = key[srcFrom]
@@ -88,8 +86,7 @@ parse.place = (srcFrom, src) => {
     dou: "src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, '$2')",
     meetup: "`${byPath(src, ['venue', 'address_1'])} (${byPath(src, ['venue', 'name'])})`",
     // First value can be rudiment: BigCityEvent work only in Kyiv
-    bigCityEvent: "`${byPath(src, ['place', 'location', 'city'])}, ${byPath(src, ['place', 'location', 'street'])}`",
-    fb: "`${byPath(src, ['place', 'location', 'city'])}, ${byPath(src, ['place', 'location', 'street'])}`"
+    bigCityEvent: "`${byPath(src, ['place', 'location', 'city'])}, ${byPath(src, ['place', 'location', 'street'])}`"
   }
 
   let place = eval(key[srcFrom])
@@ -121,8 +118,7 @@ parse.regUrl = (srcFrom, src) => {
   const key = {
     dou:          "'http://ITKPI.PP.UA/'",
     meetup:       "byPath(src, 'event_url')",
-    bigCityEvent: "byPath(src, 'link')",
-    fb: "byPath(src, 'link')"
+    bigCityEvent: "byPath(src, 'link')"
   }
 
   const regUrl = eval(key[srcFrom])
@@ -140,8 +136,7 @@ parse.imgUrl = (srcFrom, src) => {
   const key = {
     dou: '',
     meetup: '',
-    bigCityEvent: '',
-    fb: ''
+    bigCityEvent: ''
   }
 
   const imgUrl = key[srcFrom]
@@ -159,8 +154,7 @@ parse.date = (srcFrom, src) => {
   const key = {
     dou:          'dateFromDOU(src)',
     meetup:       "dateFromMilliseconds(src, 'time')",
-    bigCityEvent: "dateFromMilliseconds(src, 'eventTimestamp')",
-    fb:           "dateFromMilliseconds(src, 'start_time')"
+    bigCityEvent: "dateFromMilliseconds(src, 'eventTimestamp')"
   }
 
   const date = eval(key[srcFrom])
@@ -178,8 +172,7 @@ parse.time = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')",
     meetup:       "timeFromMilliseconds(src, 'eventTimestamp')",
-    bigCityEvent: "timeFromMilliseconds(src, 'eventTimestamp', 1000)",
-    fb:           "timeFromMilliseconds(src, 'start_time')"
+    bigCityEvent: "timeFromMilliseconds(src, 'eventTimestamp', 1000)"
   }
 
   let time = eval(key[srcFrom])

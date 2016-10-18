@@ -17,7 +17,7 @@ const firstEvent = 0
 
 /**
  * Get new data from sources.
- * @param {string} srcName - name of source, which is currently being processed.
+* @param {string} srcName - name of source, which is currently being processed.
  * @param {string} srcType - datatype of current source.
  * @param {string} srcLink - link to actual data of source.
  * @param {string} newJSON - path to JSON file with data of current iteration.
@@ -44,7 +44,7 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
       fs.writeFileSync(newJSON, res.getBody())
       break
     default:
-      _log_(`ERROR: NOT FOUND ${srcName} in get.get`)
+      _log_(`ERROR: NOT FOUND ${srcType} in dataIO.get`)
   }
 
   const old = fs.readFileSync(oldJSON)
@@ -60,56 +60,43 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
 /**
  * Read JSON file.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {string} file - path to JSON file with data of current iteration.
  * @returns {JSON} data - JSON only with events.
  */
-dataIO.read = (srcName, file) => {
-  let data = fs.readJsonSync(file, {'throws': false})
-
-  switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
-      data = data.rss.channel.item
-      break
-    case 'meetup_open_events':
-      data = data.results
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcName} in get.read`)
+dataIO.read = (srcFrom, file) => {
+  const key = {
+    dou: 'data.rss.channel.item',
+    meetup: 'data.results',
+    bigCityEvent: 'data'
   }
+
+  let data = fs.readJsonSync(file, {'throws': false})
+  data = eval(key[srcFrom])
 
   return data
 }
 
 /**
  * Search position of new events.
- * @param {string} srcName - name of source, which is currently being processed.
+ * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} newSrc - JSON file with actual state of information.
  * @param {JSON} oldSrc - JSON file with previous state of information.
  * @returns {Array} eventsPosition - position of new events.
  */
-dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
+dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
+  const key = {
+    dou: 'link',
+    meetup: 'name',
+    bigCityEvent: '_id'
+  }
+
   let eventsPosition = []
 
-  switch (srcName) {
-    case 'dou_ua_online':
-    case 'dou_ua_kyiv':
-      for (let i = 0; i < oldSrc.length; i++) {
-        if (oldSrc[firstEvent].link === newSrc[i].link) break
+  for (let i = 0; i < oldSrc.length; i++) {
+    if (oldSrc[firstEvent][key[srcFrom]] === newSrc[i][key[srcFrom]]) break
 
-        eventsPosition.push(i)
-      }
-      break
-    case 'meetup_open_events':
-      for (let i = 0; i < oldSrc.length; i++) {
-        if (oldSrc[firstEvent].name === newSrc[i].name) break
-
-        eventsPosition.push(i)
-      }
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcName} in get.eventsPosition`)
+    eventsPosition.push(i)
   }
 
   return eventsPosition
@@ -117,75 +104,61 @@ dataIO.eventsPosition = (srcName, newSrc, oldSrc) => {
 
 /**
  * Return title of event.
- * @param {string} srcName - name of source, which is currently being processed.
- * @param {JSON} src - JSON source file.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} title - event title.
  */
-dataIO.title = (srcName, src, eventsPosition) => {
-  let title = 'TITLE (dataIO error)'
-
-  switch (srcName) {
-    case 'dou_ua_kyiv':
-    case 'dou_ua_online':
-      title = src[eventsPosition[firstEvent]].title
-      break
-    case 'meetup_open_events':
-      title = src[eventsPosition[firstEvent]].name
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.title`)
+dataIO.title = (srcFrom, file, eventsPosition) => {
+  const key = {
+    dou: 'title',
+    meetup: 'name',
+    bigCityEvent: 'name'
   }
+
+  const title = file[eventsPosition[firstEvent]][key[srcFrom]]
 
   return title
 }
 
 /**
  * Return link to source of the event.
- * @param {string} srcName - name of source, which is currently being processed.
- * @param {JSON} src - JSON source file.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} link - link of the event.
  */
-dataIO.link = (srcName, src, eventsPosition) => {
-  let link = 'https://LINK.dataIO/error/'
-
-  switch (srcName) {
-    case 'dou_ua_kyiv':
-    case 'dou_ua_online':
-      link = src[eventsPosition[firstEvent]].link
-      break
-    case 'meetup_open_events':
-      link = src[eventsPosition[firstEvent]].event_url
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.link`)
+dataIO.link = (srcFrom, file, eventsPosition) => {
+  const key = {
+    dou: 'link',
+    meetup: 'event_url',
+    bigCityEvent: '_id'
   }
+
+  let link = file[eventsPosition[firstEvent]][key[srcFrom]]
+
+  if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
 
   return link
 }
 
 /**
  * Return information about one event.
- * @param {string} srcName - name of source, which is currently being processed.
- * @param {JSON} src - JSON source file.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
  * @param {Array} eventsPosition - array with position of new events.
  * @returns {string} data - information of the event.
  */
-dataIO.data = (srcName, src, eventsPosition) => {
-  let data = 'DATA (dataIO error)'
-
-  switch (srcName) {
-    case 'dou_ua_kyiv':
-    case 'dou_ua_online':
-      data = src[eventsPosition[firstEvent]].description.replace(/[\n,\u2028]/g, '')
-      break
-    case 'meetup_open_events':
-      data = JSON.stringify(src[eventsPosition[firstEvent]])
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcName} in dataIO.data`)
+dataIO.data = (srcFrom, file, eventsPosition) => {
+  const key = {
+    dou: "data.description.replace(/[\\n\\u2028]/g, '')",
+    meetup: 'JSON.stringify(data)',
+    bigCityEvent: "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
+                          .getBody().toString('utf-8')"
   }
+
+  let data = file[eventsPosition[firstEvent]]
+  data = eval(key[srcFrom])
 
   return data
 }
@@ -206,7 +179,7 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, onl
     'when_end': whenStart, // Required field... // TODO: Need to change API
     'only_date': onlyDate,
     'team': 'ITKPI',
-    'submitter_email': 'VM@ITKPI.PP.UA'
+    'submitter_email': process.env.EMAIL
   })
 
   const options = {

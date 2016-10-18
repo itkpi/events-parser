@@ -39,7 +39,6 @@ utils._log_ = (log, name) => {
  * Have exports value: lang.
  * @returns {string} language.
  */
-// TODo: Rewrite through iterator
 utils.locale = (mm) => {
   moment.locale('ru')
   if (!isNaN(moment(mm, 'MMMM').get('month'))) {
@@ -55,4 +54,11 @@ utils.locale = (mm) => {
 
   utils.lang = 'en'
   return utils.lang
+}
+
+/**
+ * @returns {number} days in curent month
+ */
+Date.prototype.daysInMonth = function () {
+  return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate()
 }

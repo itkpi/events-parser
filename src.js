@@ -4,11 +4,13 @@ const src = {}
 module.exports = src
 
 const priceTo = 200
+const accessToken = process.env.FB_ACCESS_TOKEN
 
 src.types = {
   dou: 'xml',
   meetup: 'json',
   bigCityEvent: 'json'
+  fb: 'json'
 }
 
 src.address = [
@@ -19,5 +21,6 @@ src.address = [
   ['bigCityEvent', 'VOLUNTEERING', 'http://bigcityevent.com/api/v1/events/?tag=VOLUNTEERING'],
   ['bigCityEvent', 'CONFERENCE_EVENT', 'http://bigcityevent.com/api/v1/events/?tag=CONFERENCE_EVENT'],
   ['bigCityEvent', 'MEETUP', `http://bigcityevent.com/api/v1/events/?tag=MEETUP&priceTo=${priceTo}`],
-  ['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`]
+  ['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`],
+  ['fb', 'Projector', `https://graph.facebook.com/prjctrcomua/events?access_token=${accessToken}`]
 ]

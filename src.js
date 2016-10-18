@@ -8,7 +8,8 @@ const priceTo = 200
 src.types = {
   dou: 'xml',
   meetup: 'json',
-  bigCityEvent: 'json'
+  bigCityEvent: 'json',
+  fb: 'json'
 }
 
 src.address = [
@@ -19,5 +20,9 @@ src.address = [
   ['bigCityEvent', 'VOLUNTEERING', 'http://bigcityevent.com/api/v1/events/?tag=VOLUNTEERING'],
   ['bigCityEvent', 'CONFERENCE_EVENT', 'http://bigcityevent.com/api/v1/events/?tag=CONFERENCE_EVENT'],
   ['bigCityEvent', 'MEETUP', `http://bigcityevent.com/api/v1/events/?tag=MEETUP&priceTo=${priceTo}`],
-  ['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`]
+  ['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`],
+  ['fb', 'Projector', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
+  ['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
+  ['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
+  ['fb', 'Читалка', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]
 ]

@@ -14,7 +14,6 @@ const dataIO = {}
 module.exports = dataIO
 
 const firstEvent = 0
-const accessToken = process.env.FB_ACCESS_TOKEN
 
 /**
  * Get new data from sources.

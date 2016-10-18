@@ -22,7 +22,8 @@ parse.title = (srcFrom, src) => {
   const key = {
     dou: "src.replace(/(,)\\s[0-9]{1,2}(.)+/g, '')",
     meetup:       'src',
-    bigCityEvent: 'src'
+    bigCityEvent: 'src',
+    fb:           'src'
   }
 
   const title = eval(key[srcFrom])
@@ -122,7 +123,7 @@ parse.regUrl = (srcFrom, src) => {
     dou:          "'http://ITKPI.PP.UA/'",
     meetup:       "byPath(src, 'event_url')",
     bigCityEvent: "byPath(src, 'link')",
-    fb: "byPath(src, 'link')"
+    fb:           "`https://fb.com/${byPath(src, 'id')}`"
   }
 
   const regUrl = eval(key[srcFrom])

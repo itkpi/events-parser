@@ -7,8 +7,11 @@
 [![JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
 Events-parser work with:
-* DOU.UA
+* DOU.ua
 * Meetup.com
-* AIN.UA (in future)
-* FB.com (in future)
+* AIN.ua (in future)
+* BigCityEvent.com
+* FB.com
 * VK.com (in future)
+
+Licensed under the Apache License, Version 2.0.

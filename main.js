@@ -45,39 +45,38 @@ for (let adr = 0; adr < src.address.length; adr++) {
 
   // RSS to API
   while (eventsPosition.length) {
-    let title = dataIO.title(srcFrom, newSrc, eventsPosition)
     const link = dataIO.link(srcFrom, newSrc, eventsPosition)
     const data = dataIO.data(srcFrom, newSrc, eventsPosition)
 
     _log_(`${srcName}: ${link} start\n`)
 
     // Parse event description
-    title = parse.title(srcFrom, title)
+    let title = parse.title(srcFrom, data)
     let agenda = parse.agenda(srcFrom, data)
-    let whenStart = parse.startDate(srcFrom, data)
-    let whenEnd = parse.endDate(srcFrom, data)
+    let whenStart = parse.date(srcFrom, data, 'dateStart')
+    let whenEnd = parse.date(srcFrom, data, 'dateEnd')
 
     if (inBlackList(title, agenda, whenStart, `${link}\n${title}`)) {
       eventsPosition.shift()
       continue
     }
 
-    let social = parse.social(srcFrom, data, link, title, agenda)
+    let addInfo = parse.addInfo(srcFrom, data, link, title, agenda)
     let place = parse.place(srcFrom, data)
     const regUrl = parse.regUrl(srcFrom, data)
     const imgUrl = parse.imgUrl(srcFrom, data)
-    let onlyDate = parse.startTime(srcFrom, data)
+    let onlyDate = parse.time(srcFrom, data, 'timeStart')
 
     if (onlyDate !== true) {
       whenStart += onlyDate
-      whenEnd += parse.endTime(srcFrom, data)
+      whenEnd += parse.time(srcFrom, data, 'timeEnd')
       onlyDate = false
     }
 
     // Delete superfluous words
     title = transform.title(title)
     agenda = transform.agenda(agenda)
-    social = transform.social(social)
+    addInfo = transform.addInfo(addInfo)
     place = transform.place(place)
 
     // Yandex Translate can translate a little more 7000 symbols per request.
@@ -110,7 +109,7 @@ for (let adr = 0; adr < src.address.length; adr++) {
 
     // Send event to API
     ya.then(() => {
-      dataIO.sendtoAPI(title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
+      dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
 
       return Promise.resolve()
     })

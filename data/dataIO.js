@@ -9,6 +9,7 @@ const request = require('sync-request')
 const xml2json = require('xml2json')
 const http = require('http')
 const _log_ = require('../utils.js')._log_
+const giveConfig = require('../src.js').config
 
 const dataIO = {}
 module.exports = dataIO
@@ -66,15 +67,8 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * @returns {JSON} data - JSON only with events.
  */
 dataIO.read = (srcFrom, file) => {
-  const key = {
-    dou: 'data.rss.channel.item',
-    meetup: 'data.results',
-    bigCityEvent: 'data',
-    fb: 'data.data'
-  }
-
   let data = fs.readJsonSync(file, {'throws': false})
-  data = eval(key[srcFrom])
+  data = eval(giveConfig[srcFrom]['allEvents'])
 
   return data
 }
@@ -87,42 +81,16 @@ dataIO.read = (srcFrom, file) => {
  * @returns {Array} eventsPosition - position of new events.
  */
 dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
-  const key = {
-    dou: 'link',
-    meetup: 'name',
-    bigCityEvent: '_id',
-    fb: 'id'
-  }
-
   let eventsPosition = []
 
   for (let i = 0; i < oldSrc.length; i++) {
-    if (oldSrc[firstEvent][key[srcFrom]] === newSrc[i][key[srcFrom]]) break
+    if (oldSrc[firstEvent][giveConfig[srcFrom]['NUEeventId']] ===
+        newSrc[i]         [giveConfig[srcFrom]['NUEeventId']]) break
 
     eventsPosition.push(i)
   }
 
   return eventsPosition
-}
-
-/**
- * Return title of event.
- * @param {string} srcFrom - source, which is currently being processed.
- * @param {JSON} file - JSON source file.
- * @param {Array} eventsPosition - array with position of new events.
- * @returns {string} title - event title.
- */
-dataIO.title = (srcFrom, file, eventsPosition) => {
-  const key = {
-    dou: 'title',
-    meetup: 'name',
-    bigCityEvent: 'name',
-    fb: 'name'
-  }
-
-  const title = file[eventsPosition[firstEvent]][key[srcFrom]]
-
-  return title
 }
 
 /**
@@ -133,14 +101,7 @@ dataIO.title = (srcFrom, file, eventsPosition) => {
  * @returns {string} link - link of the event.
  */
 dataIO.link = (srcFrom, file, eventsPosition) => {
-  const key = {
-    dou: 'link',
-    meetup: 'event_url',
-    bigCityEvent: '_id',
-    fb: 'id'
-  }
-
-  let link = file[eventsPosition[firstEvent]][key[srcFrom]]
+  let link = file[eventsPosition[firstEvent]][giveConfig[srcFrom]['NUEsrcLink']]
 
   if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
   if (srcFrom === 'fb') link = `https://fb.com/${link}`
@@ -156,16 +117,8 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
  * @returns {string} data - information of the event.
  */
 dataIO.data = (srcFrom, file, eventsPosition) => {
-  const key = {
-    dou: "data.description.replace(/[\\n\\u2028]/g, '')",
-    meetup: 'JSON.stringify(data)',
-    bigCityEvent: "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
-                          .getBody().toString('utf-8')",
-    fb: 'JSON.stringify(data)'
-  }
-
   let data = file[eventsPosition[firstEvent]]
-  data = eval(key[srcFrom])
+  data = eval(giveConfig[srcFrom]['eventData'])
 
   return data
 }

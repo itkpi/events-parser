@@ -55,16 +55,16 @@ transform.agenda = (data) => {
 }
 
 /**
- * Social field style unification.
+ * Additional information field style unification.
  * @param {string} data - combine field with external information for moderators.
- * @returns {string} social of the event.
+ * @returns {string} addInfo of the event.
  */
-transform.social = (data) => {
-  const social = data
+transform.addInfo = (data) => {
+  const addInfo = data
     // Change image width
-    .replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="623"$3$6<br/>$4<br/>')
+    .replace(/(<img)(\sstyle=".+?")?(\ssrc="(.+?)")(\sstyle=".+?")?(>)/g, '$1 width="600"$3$6<br/>$4<br/>')
 
-  return social
+  return addInfo
 }
 
 /**

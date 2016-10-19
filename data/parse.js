@@ -294,7 +294,7 @@ function dateFromDOU (src) {
   mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
 
   if (dd.length === src.length || mm.length === src.length) {
-    _log_(`ERROR: ${srcFrom} have parsing problem in parse.whenStart\n${src}`)
+    _log_(`ERROR: DOU have parsing problem in parse.whenStart\n${src}`)
 
     return date
   }

@@ -9,7 +9,7 @@ const request = require('sync-request')
 const xml2json = require('xml2json')
 const http = require('http')
 const _log_ = require('../utils.js')._log_
-const giveConfig = require('../src.js').config
+const ain = require('./ain_scraper.js')
 
 const dataIO = {}
 module.exports = dataIO
@@ -35,6 +35,7 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   // Get data from source
   let res = request('GET', srcLink)
+  if (srcName == 'ain') res = ain.get(srcLink)
 
   switch (srcType) {
     case 'xml':
@@ -67,8 +68,16 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  * @returns {JSON} data - JSON only with events.
  */
 dataIO.read = (srcFrom, file) => {
+  const key = {
+    dou: 'data.rss.channel.item',
+    meetup: 'data.results',
+    bigCityEvent: 'data',
+    fb: 'data.data',
+    ain: 'data'
+  }
+
   let data = fs.readJsonSync(file, {'throws': false})
-  data = eval(giveConfig[srcFrom]['allEvents'])
+  data = eval(key[srcFrom])
 
   return data
 }
@@ -81,16 +90,44 @@ dataIO.read = (srcFrom, file) => {
  * @returns {Array} eventsPosition - position of new events.
  */
 dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
+  const key = {
+    dou: 'link',
+    meetup: 'name',
+    bigCityEvent: '_id',
+    fb: 'id',
+    ain: 'link'
+  }
+
   let eventsPosition = []
 
   for (let i = 0; i < oldSrc.length; i++) {
-    if (oldSrc[firstEvent][giveConfig[srcFrom]['NUEeventId']] ===
-        newSrc[i]         [giveConfig[srcFrom]['NUEeventId']]) break
+    if (oldSrc[firstEvent][key[srcFrom]] === newSrc[i][key[srcFrom]]) break
 
     eventsPosition.push(i)
   }
 
   return eventsPosition
+}
+
+/**
+ * Return title of event.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} file - JSON source file.
+ * @param {Array} eventsPosition - array with position of new events.
+ * @returns {string} title - event title.
+ */
+dataIO.title = (srcFrom, file, eventsPosition) => {
+  const key = {
+    dou: 'title',
+    meetup: 'name',
+    bigCityEvent: 'name',
+    fb: 'name',
+    ain: 'name'
+  }
+
+  const title = file[eventsPosition[firstEvent]][key[srcFrom]]
+
+  return title
 }
 
 /**
@@ -101,7 +138,15 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
  * @returns {string} link - link of the event.
  */
 dataIO.link = (srcFrom, file, eventsPosition) => {
-  let link = file[eventsPosition[firstEvent]][giveConfig[srcFrom]['NUEsrcLink']]
+  const key = {
+    dou: 'link',
+    meetup: 'event_url',
+    bigCityEvent: '_id',
+    fb: 'id',
+    ain: 'link'
+  }
+
+  let link = file[eventsPosition[firstEvent]][key[srcFrom]]
 
   if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
   if (srcFrom === 'fb') link = `https://fb.com/${link}`
@@ -117,8 +162,17 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
  * @returns {string} data - information of the event.
  */
 dataIO.data = (srcFrom, file, eventsPosition) => {
+  const key = {
+    dou: "data.description.replace(/[\\n\\u2028]/g, '')",
+    meetup: 'JSON.stringify(data)',
+    bigCityEvent: "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
+                          .getBody().toString('utf-8')",
+    fb:  'JSON.stringify(data)',
+    ain: 'JSON.stringify(data)'
+  }
+
   let data = file[eventsPosition[firstEvent]]
-  data = eval(giveConfig[srcFrom]['eventData'])
+  data = eval(key[srcFrom])
 
   return data
 }

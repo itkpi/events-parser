@@ -1,5 +1,7 @@
 'use strict'
 
+const ain = require('./data/ain_scraper.js')
+
 const src = {}
 module.exports = src
 
@@ -9,8 +11,11 @@ src.types = {
   dou: 'xml',
   meetup: 'json',
   bigCityEvent: 'json',
-  fb: 'json'
+  fb: 'json',
+  ain: 'json'
 }
+
+let ainAdr = ain.address
 
 src.address = [
   // srcFrom, srcName, NUEsrcLink
@@ -24,7 +29,9 @@ src.address = [
   ['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
   ['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
   ['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
-  ['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]
+  ['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
+  [ainAdr[0]],
+  [ainAdr[1]]
 ]
 
 /**
@@ -115,5 +122,22 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`'
     , dateEnd:      "dateFromMilliseconds(src, 'end_time')"
     , timeStart:    "timeFromMilliseconds(src, 'start_time')"
     , timeEnd:      "timeFromMilliseconds(src, 'end_time')"
+    },
+
+  ain:
+    { allEvents:    'data'
+    , NUEeventId:   'link'
+    , NUEsrcLink:   'link'
+    , eventData:    'JSON.stringify(data)'
+    , title:        'JSON.parse(src).name'
+    , agenda:       'JSON.parse(src).agenda'
+    , addInfo:      '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`'
+    , place:        'JSON.parse(src).place'
+    , registration: 'JSON.parse(src).regUrl'
+    , image:        'JSON.parse(src).imgUrl'
+    , dateStart:    "dateFromMilliseconds(src, 'date')"
+    , dateEnd:      "dateFromMilliseconds(src, 'date')"
+    , timeStart:    "timeFromMilliseconds(src, 'date')"
+    , timeEnd:      "timeFromMilliseconds(src, 'date')"
     }
 }

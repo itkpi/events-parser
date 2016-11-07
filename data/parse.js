@@ -118,7 +118,7 @@ parse.date = (srcFrom, src, key) => {
  * @returns {string|boolean} time when start. If event have only date - return true.
  */
 parse.time = (srcFrom, src, key) => {
-  let time = eval(giveConfig[srcFrom][key])
+  const time = eval(giveConfig[srcFrom][key])
 
   if (time.length === src.length && srcFrom !== 'dou') {
     _log_(`ERROR: ${srcFrom} have parsing problem in parse.time\n${src}`)

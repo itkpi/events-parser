@@ -5,13 +5,6 @@ module.exports = src
 
 const priceTo = 200
 
-src.types = {
-  dou: 'xml',
-  meetup: 'json',
-  bigCityEvent: 'json',
-  fb: 'json'
-}
-
 src.address = [
   // srcFrom, srcName, NUEsrcLink
   ['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online'],
@@ -28,6 +21,7 @@ src.address = [
 ]
 
 /**
+ * src.address:           NUEsrcType - type of src. xml or JSON. !!!NOT USE EVAL()!!!
  * dataIO.read:           allEvents - path to JSON, only with events.
  * dataIO.eventsPosition: NUEeventId - path to unique event id. !!!NOT USE EVAL()!!!
  * dataIO.link:           NUEsrcLink - path to URL of event in source. !!!NOT USE EVAL()!!!
@@ -45,7 +39,8 @@ src.address = [
  */ 
 src.config = {
   dou:
-    { allEvents:    'data.rss.channel.item'
+    { NUEsrcType:   'xml'
+    , allEvents:    'data.rss.channel.item'
     , NUEeventId:   'link'
     , NUEsrcLink:   'link'
     , eventData:    'JSON.stringify(data)'
@@ -65,7 +60,8 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`'
     },
 
   meetup:
-    { allEvents:    'data.results'
+    { NUEsrcType:   'json'
+    , allEvents:    'data.results'
     , NUEeventId:   'name'
     , NUEsrcLink:   'event_url'
     , eventData:    'JSON.stringify(data)'
@@ -82,7 +78,8 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`'
     },
 
   bigCityEvent:
-    { allEvents:    'data'
+    { NUEsrcType:   'json'
+    , allEvents:    'data'
     , NUEeventId:   '_id'
     , NUEsrcLink:   '_id'
     , eventData:    "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
@@ -100,7 +97,8 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`'
     },
 
   fb:
-    { allEvents:    'data.data'
+    { NUEsrcType:   'json'
+    , allEvents:    'data.data'
     , NUEeventId:   'id'
     , NUEsrcLink:   'id'
     , eventData:    'JSON.stringify(data)'

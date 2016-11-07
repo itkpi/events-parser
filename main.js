@@ -23,7 +23,7 @@ fs.ensureDirSync('./logs/')
 for (let adr = 0; adr < src.address.length; adr++) {
   const srcFrom = src.address[adr][0]
   const srcName = `${srcFrom}_${src.address[adr][1]}`
-  const srcType = src.types[srcFrom]
+  const srcType = src.config[srcFrom]['NUEsrcType']
   const srcLink = src.address[adr][2]
 
   _log_(`Start ${srcName}`, 'onlyCron')

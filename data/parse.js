@@ -20,7 +20,7 @@ module.exports = parse
  * @returns {string} title.
  */
 parse.title = (srcFrom, src) => {
-  return eval(giveConfig[srcFrom]['title'])
+  return eval(giveConfig[srcFrom].title)
 }
 
 /**
@@ -30,7 +30,7 @@ parse.title = (srcFrom, src) => {
  * @returns {string} agenda.
  */
 parse.agenda = (srcFrom, src) => {
-  const agenda = eval(giveConfig[srcFrom]['agenda'])
+  const agenda = eval(giveConfig[srcFrom].agenda)
 
   if (srcFrom === 'dou' && agenda.length === src.length) {
     _log_(`ERROR: ${srcFrom} have parsing problem in parse.agenda\n${src}`)
@@ -49,7 +49,7 @@ parse.agenda = (srcFrom, src) => {
  * @returns {string} addInfo.
  */
 parse.addInfo = (srcFrom, src, link, title, agenda) => {
-  return eval(giveConfig[srcFrom]['addInfo'])
+  return eval(giveConfig[srcFrom].addInfo)
 }
 
 /**
@@ -59,7 +59,7 @@ parse.addInfo = (srcFrom, src, link, title, agenda) => {
  * @returns {string} place.
  */
 parse.place = (srcFrom, src) => {
-  let place = eval(giveConfig[srcFrom]['place'])
+  let place = eval(giveConfig[srcFrom].place)
 
   if (place.toLowerCase() === 'online' || place.toLowerCase() === 'онлайн') return 'Онлайн'
 
@@ -85,7 +85,7 @@ parse.place = (srcFrom, src) => {
  * @returns {string} regUrl - registration url.
  */
 parse.regUrl = (srcFrom, src) => {
-  return eval(giveConfig[srcFrom]['registration'])
+  return eval(giveConfig[srcFrom].registration)
 }
 
 /**
@@ -95,7 +95,7 @@ parse.regUrl = (srcFrom, src) => {
  * @returns {string} imgUrl - image url.
  */
 parse.imgUrl = (srcFrom, src) => {
-  return eval(giveConfig[srcFrom]['image'])
+  return eval(giveConfig[srcFrom].image)
 }
 
 /**
@@ -141,8 +141,7 @@ parse.time = (srcFrom, src, key) => {
 function byPath (src, path) {
   let data = JSON.parse(src)
 
-  if (typeof (path) === 'string' ||
-      typeof (path) === 'symbol') return data[path]
+  if (typeof path === 'string' || typeof path === 'symbol') return data[path]
   if (!path) return data
 
   for (let key of path) {
@@ -160,9 +159,10 @@ function byPath (src, path) {
  */
 function dateFromMilliseconds (src, path) {
   const mmStartFromZero = 1 // January is 0!
-  const dd = new Date(byPath(src, path)).getDate()
-  const mm = new Date(byPath(src, path)).getMonth() + mmStartFromZero
-  const yyyy = new Date(byPath(src, path)).getFullYear()
+  const now = new Date(byPath(src, path))
+  const dd = now.getDate()
+  const mm = now.getMonth() + mmStartFromZero
+  const yyyy = now.getFullYear()
 
   const date = `${yyyy}-${mm}-${dd}`
 

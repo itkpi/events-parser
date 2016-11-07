@@ -85,7 +85,7 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
 
   for (let i = 0; i < oldSrc.length; i++) {
     if (oldSrc[firstEvent][giveConfig[srcFrom].NUEeventId] ===
-        newSrc[i]         [giveConfig[srcFrom].NUEeventId]) break
+        newSrc[i][giveConfig[srcFrom].NUEeventId]) break
 
     eventsPosition.push(i)
   }

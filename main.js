@@ -38,7 +38,7 @@ Promise.all([
 function run (source) {
   const srcFrom = source[0]
   const srcName = `${srcFrom}_${source[1]}`
-  const srcType = src.types[srcFrom]
+  const srcType = src.config[srcFrom].NUEsrcType
   const srcLink = source[2]
 
   _log_(`Start ${srcName}`, 'onlyCron')
@@ -48,8 +48,7 @@ function run (source) {
   const oldJSON = path.join(__dirname, 'json', `${srcName}_old.json`)
 
   const getNewData = dataIO.get(srcName, srcType, srcLink, newJSON, oldJSON)
-
-  if (!getNewData) continue
+  // if (!getNewData) continue
 
   // Read data
   const newSrc = dataIO.read(srcFrom, newJSON)

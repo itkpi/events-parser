@@ -18,13 +18,28 @@ const _log_ = require('./utils')._log_
 const utils = require('./utils')
 
 _log_('Start', 'onlyCron')
-fs.ensureDirSync('./logs/')
 
-for (let adr = 0; adr < src.address.length; adr++) {
-  const srcFrom = src.address[adr][0]
-  const srcName = `${srcFrom}_${src.address[adr][1]}`
-  const srcType = src.config[srcFrom].NUEsrcType
-  const srcLink = src.address[adr][2]
+const priceTo = 200
+Promise.all([
+  // srcFrom, srcName, srcLink
+  run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
+  run(['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']),
+  run(['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS]),
+  run(['bigCityEvent', 'VOLUNTEERING', 'http://bigcityevent.com/api/v1/events/?tag=VOLUNTEERING']),
+  run(['bigCityEvent', 'CONFERENCE_EVENT', 'http://bigcityevent.com/api/v1/events/?tag=CONFERENCE_EVENT']),
+  run(['bigCityEvent', 'MEETUP', `http://bigcityevent.com/api/v1/events/?tag=MEETUP&priceTo=${priceTo}`]),
+  run(['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`]),
+  run(['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`])
+])
+
+function run (source) {
+  const srcFrom = source[0]
+  const srcName = `${srcFrom}_${source[1]}`
+  const srcType = src.types[srcFrom]
+  const srcLink = source[2]
 
   _log_(`Start ${srcName}`, 'onlyCron')
 
@@ -78,42 +93,46 @@ for (let adr = 0; adr < src.address.length; adr++) {
     agenda = transform.agenda(agenda)
     addInfo = transform.addInfo(addInfo)
     place = transform.place(place)
-
+    
     // Yandex Translate can translate a little more 7000 symbols per request.
     const translateMax = 7000
 
     if (agenda.length > translateMax) {
       agenda = '<h1>Too many. Do we really need this?</h1>'
     }
+
     // Translate
-    let ya = new Promise((resolve, reject) => {
-      if (utils.lang === 'ru') {
-        yandex.translate(agenda, {'from': 'ru', 'to': 'uk'}, (err, res) => {
-          if (err) throw err
-          agenda = res.text
-          yandex.translate(title, {'from': 'ru', 'to': 'uk'}, (err, res) => {
-            if (err) throw err
-            title = res.text
-            yandex.translate(place, {'from': 'ru', 'to': 'uk'}, (err, res) => {
-              if (err) throw err
-              place = res.text
-
-              return resolve()
-            })
-          })
-        })
-      } else {
-        return resolve()
-      }
-    })
-
-    // Send event to API
-    ya.then(() => {
+    if (utils.lang === 'ru') {
+      Promise.all(
+        [ translate(place)
+        , translate(agenda)
+        , translate(title)
+        ])
+      // Send event to API
+      .then((tr) => {
+        place = tr[0] // fucking vagga -_-
+        agenda = tr[1]
+        title = tr[2]
+        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
+      })
+    } else {
       dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
-
-      return Promise.resolve()
-    })
+    }
     eventsPosition.shift()
   }
 }
 _log_('End', 'onlyCron')
+
+/**
+ * Return translate text
+ * @param {string} src - source text, which is currently being processed.
+ * @returns {string} res.text - translate source text
+ */
+function translate (src) {
+  return new Promise((resolve, reject) => {
+    yandex.translate(src, {'from': 'ru', 'to': 'uk'}, (err, res) => {
+      if (err) reject(err)
+      resolve(res.text[0])
+    })
+  })
+}

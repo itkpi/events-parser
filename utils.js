@@ -10,6 +10,8 @@ const moment = require('moment')
 const utils = {}
 module.exports = utils
 
+fs.ensureDir('./logs/', (err) => { if (err) throw err })
+
 /**
  * Custom logging tool. Print logs to cron and save them to file (if name !== 'onlyCron')
  * @param {string} log - message which need logging.

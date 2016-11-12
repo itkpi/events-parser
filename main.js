@@ -19,16 +19,11 @@ const utils = require('./utils')
 
 _log_('Start', 'onlyCron')
 
-const priceTo = 200
 Promise.all([
   // srcFrom, srcName, srcLink
   run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
   run(['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']),
   run(['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS]),
-  run(['bigCityEvent', 'VOLUNTEERING', 'http://bigcityevent.com/api/v1/events/?tag=VOLUNTEERING']),
-  run(['bigCityEvent', 'CONFERENCE_EVENT', 'http://bigcityevent.com/api/v1/events/?tag=CONFERENCE_EVENT']),
-  run(['bigCityEvent', 'MEETUP', `http://bigcityevent.com/api/v1/events/?tag=MEETUP&priceTo=${priceTo}`]),
-  run(['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`]),
   run(['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
   run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
   run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),

@@ -58,6 +58,19 @@ utils.locale = (mm) => {
   return utils.lang
 }
 
+//ain date-name generation
+const nowYear = new Date().getFullYear()
+const nowMonth = new Date().getMonth() + 1
+let nextMonth = nowMonth + 1
+let nextYear = nowYear
+if (nextMonth === 13) { 
+  nextMonth = 1
+  nextYear += 1
+}
+
+utils.ainName = nowYear + '-' + nowMonth
+utils.nextAinName = nextYear + '-' + nextMonth
+
 /**
  * @returns {number} days in curent month
  */

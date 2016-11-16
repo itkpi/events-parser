@@ -36,7 +36,7 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   // Get data from source
   let res = request('GET', srcLink)
-  if (srcName === 'ain') res = ain.get(srcLink)
+  if (srcName === 'ain') res = ainGetEventsJSON(srcLink, srcName)
 
   switch (srcType) {
     case 'xml':

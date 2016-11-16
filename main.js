@@ -19,6 +19,16 @@ const utils = require('./utils')
 
 _log_('Start', 'onlyCron')
 
+//ain date-name generation
+const nowYear = new Date().getFullYear()
+const nowMonth = new Date().getMonth() + 1
+let nextMonth = nowMonth + 1
+let nextYear = nowYear
+if (nextMonth === 13) { 
+  nextMonth = 1
+  nextYear += 1
+}
+
 Promise.all([
   // srcFrom, srcName, srcLink
   run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
@@ -27,7 +37,9 @@ Promise.all([
   run(['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
   run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
   run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-  run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`])
+  run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  run(['ain', `${nowYear}-${nowMonth}`, `http://ain.ua/events/${nowYear}-${nowMonth}`]),
+  run(['ain', `${nextYear}-${nextMonth}`, `http://ain.ua/events/${nextYear}-${nextMonth}`])
 ])
 
 function run (source) {

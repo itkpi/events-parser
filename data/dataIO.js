@@ -68,7 +68,7 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
  */
 dataIO.read = (srcFrom, file) => {
   let data = fs.readJsonSync(file, {'throws': false})
-  data = eval(giveConfig[srcFrom]['allEvents'])
+  data = eval(giveConfig[srcFrom].allEvents)
 
   return data
 }
@@ -84,8 +84,8 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
   let eventsPosition = []
 
   for (let i = 0; i < oldSrc.length; i++) {
-    if (oldSrc[firstEvent][giveConfig[srcFrom]['NUEeventId']] ===
-        newSrc[i]         [giveConfig[srcFrom]['NUEeventId']]) break
+    if (oldSrc[firstEvent][giveConfig[srcFrom].NUEeventId] ===
+        newSrc[i][giveConfig[srcFrom].NUEeventId]) break
 
     eventsPosition.push(i)
   }
@@ -101,7 +101,7 @@ dataIO.eventsPosition = (srcFrom, newSrc, oldSrc) => {
  * @returns {string} link - link of the event.
  */
 dataIO.link = (srcFrom, file, eventsPosition) => {
-  let link = file[eventsPosition[firstEvent]][giveConfig[srcFrom]['NUEsrcLink']]
+  let link = file[eventsPosition[firstEvent]][giveConfig[srcFrom].NUEsrcLink]
 
   if (srcFrom === 'bigCityEvent') link = `http://bigcityevent.com/api/v1/event/${link}`
   if (srcFrom === 'fb') link = `https://fb.com/${link}`
@@ -118,7 +118,7 @@ dataIO.link = (srcFrom, file, eventsPosition) => {
  */
 dataIO.data = (srcFrom, file, eventsPosition) => {
   let data = file[eventsPosition[firstEvent]]
-  data = eval(giveConfig[srcFrom]['eventData'])
+  data = eval(giveConfig[srcFrom].eventData)
 
   return data
 }

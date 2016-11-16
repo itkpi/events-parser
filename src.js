@@ -5,36 +5,8 @@ const ain = require('./data/ain_scraper.js')
 const src = {}
 module.exports = src
 
-const priceTo = 200
-
-src.types = {
-  dou: 'xml',
-  meetup: 'json',
-  bigCityEvent: 'json',
-  fb: 'json',
-  ain: 'json'
-}
-
-let ainAdr = ain.address
-
-src.address = [
-  // srcFrom, srcName, NUEsrcLink
-  ['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online'],
-  ['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2'],
-  ['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS],
-  ['bigCityEvent', 'VOLUNTEERING', 'http://bigcityevent.com/api/v1/events/?tag=VOLUNTEERING'],
-  ['bigCityEvent', 'CONFERENCE_EVENT', 'http://bigcityevent.com/api/v1/events/?tag=CONFERENCE_EVENT'],
-  ['bigCityEvent', 'MEETUP', `http://bigcityevent.com/api/v1/events/?tag=MEETUP&priceTo=${priceTo}`],
-  ['bigCityEvent', 'WORKSHOP', `http://bigcityevent.com/api/v1/events/?tag=WORKSHOP&priceTo=${priceTo}`],
-  ['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
-  ['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
-  ['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
-  ['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`],
-  [ainAdr[0]],
-  [ainAdr[1]]
-]
-
 /**
+ * src.address:           NUEsrcType - type of src. xml or JSON. !!!NOT USE EVAL()!!!
  * dataIO.read:           allEvents - path to JSON, only with events.
  * dataIO.eventsPosition: NUEeventId - path to unique event id. !!!NOT USE EVAL()!!!
  * dataIO.link:           NUEsrcLink - path to URL of event in source. !!!NOT USE EVAL()!!!
@@ -49,95 +21,81 @@ src.address = [
  * parse.date:            dateEnd - path to date when event end or code to extract it.
  * parse.time:            timeStart - path to time when event start or code to extract it.
  * parse.time:            timeEnd - path to time when event end or code to extract it.
- */ 
+ */
 src.config = {
-  dou:
-    { allEvents:    'data.rss.channel.item'
-    , NUEeventId:   'link'
-    , NUEsrcLink:   'link'
-    , eventData:    'JSON.stringify(data)'
-    , title:        "JSON.parse(src).title.replace(/(,)\\s[0-9]{1,2}(.)+/g, '')"
-    , agenda:       "JSON.parse(src).description.replace(/.+?(Место|Місце|Place):<\\/strong>.+?<\\/p>(.+)<\\/div>/, '$2')"
-    , addInfo:      '`<a href="${link}">ORIGINAL POST</a> | \
+  dou: {
+    NUEsrcType: 'xml',
+    allEvents: 'data.rss.channel.item',
+    NUEeventId: 'link',
+    NUEsrcLink: 'link',
+    eventData: 'JSON.stringify(data)',
+    title: 'JSON.parse(src).title.replace(/(,)\\s[0-9]{1,2}(.)+/g, \'\')',
+    agenda: 'JSON.parse(src).description.replace(/.+?(Место|Місце|Place):<\\/strong>.+?<\\/p>(.+)<\\/div>/, \'$2\')',
+    addInfo: '`<a href="${link}">ORIGINAL POST</a> | \
 <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search\
 &image_url=${src.replace(/.+?<img src="(.+?)"\\sstyle.+/, "$1")}" \
-target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`'
-    , place:        "src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, '$2')"
-    , registration: "'http://ITKPI.PP.UA/'"
-    , image:        "''"
-    , dateStart:    'dateFromDOU(src)'
-    , dateEnd:      'dateFromDOU(src)'
-    , timeStart:    "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')"
-    , timeEnd:      "src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, '$2')"
-    },
+target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
+    place: 'src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, \'$2\')',
+    registration: '\'http://ITKPI.PP.UA/\'',
+    image: '\'\'',
+    dateStart: 'dateFromDOU(src)',
+    dateEnd: 'dateFromDOU(src)',
+    timeStart: 'src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, \'$2\')',
+    timeEnd: 'src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, \'$2\')'
+  },
 
-  meetup:
-    { allEvents:    'data.results'
-    , NUEeventId:   'name'
-    , NUEsrcLink:   'event_url'
-    , eventData:    'JSON.stringify(data)'
-    , title:        'JSON.parse(src).name'
-    , agenda:       'JSON.parse(src).description'
-    , addInfo:      '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`'
-    , place:        '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`'
-    , registration: 'JSON.parse(src).event_url'
-    , image:        "''"
-    , dateStart:    "dateFromMilliseconds(src, 'time')"
-    , dateEnd:      "dateFromMilliseconds(src, 'time')"
-    , timeStart:    "timeFromMilliseconds(src, 'time')"
-    , timeEnd:      "timeFromMilliseconds(src, 'time')"
-    },
+  meetup: {
+    NUEsrcType: 'json',
+    allEvents: 'data.results',
+    NUEeventId: 'name',
+    NUEsrcLink: 'event_url',
+    eventData: 'JSON.stringify(data)',
+    title: 'JSON.parse(src).name',
+    agenda: 'JSON.parse(src).description',
+    addInfo: '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`',
+    place: '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`',
+    registration: 'JSON.parse(src).event_url',
+    image: '\'\'',
+    dateStart: 'dateFromMilliseconds(src, \'time\')',
+    dateEnd: 'dateFromMilliseconds(src, \'time\')',
+    timeStart: 'timeFromMilliseconds(src, \'time\')',
+    timeEnd: 'timeFromMilliseconds(src, \'time\')'
+  },
 
-  bigCityEvent:
-    { allEvents:    'data'
-    , NUEeventId:   '_id'
-    , NUEsrcLink:   '_id'
-    , eventData:    "request('GET',`http://bigcityevent.com/api/v1/event/${data._id}`)\
-                            .getBody().toString('utf-8')"
-    , title:        'JSON.parse(src).name'
-    , agenda:       'JSON.parse(src).description'
-    , addInfo:       '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`'
-    , place:        '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`'
-    , registration: 'JSON.parse(src).link'
-    , image:        "''"
-    , dateStart:    "dateFromMilliseconds(src, 'eventTimestamp')"
-    , dateEnd:      "dateFromMilliseconds(src, 'eventTimestamp')"
-    , timeStart:    "timeFromMilliseconds(src, 'eventTimestamp', 1000)"
-    , timeEnd:      "timeFromMilliseconds(src, 'eventTimestamp', 1000)"
-    },
+  bigCityEvent: {
+    NUEsrcType: 'json',
+    allEvents: 'data',
+    NUEeventId: '_id',
+    NUEsrcLink: '_id',
+    eventData: 'request(\'GET\',`http://bigcityevent.com/api/v1/event/${data._id}`).getBody().toString()',
+    title: 'JSON.parse(src).name',
+    agenda: 'JSON.parse(src).description',
+    addInfo: '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`',
+    place: '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`',
+    registration: 'JSON.parse(src).link',
+    image: '\'\'',
+    dateStart: 'dateFromMilliseconds(src, \'eventTimestamp\')',
+    dateEnd: 'dateFromMilliseconds(src, \'eventTimestamp\')',
+    timeStart: 'timeFromMilliseconds(src, \'eventTimestamp\', 1000)',
+    timeEnd: 'timeFromMilliseconds(src, \'eventTimestamp\', 1000)'
+  },
 
-  fb:
-    { allEvents:    'data.data'
-    , NUEeventId:   'id'
-    , NUEsrcLink:   'id'
-    , eventData:    'JSON.stringify(data)'
-    , title:        'JSON.parse(src).name'
-    , agenda:       'JSON.parse(src).description'
-    , addInfo:      '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`'
-                    // First value can be rudiment: BigCityEvent work only in Kyiv
-    , place:        '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`'
-    , registration: '`https://fb.com/${JSON.parse(src).id}`'
-    , image:        "''"
-    , dateStart:    "dateFromMilliseconds(src, 'start_time')"
-    , dateEnd:      "dateFromMilliseconds(src, 'end_time')"
-    , timeStart:    "timeFromMilliseconds(src, 'start_time')"
-    , timeEnd:      "timeFromMilliseconds(src, 'end_time')"
-    },
-
-  ain:
-    { allEvents:    'data'
-    , NUEeventId:   'link'
-    , NUEsrcLink:   'link'
-    , eventData:    'JSON.stringify(data)'
-    , title:        'JSON.parse(src).name'
-    , agenda:       'JSON.parse(src).agenda'
-    , addInfo:      '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`'
-    , place:        'JSON.parse(src).place'
-    , registration: 'JSON.parse(src).regUrl'
-    , image:        'JSON.parse(src).imgUrl'
-    , dateStart:    "dateFromMilliseconds(src, 'date')"
-    , dateEnd:      "dateFromMilliseconds(src, 'date')"
-    , timeStart:    "timeFromMilliseconds(src, 'date')"
-    , timeEnd:      "timeFromMilliseconds(src, 'date')"
-    }
+  fb: {
+    NUEsrcType: 'json',
+    allEvents: 'data.data',
+    NUEeventId: 'id',
+    NUEsrcLink: 'id',
+    eventData: 'JSON.stringify(data)',
+    title: 'JSON.parse(src).name',
+    agenda: 'JSON.parse(src).description',
+    addInfo: '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`',
+             // First value can be rudiment: BigCityEvent work only in Kyiv
+    place: '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`',
+    registration: '`https://fb.com/${JSON.parse(src).id}`',
+    image: '\'\'',
+    dateStart: 'dateFromMilliseconds(src, \'start_time\')',
+    dateEnd: 'dateFromMilliseconds(src, \'end_time\')',
+    timeStart: 'timeFromMilliseconds(src, \'start_time\')',
+    timeEnd: 'timeFromMilliseconds(src, \'end_time\')'
+  }
 }

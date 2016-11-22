@@ -94,7 +94,7 @@ BAN_COURSE_TITLE='Курс|Course' #case insensitive
 BAN_COURSE_COMPANY='Ignore courses by this company|and this|you can ban by URLs - it\'s more efective'
 ```
 
-##### Need for work with meetup
+##### Need for work with Meetup
 ```bash
 MEETUP_GROUPS='https://api.meetup.com/find/groups?your-settings' 
 MEETUP_OPEN_EVENTS='https://api.meetup.com/2/open_events?your-settings' 

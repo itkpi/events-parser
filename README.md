@@ -16,81 +16,94 @@ Events-parser work with:
 
 Licensed under the Apache License, Version 2.0.
 
+
+
 ##Prerequisites
 * [Git](https://git-scm.com/downloads)
 
 +
 * [Vagga](http://vagga.readthedocs.io/en/latest/installation.html) (higly recomended)
 <br>OR
-* [Docker](https://www.docker.com/products/overview) (in future)
-<br>OR
 * [Node.JS](https://nodejs.org/uk/) 4+ (not recomended)
 
-## Clone, build and run
+
+
+## Clone repo
+```bash
+$ git clone https://github.com/itkpi/events-parser.git
+```
+
+
+
+## Build and run
+
+
 
 ### Vagga-way
 
-##### Clone repo
-```bash
-git clone https://github.com/itkpi/events-parser.git
-```
 ##### Add enviroment keys
-
-Add next variables to your shell on this pattern:
+Add variables to your shell on this pattern:
 ```bash
-export VAGGA_ENV_%variable_name%
+$ export VAGGA_ENV_%variable_name%='%value%'
 ```
-[All supported enviroment variables](https://github.com/itkpi/events-parser/#all-supported-enviroment-variables)
+[All supported enviroment variables](#all-supported-enviroment-variables)
 
 ##### Install dependencies and run
 ```bash
-vagga run
+$ vagga run
 ```
 
-### Docker-way
 
-##### Clone repo
-```bash
-git clone https://github.com/itkpi/events-parser.git
-```
-##### Add enviroment keys
 
-Add next variables to your shell on this pattern:
-```bash
-
-```
-[All supported enviroment variables](https://github.com/itkpi/events-parser/#all-supported-enviroment-variables)
-
-##### Install dependencies
-```bash
-
-```
-
-##### Run
-```bash
-
-```
 ### NodeJS-way
 
-##### Clone repo
-```bash
-git clone https://github.com/itkpi/events-parser.git
-```
 ##### Add enviroment keys
-
-Add next variables to your shell on this pattern:
+Add variables to your shell on this pattern:
 ```bash
-
+$ export %variable_name%='%value%'
 ```
-[All supported enviroment variables](https://github.com/itkpi/events-parser/#all-supported-enviroment-variables)
+[All supported enviroment variables](#all-supported-enviroment-variables)
 
 ##### Install dependencies
 ```bash
-
+$ npm install
 ```
 
 ##### Run
 ```bash
-
+$ node main.js
 ```
-## All supported enviroment variables:
+
+
+
+## All supported enviroment variables
+
+##### Need for send events to API
+```bash
+EMAIL='your@mail.domain' 
+HOSTNAME_URL='http://your.api.host.name/'
+HOSTNAME_PATH='/path/to/you/suggestions/api/'
+HOSTNAME_PORT='80'
+```
+
+##### Need for Blacklist
+```bash
+BAN_IN_TITLE='Ignore this phrase|and this|case insensitive'
+BAN_IN_TITLE_OR_AGENDA='Ignore this phrase or company|and this|case insensitive'
+BAN_COURSE_TITLE='Курс|Course' #case insensitive
+BAN_COURSE_COMPANY='Ignore courses by this company|and this|you can ban by URLs - it\'s more efective'
+```
+
+##### Need for work with meetup
+```bash
+MEETUP_GROUPS='https://api.meetup.com/find/groups?your-settings' 
+MEETUP_OPEN_EVENTS='https://api.meetup.com/2/open_events?your-settings' 
+```
+More details about `MEETUP` in [this page](https://github.com/itkpi/events-parser/wiki/Meetup.com).
+
+##### Need for Translate Module
+
+```bash
+YANDEX_TRANSLATE_KEY='Your Yandex-Translate API-key'
+```
+You can get API-key on [this page](https://tech.yandex.ru/keys/get/?service=trnsl).

@@ -58,18 +58,30 @@ utils.locale = (mm) => {
   return utils.lang
 }
 
-//ain date-name generation
-const nowYear = new Date().getFullYear()
-const nowMonth = new Date().getMonth() + 1
-let nextMonth = nowMonth + 1
-let nextYear = nowYear
-if (nextMonth === 13) { 
-  nextMonth = 1
-  nextYear += 1
-}
+/**
+ * Date generator for ain links.
+ * @param {string/number} month - month which we need.
+ * @returns {string} date in 'year-month' format. 
+ */
+utils.ainGetMonth = (month) => {
+  const nowYear = new Date().getFullYear()
+  const nowMonth = new Date().getMonth() + 1
+  let nextMonth = nowMonth + 1
+  let nextYear = nowYear
+  if (nextMonth === 13) { 
+    nextMonth = 1
+    nextYear += 1
+  }
 
-utils.ainName = nowYear + '-' + nowMonth
-utils.nextAinName = nextYear + '-' + nextMonth
+  switch (month) {
+    case 'this':
+      return nowYear + '-' + nowMonth
+    case 'next':
+      return nextYear + '-' + nextMonth
+    default:
+      return nowYear + '-' + month
+  }
+}
 
 /**
  * @returns {number} days in curent month

@@ -21,15 +21,15 @@ _log_('Start', 'onlyCron')
 
 Promise.all([
   // srcFrom, srcName, srcLink
-  run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
-  run(['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']),
-  run(['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS]),
-  run(['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-  run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-  run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-  run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-  run(['ain', `${utils.ainName}`, `http://ain.ua/events/${utils.ainName}`]),
-  run(['ain', `${utils.nextAinName}`, `http://ain.ua/events/${utils.nextAinName}`])
+  //run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
+  //run(['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']),
+  //run(['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS]),
+  //run(['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  //run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  //run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  //run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+  run(['ain', `${utils.ainGetMonth('this')}`, `http://ain.ua/events/${utils.ainGetMonth('this')}`]),
+  run(['ain', `${utils.ainGetMonth('next')}`, `http://ain.ua/events/${utils.ainGetMonth('next')}`])
 ])
 
 function run (source) {
@@ -44,7 +44,7 @@ function run (source) {
   const newJSON = path.join(__dirname, 'json', `${srcName}_new.json`)
   const oldJSON = path.join(__dirname, 'json', `${srcName}_old.json`)
 
-  const getNewData = dataIO.get(srcName, srcType, srcLink, newJSON, oldJSON)
+  const getNewData = dataIO.get(srcFrom, srcName, srcType, srcLink, newJSON, oldJSON)
   // if (!getNewData) continue
 
   // Read data

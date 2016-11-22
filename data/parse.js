@@ -5,6 +5,7 @@
 'use strict'
 
 const moment = require('moment')
+const cheerio = require("cheerio")
 
 const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
@@ -215,4 +216,34 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
   const time = new Date((byPath(src, path) * greaterThanMS) % MSinDay)
 
   return time
+}
+
+function ainTitle (data) {
+  let name = ''
+  let price = data('.event-head').find('a').parent().next().text().replace(/[^A-Za-z0-9.-:/$ ]/g, "").replace(/\n/g, ' ')
+    if (price !== '') {
+      name += data('h1').text() + ' | ' + price
+    } else {
+      name += data('h1').text()
+    }
+
+    return name
+}
+
+function ainDate (srcName, data) {
+  let time = ''
+    if (data('.event-head').find('time').eq(1).attr('datetime')) {
+      time += data('.event-head').find('time').eq(1).attr('datetime').replace(/(<span>|<\/span>)/g, '')
+    }
+
+    return srcName + '-' + data('.event-head').find('time').eq(0).attr('datetime').replace(/[^0-9.-:/$]/g, "") + 'T' + time
+}
+
+function ainImage (data) {
+  let imgUrl = data('.txt').find('img').attr('src')
+  if (!event.imgUrl) {
+    imgUrl = ''
+  }
+
+  return imgUrl
 }

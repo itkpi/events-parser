@@ -146,8 +146,8 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whe
 
   const options = {
     'hostname': process.env.HOSTNAME_URL,
-    'port': 80,
-    'path': '/api/v1/suggested_events',
+    'port': process.env.HOSTNAME_PORT,
+    'path': process.env.HOSTNAME_PATH,
     'method': 'POST',
     'headers': {
       'Content-Type': 'application/json; charset=utf-8',

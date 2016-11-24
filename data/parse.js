@@ -21,7 +21,6 @@ module.exports = parse
  * @returns {string} title.
  */
 parse.title = (srcFrom, src) => {
-
   return eval(giveConfig[srcFrom].title)
 }
 
@@ -218,30 +217,82 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
   return time
 }
 
-function ainTitle (data) {
+/**
+ * Find title + price of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @param {string} price - event price.
+ * @returns {string} name - event title.
+ */
+function ainTitle (src) {
   let name = ''
-  let price = data('.event-head').find('a').parent().next().text().replace(/[^A-Za-z0-9.-:/$ ]/g, "").replace(/\n/g, ' ')
+  let price = src('.event-head').find('a').parent().next().text()
+    .replace(/[^A-Za-z0-9.-:/$ ]/g, "").replace(/\n/g, ' ')
     if (price !== '') {
-      name += data('h1').text() + ' | ' + price
+      name += src('h1').text() + ' | ' + price
     } else {
-      name += data('h1').text()
+      name += src('h1').text()
     }
 
     return name
 }
 
-function ainDate (srcName, data) {
-  let time = ''
-    if (data('.event-head').find('time').eq(1).attr('datetime')) {
-      time += data('.event-head').find('time').eq(1).attr('datetime').replace(/(<span>|<\/span>)/g, '')
-    }
+/**
+ * Find date of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @param {string} srcName - event date in YYYY=MM format.
+ * @returns {string} - event date in YYYY-MM-DD format.
+ */
+function ainDate (src) {
+  let date = '9999-09-09'
+  let today = new Date()
+  let eventDate = src('.event-head').find('time').eq(0)
+    .attr('datetime').replace(/[^А-Яа-я0-9.-:/$]/g, "")
+  let yyyy = today.getFullYear()
+  let dd = eventDate.slice(-2)
+  let mm = eventDate.slice(0, -2)
 
-    return srcName + '-' + data('.event-head').find('time').eq(0).attr('datetime').replace(/[^0-9.-:/$]/g, "") + 'T' + time
+  const mmStartFromZero = 1 // January is 0!
+  const mmNow = today.getMonth()
+
+  moment.locale(locale(mm))
+  mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
+
+  if (dd.length === src.length || mm.length === src.length) {
+    _log_(`ERROR: AIN have parsing problem in parse.whenStart\n${src}`)
+
+    return date
+  }
+
+  if (mmNow > mm) yyyy += 1
+
+  date = `${yyyy}-${mm}-${dd}`
+
+  return date
 }
 
-function ainImage (data) {
-  let imgUrl = data('.txt').find('img').attr('src')
-  if (!event.imgUrl) {
+/**
+ * Find time of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} time - event time in HH:MM format.
+ */
+function ainTime (src) {
+  let time = '00:00'
+    if (src('.event-head').find('time').eq(1).attr('datetime')) {
+      time = src('.event-head').find('time').eq(1).attr('datetime')
+      .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
+  }
+  
+  return time
+}
+
+/**
+ * Find image of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} imgUrl - event image URL.
+ */
+function ainImage (src) {
+  let imgUrl = src('.txt').find('img').attr('src')
+  if (!imgUrl) {
     imgUrl = ''
   }
 

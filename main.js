@@ -98,7 +98,7 @@ function run (source) {
     }
 
     // Translate
-    if (utils.lang === 'ru') {
+    if (utils.lang === 'апрвар') {
       Promise.all(
         [ translate(place)
         , translate(agenda)
@@ -111,7 +111,7 @@ function run (source) {
         title = tr[2]
         dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
       })
-    } else {
+    } else { 
       dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
     }
     eventsPosition.shift()

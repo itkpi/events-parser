@@ -169,6 +169,11 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whe
   req.end()
 }
 
+/**
+ * Get event link from Ain calendar.
+ * @param {Raw} res - requested calendar page.
+ * @returns {JSON} file - list of events links.
+ */
 function ainGetLinks (res) {
   let file = []
   let linkPos = 1
@@ -191,4 +196,15 @@ function ainGetLinks (res) {
   }
 
   return JSON.stringify(file)
+}
+
+/**
+ * Get event data from Ain links list.
+ * @param {JSON} data - list of events links.
+ * @returns {Raw} data - event data.
+ */
+function ainGetData (data) {
+  data = cheerio.load(request('GET', data.link).getBody().toString())
+
+  return data
 }

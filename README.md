@@ -9,7 +9,7 @@
 Events-parser work with:
 * DOU.ua
 * Meetup.com
-* AIN.ua (in future)
+* AIN.ua
 * BigCityEvent.com
 * FB.com
 * VK.com (in future)

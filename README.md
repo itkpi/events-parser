@@ -107,4 +107,3 @@ More details about `MEETUP` in [this page](https://github.com/itkpi/events-parse
 YANDEX_TRANSLATE_KEY='Your Yandex-Translate API-key'
 ```
 You can get API-key on [this page](https://tech.yandex.ru/keys/get/?service=trnsl).
->>>>>>> 6cfe23278a72011242d3f15f5468c4046d1d96fc

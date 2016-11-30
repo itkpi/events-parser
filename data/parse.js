@@ -101,6 +101,16 @@ parse.imgUrl = (srcFrom, src) => {
 }
 
 /**
+ * Find Price of the event.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} price - event price.
+ */
+parse.price = (srcFrom, src) => {
+  return eval(giveConfig[srcFrom].price)
+}
+
+/**
  * Find Date of the event.
  * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
@@ -110,7 +120,6 @@ parse.imgUrl = (srcFrom, src) => {
 parse.date = (srcFrom, src, key) => {
   return eval(giveConfig[srcFrom][key])
 }
-
 
 /**
  * Find Time of the event.
@@ -132,7 +141,6 @@ parse.time = (srcFrom, src, key) => {
 
   return true
 }
-
 
 /**
  * Extract data from JSON by path
@@ -224,16 +232,9 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
  * @returns {string} name - event title.
  */
 function ainTitle (src) {
-  let name = ''
-  let price = src('.event-head').find('a').parent().next().text()
-    .replace(/[^A-Za-z0-9.-:/$ ]/g, "").replace(/\n/g, ' ')
-    if (price !== '') {
-      name += src('h1').text() + ' | ' + price
-    } else {
-      name += src('h1').text()
-    }
+  let name = src('h1').text()
 
-    return name
+    return name || ''
 }
 
 /**
@@ -276,25 +277,33 @@ function ainDate (src) {
  * @returns {string} time - event time in HH:MM format.
  */
 function ainTime (src) {
-  let time = '00:00'
-    if (src('.event-head').find('time').eq(1).attr('datetime')) {
-      time = src('.event-head').find('time').eq(1).attr('datetime')
-      .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
-  }
+  let time = src('.event-head').find('time').eq(1).attr('datetime')
+      time = time ? time.replace(/(<span>|<\/span>)/g, '').slice(1, 6) : '00:00'
   
   return time
 }
 
 /**
- * Find image of Ain event.
+ * Find place of Ain event.
  * @param {JSON} src - JSON of current event.
- * @returns {string} imgUrl - event image URL.
+ * @returns {string} time - event place.
  */
-function ainImage (src) {
-  let imgUrl = src('.txt').find('img').attr('src')
-  if (!imgUrl) {
-    imgUrl = ''
-  }
+function ainPlace (src) {
+  let place = src('div.ven').next().text()
+  place = place === 'Онлайн' ? 'Online' : place + ' ' + src('.address-marker').text()
 
-  return imgUrl
+  return place
+}
+
+/**
+ * Find price of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} time - event price.
+ */
+function ainPrice (src) {
+  let price = src('.event-head').find('a').parent().next().text()
+    .replace(/[^A-Za-z0-9.:/$ ]/g, '').replace(/[\n]/g, ' ')
+  price = price ? ' | ' + price : ' | Free'
+
+  return price
 }

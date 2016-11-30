@@ -76,7 +76,11 @@ function run (source) {
     let place = parse.place(srcFrom, data)
     const regUrl = parse.regUrl(srcFrom, data)
     const imgUrl = parse.imgUrl(srcFrom, data)
+    const price = parse.price(srcFrom, data)
     let onlyDate = parse.time(srcFrom, data, 'timeStart')
+
+    // Add price in title (only for now)
+    title += price
 
     if (onlyDate !== true) {
       whenStart += onlyDate

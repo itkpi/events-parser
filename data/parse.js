@@ -5,7 +5,7 @@
 'use strict'
 
 const moment = require('moment')
-const cheerio = require("cheerio")
+const cheerio = require('cheerio')
 
 const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
@@ -199,7 +199,7 @@ function dateFromDOU (src) {
   mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
 
   if (dd.length === src.length || mm.length === src.length) {
-    _log_(`ERROR: DOU have parsing problem in parse.whenStart\n${src}`)
+    _log_(`ERROR: DOU has parsing problem in parse.whenStart\n${src}`)
 
     return date
   }
@@ -234,7 +234,7 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
 function ainTitle (src) {
   const name = src('h1').text() || ''
 
-    return name
+  return name
 }
 
 /**
@@ -245,11 +245,11 @@ function ainTitle (src) {
  */
 function ainDate (src) {
   let date = '9999-09-09'
-  let today = new Date()
-  let eventDate = src('.event-head').find('time').eq(0)
+  const today = new Date()
+  const eventDate = src('.event-head').find('time').eq(0)
     .attr('datetime').replace(/[^А-Яа-я0-9.-:/$]/g, "")
   let yyyy = today.getFullYear()
-  let dd = eventDate.slice(-2)
+  const dd = eventDate.slice(-2)
   let mm = eventDate.slice(0, -2)
 
   const mmStartFromZero = 1 // January is 0!
@@ -259,7 +259,7 @@ function ainDate (src) {
   mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
 
   if (dd.length === src.length || mm.length === src.length) {
-    _log_(`ERROR: AIN have parsing problem in parse.whenStart\n${src}`)
+    _log_(`ERROR: AIN has parsing problem in parse.whenStart\n${src}`)
 
     return date
   }
@@ -277,8 +277,9 @@ function ainDate (src) {
  * @returns {string} time - event time in HH:MM format.
  */
 function ainTime (src) {
-  let t = src('.event-head').find('time').eq(1).attr('datetime')
-  const time = t ? t.replace(/(<span>|<\/span>)/g, '').slice(1, 6) : '00:00'
+  const time = src('.event-head').find('time').eq(1).attr('datetime') ?
+    src('.event-head').find('time').eq(1).attr('datetime')
+    .replace(/(<span>|<\/span>)/g, '').slice(1, 6) : '00:00'
   
   return time
 }
@@ -289,8 +290,8 @@ function ainTime (src) {
  * @returns {string} time - event place.
  */
 function ainPlace (src) {
-  let place = src('div.ven').next().text()
-  place = place === 'Онлайн' ? 'Online' : place + ' ' + src('.address-marker').text()
+  const place = src('div.ven').next().text() === 'Онлайн' ? 'Online' : src('div.ven')
+    .next().text() + ' ' + src('.address-marker').text()
 
   return place
 }
@@ -301,9 +302,8 @@ function ainPlace (src) {
  * @returns {string} time - event price.
  */
 function ainPrice (src) {
-  const p = src('.event-head').find('a').parent().next().text()
-    .replace(/[^A-Za-z0-9-:/$ ]/g, '').replace(/[\n]/g, ' ')
-  const price = p ? ' | ' + p : ''
+  const price = src('.event-head').find('a').parent().next().text()
+    .replace(/[^A-Za-z0-9:/$ -]/g, '').replace(/[\n]/g, ' ')
 
   return price
 }

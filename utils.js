@@ -67,8 +67,12 @@ utils.ainGetMonth = (num) => {
   const nowYear = new Date().getFullYear()
   const nowMonth = new Date().getMonth() + 1
   let month = nowMonth + num
-  let year = month === 13 ? nowYear + 1 : nowYear
-  month = month === 13 ? '01' : month
+  let year = nowYear
+  while (month > 12) {
+    year += 1
+    month -= 12
+  }
+  if (month < 10) month = '0' + month
   const date = `${year}-${month}`
 
   return date

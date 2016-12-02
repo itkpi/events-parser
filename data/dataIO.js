@@ -6,7 +6,7 @@
 
 const fs = require('fs-extra')
 const request = require('sync-request')
-const cheerio = require("cheerio")
+const cheerio = require('cheerio')
 const xml2json = require('xml2json')
 const http = require('http')
 const _log_ = require('../utils.js')._log_
@@ -35,20 +35,20 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   fs.copySync(newJSON, oldJSON)
 
   // Get data from source
-  let res = request('GET', srcLink).getBody()
+  const res = request('GET', srcLink).getBody()
 
   switch (srcType) {
     case 'xml':
-      res = xml2json.toJson(res.getBody(), {'sanitize': false})
-      fs.writeFileSync(newJSON, res)
+      const xmlBody = xml2json.toJson(res.getBody(), {'sanitize': false})
+      fs.writeFileSync(newJSON, xmlBody)
       break
     case 'json':
       const readableBody = JSON.stringify(JSON.parse(res))
       fs.writeFileSync(newJSON, readableBody)
       break
     case 'rawAin':
-      res = ainGetLinks(res)
-      const ainBody = JSON.stringify(JSON.parse(res))
+      const links = ainGetLinks(res)
+      const ainBody = JSON.stringify(JSON.parse(links))
       fs.writeFileSync(newJSON, ainBody)
       break
     default:
@@ -135,7 +135,7 @@ dataIO.data = (srcFrom, file, eventsPosition) => {
 dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName) => {
   const body = JSON.stringify({
     // Add price in title (only for now)
-    'title': title.toString() + price.toString(),
+    'title': price ? title.toString() + ' | ' + price.toString() : title.toString(),
     'agenda': agenda.toString(),
     'social': `<i>From: ${srcName}</i> ${social.toString()}`,
     'place': place.toString(),
@@ -180,7 +180,7 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, price, whenSta
  * @returns {JSON} file - list of events links.
  */
 function ainGetLinks (res) {
-  let file = []
+  const file = []
   let linkPos = 1
 
   let month = cheerio.load(res.toString())

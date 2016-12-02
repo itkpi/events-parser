@@ -20,7 +20,7 @@ const utils = require('./utils')
 _log_('Start', 'onlyCron')
 
 Promise.all([
-   //srcFrom, srcName, srcLink
+  // srcFrom, srcName, srcLink
   run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
   run(['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']),
   run(['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS]),

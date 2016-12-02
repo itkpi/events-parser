@@ -20,7 +20,7 @@ const utils = require('./utils')
 _log_('Start', 'onlyCron')
 
 Promise.all([
-  // srcFrom, srcName, srcLink
+   //srcFrom, srcName, srcLink
   run(['dou', 'ONLINE', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/online']),
   run(['dou', 'KYIV', 'http://dou.ua/calendar/feed/%D0%B2%D1%81%D0%B5%20%D1%82%D0%B5%D0%BC%D1%8B/%D0%9A%D0%B8%D0%B5%D0%B2']),
   run(['meetup', 'OPEN_EVENTS', process.env.MEETUP_OPEN_EVENTS]),
@@ -28,8 +28,8 @@ Promise.all([
   run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
   run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
   run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-  run(['ain', `${utils.ainGetMonth('this')}`, `http://ain.ua/events/${utils.ainGetMonth('this')}`]),
-  run(['ain', `${utils.ainGetMonth('next')}`, `http://ain.ua/events/${utils.ainGetMonth('next')}`])
+  run(['ain', `${utils.ainGetMonth(0)}`, `http://ain.ua/events/${utils.ainGetMonth(0)}`]),
+  run(['ain', `${utils.ainGetMonth(1)}`, `http://ain.ua/events/${utils.ainGetMonth(1)}`])
 ])
 
 function run (source) {
@@ -44,7 +44,7 @@ function run (source) {
   const newJSON = path.join(__dirname, 'json', `${srcName}_new.json`)
   const oldJSON = path.join(__dirname, 'json', `${srcName}_old.json`)
 
-  const getNewData = dataIO.get(srcFrom, srcName, srcType, srcLink, newJSON, oldJSON)
+  const getNewData = dataIO.get(srcName, srcType, srcLink, newJSON, oldJSON)
   // if (!getNewData) continue
 
   // Read data
@@ -79,9 +79,6 @@ function run (source) {
     const price = parse.price(srcFrom, data)
     let onlyDate = parse.time(srcFrom, data, 'timeStart')
 
-    // Add price in title (only for now)
-    title += price
-
     if (onlyDate !== true) {
       whenStart += onlyDate
       whenEnd += parse.time(srcFrom, data, 'timeEnd')
@@ -113,10 +110,10 @@ function run (source) {
         place = tr[0] // fucking vagga -_-
         agenda = tr[1]
         title = tr[2]
-        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
+        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName)
       })
     } else {
-      dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
+      dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName)
     }
     eventsPosition.shift()
   }

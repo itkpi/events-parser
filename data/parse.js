@@ -232,9 +232,9 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
  * @returns {string} name - event title.
  */
 function ainTitle (src) {
-  let name = src('h1').text()
+  const name = src('h1').text() || ''
 
-    return name || ''
+    return name
 }
 
 /**
@@ -277,8 +277,8 @@ function ainDate (src) {
  * @returns {string} time - event time in HH:MM format.
  */
 function ainTime (src) {
-  let time = src('.event-head').find('time').eq(1).attr('datetime')
-      time = time ? time.replace(/(<span>|<\/span>)/g, '').slice(1, 6) : '00:00'
+  let t = src('.event-head').find('time').eq(1).attr('datetime')
+  const time = t ? t.replace(/(<span>|<\/span>)/g, '').slice(1, 6) : '00:00'
   
   return time
 }
@@ -301,9 +301,9 @@ function ainPlace (src) {
  * @returns {string} time - event price.
  */
 function ainPrice (src) {
-  let price = src('.event-head').find('a').parent().next().text()
-    .replace(/[^A-Za-z0-9.:/$ ]/g, '').replace(/[\n]/g, ' ')
-  price = price ? ' | ' + price : ' | Free'
+  const p = src('.event-head').find('a').parent().next().text()
+    .replace(/[^A-Za-z0-9-:/$ ]/g, '').replace(/[\n]/g, ' ')
+  const price = p ? ' | ' + p : ''
 
   return price
 }

@@ -60,28 +60,20 @@ utils.locale = (mm) => {
 
 /**
  * Date generator for ain links.
- * @param {string/number} month - month which we need.
+ * @param {number} num - what month from now we need.
  * @returns {string} date in 'year-month' format. 
  */
-utils.ainGetMonth = (month) => {
+utils.ainGetMonth = (num) => {
   const nowYear = new Date().getFullYear()
   const nowMonth = new Date().getMonth() + 1
-  let nextMonth = nowMonth + 1
-  let nextYear = nowYear
-  if (nextMonth === 13) { 
-    nextMonth = 1
-    nextYear += 1
-  }
+  let month = nowMonth + num
+  let year = month === 13 ? nowYear + 1 : nowYear
+  month = month === 13 ? '01' : month
+  const date = `${year}-${month}`
 
-  switch (month) {
-    case 'this':
-      return nowYear + '-' + nowMonth
-    case 'next':
-      return nextYear + '-' + nextMonth
-    default:
-      return nowYear + '-' + month
-  }
+  return date
 }
+
 
 /**
  * @returns {number} days in curent month

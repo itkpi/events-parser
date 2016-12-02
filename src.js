@@ -102,7 +102,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
   },
 
   ain: {
-    NUEsrcType: 'json',
+    NUEsrcType: 'rawAin',
     allEvents: 'data', 
     NUEeventId: 'link', 
     NUEsrcLink: 'link',

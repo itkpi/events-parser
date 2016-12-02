@@ -26,7 +26,7 @@ const firstEvent = 0
  * @param {string} oldJSON - path to JSON file with data of previous iteration.
  * @returns {boolean} 'true' if new events are present. Otherwise return 'false'.
  */
-dataIO.get = (srcFrom, srcName, srcType, srcLink, newJSON, oldJSON) => {
+dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   // Check for the existence files
   fs.ensureFileSync(newJSON)
   fs.ensureFileSync(oldJSON)
@@ -36,7 +36,6 @@ dataIO.get = (srcFrom, srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   // Get data from source
   let res = request('GET', srcLink).getBody()
-  if (srcFrom === 'ain') res = ainGetLinks(res)
 
   switch (srcType) {
     case 'xml':
@@ -46,6 +45,11 @@ dataIO.get = (srcFrom, srcName, srcType, srcLink, newJSON, oldJSON) => {
     case 'json':
       const readableBody = JSON.stringify(JSON.parse(res))
       fs.writeFileSync(newJSON, readableBody)
+      break
+    case 'rawAin':
+      res = ainGetLinks(res)
+      const ainBody = JSON.stringify(JSON.parse(res))
+      fs.writeFileSync(newJSON, ainBody)
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcType} in dataIO.get`)
@@ -128,9 +132,10 @@ dataIO.data = (srcFrom, file, eventsPosition) => {
 /**
  * Send event to API.
  */
-dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName) => {
+dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName) => {
   const body = JSON.stringify({
-    'title': title.toString(),
+    // Add price in title (only for now)
+    'title': title.toString() + price.toString(),
     'agenda': agenda.toString(),
     'social': `<i>From: ${srcName}</i> ${social.toString()}`,
     'place': place.toString(),

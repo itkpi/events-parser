@@ -109,7 +109,6 @@ parse.date = (srcFrom, src, key) => {
   return eval(giveConfig[srcFrom][key])
 }
 
-
 /**
  * Find Time of the event.
  * @param {string} srcFrom - source, which is currently being processed.
@@ -130,7 +129,6 @@ parse.time = (srcFrom, src, key) => {
 
   return true
 }
-
 
 /**
  * Extract data from JSON by path

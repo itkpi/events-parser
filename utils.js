@@ -6,6 +6,7 @@
 
 const fs = require('fs-extra')
 const moment = require('moment')
+const spawn = require('child_process').spawn
 
 const utils = {}
 module.exports = utils
@@ -73,10 +74,10 @@ Date.prototype.daysInMonth = function () {
  * @param {number} cbEnd - callback with exit status code.
  */
 function RunInShell (cmd, args, cbStdout, cbEnd) {
-  const spawn = require('child_process').spawn
   const child = spawn(cmd, args)
   const self = this
-  self.exit = 0  // Send a cb to set 1 when cmd exits
+  // Send a cb to set 1 when cmd exits
+  self.exit = 0
   self.stdout = ''
   child.stdout.on('data', (data) => { cbStdout(self, data) })
   child.stdout.on('end', () => { cbEnd(self) })

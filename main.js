@@ -4,7 +4,6 @@
 
 'use strict'
 
-const fs = require('fs-extra')
 const yandex = require('yandex-translate')(process.env.YANDEX_TRANSLATE_KEY)
 const path = require('path')
 
@@ -17,7 +16,7 @@ const src = require('./src')
 const _log_ = require('./utils')._log_
 const utils = require('./utils')
 
-new Promise ((resolve, reject) => {
+new Promise((resolve, reject) => {
   setTimeout(() => {
     _log_(`Start ${utils.getVersion()}`, 'onlyCron')
     resolve()
@@ -101,11 +100,11 @@ new Promise ((resolve, reject) => {
 
       // Translate
       if (utils.lang === 'ru') {
-        Promise.all(
-          [ translate(place)
-          , translate(agenda)
-          , translate(title)
-          ])
+        Promise.all([
+          translate(place),
+          translate(agenda),
+          translate(title)
+        ])
         // Send event to API
         .then((tr) => {
           place = tr[0] // fucking vagga -_-

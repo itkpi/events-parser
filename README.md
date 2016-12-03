@@ -41,6 +41,7 @@ $ git clone https://github.com/itkpi/events-parser.git
 
 ### Vagga-way
 
+
 #### Add enviroment keys
 ##### Add variables to your shell on this pattern:
 ```bash
@@ -62,8 +63,8 @@ $ vagga run
 ```
 
 
-
 ### NodeJS-way
+
 
 #### Add enviroment keys
 Add variables to your shell on this pattern:
@@ -88,6 +89,8 @@ $ node main.js
 
 ## All supported enviroment variables
 
+
+
 ### Need for send events to API
 ```bash
 EMAIL='your@mail.domain' 
@@ -95,6 +98,7 @@ HOSTNAME_URL='your.api.host.name'
 HOSTNAME_PATH='/path/to/you/suggestions/api'
 HOSTNAME_PORT='80'
 ```
+
 
 ### Need for Blacklist
 ```bash
@@ -104,17 +108,20 @@ BAN_COURSE_TITLE='Курс|Course' #case insensitive
 BAN_COURSE_COMPANY='Ignore courses by this company|and this|you can ban by URLs - it\'s more efective'
 ```
 
+
 ### Meetup access token
 ```bash
 MEETUP_OPEN_EVENTS='https://api.meetup.com/2/open_events?your-settings'
 ```
 More details about `MEETUP` in [this page](https://github.com/itkpi/events-parser/wiki/Meetup.com).
 
+
 ### Facebook access token
 ```bash
 FB_ACCESS_TOKEN='your_facebook_token'
 ```
 You can get Access Token on [this page](https://developers.facebook.com/tools/explorer/).
+
 
 ### Yandex Translate API-key
 ```bash

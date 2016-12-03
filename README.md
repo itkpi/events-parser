@@ -114,9 +114,9 @@ More details about `MEETUP` in [this page](https://github.com/itkpi/events-parse
 ```bash
 FB_ACCESS_TOKEN='your_facebook_token'
 ```
+You can get Access Token on [this page](https://developers.facebook.com/tools/explorer/).
 
 ### Need for Translate Module
-
 ```bash
 YANDEX_TRANSLATE_KEY='Your Yandex-Translate API-key'
 ```

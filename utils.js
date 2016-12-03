@@ -106,7 +106,9 @@ const branch = RIS('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
  */
 utils.getVersion = () => {
   const ds = describe.stdout.split('-')
-  const version = `${ds[0]}-${branch.stdout}-${ds[1]}-${ds[2]}`
+  const version = ds.length === 1
+    ? `${ds[0]}-${branch.stdout}`
+    : `${ds[0]}-${branch.stdout}-${ds[1]}-${ds[2]}`
 
   return version
 }

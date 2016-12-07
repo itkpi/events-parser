@@ -110,10 +110,10 @@ function run (source) {
         place = tr[0] // fucking vagga -_-
         agenda = tr[1]
         title = tr[2]
-        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName)
+        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName, price)
       })
     } else {
-      dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName)
+      dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName, price)
     }
     eventsPosition.shift()
   }

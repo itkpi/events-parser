@@ -64,8 +64,9 @@ utils.locale = (mm) => {
  * @returns {string} date in 'year-month' format. 
  */
 utils.ainGetMonth = (num) => {
-  const nowYear = new Date().getFullYear()
-  const nowMonth = new Date().getMonth() + 1
+  const now = new Date()
+  const nowYear = now.getFullYear()
+  const nowMonth = now.getMonth() + 1
   let month = nowMonth + num
   let year = nowYear
   while (month > 12) {

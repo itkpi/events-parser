@@ -39,8 +39,8 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   switch (srcType) {
     case 'xml':
-      const xmlBody = xml2json.toJson(res.getBody(), {'sanitize': false})
-      fs.writeFileSync(newJSON, xmlBody)
+      const jsonBody = xml2json.toJson(res.getBody(), {'sanitize': false})
+      fs.writeFileSync(newJSON, jsonBody)
       break
     case 'json':
       const readableBody = JSON.stringify(JSON.parse(res))
@@ -132,7 +132,7 @@ dataIO.data = (srcFrom, file, eventsPosition) => {
 /**
  * Send event to API.
  */
-dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, price, whenStart, whenEnd, onlyDate, srcName) => {
+dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName, price) => {
   const body = JSON.stringify({
     // Add price in title (only for now)
     'title': price ? title.toString() + ' | ' + price.toString() : title.toString(),
@@ -181,23 +181,17 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, price, whenSta
  */
 function ainGetLinks (res) {
   const file = []
-  let linkPos = 1
+  const year = new Date().getFullYear().toString()
+  const month = cheerio.load(res.toString())
 
-  let month = cheerio.load(res.toString())
+  for (let linkPos = 0; linkPos > -1; linkPos++) {
+    const event = {}
+    event.link = month('.date-items').find('a').eq(linkPos).attr('href')
 
-  while (true) {
-    let event = {
-      link: ''
-    }
-    event.link += month('.date-items').find('a').eq(linkPos).attr('href')
-    if (event.link === 'undefined' || event.link === '#') {
-      break
-    }
+    if (event.link === undefined) break
+    if (event.link === '#' || event.link.slice(21, 25) === year) continue
 
-    if (event.link.slice(21, 25) !== '2016') {
-      file.push(event)
-    }
-    linkPos++
+    file.push(event)
   }
 
   return JSON.stringify(file)

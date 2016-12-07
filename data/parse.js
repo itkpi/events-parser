@@ -50,7 +50,6 @@ parse.agenda = (srcFrom, src) => {
  * @returns {string} addInfo.
  */
 parse.addInfo = (srcFrom, src, link, title, agenda) => {
-
   return eval(giveConfig[srcFrom].addInfo)
 }
 
@@ -247,7 +246,7 @@ function ainDate (src) {
   let date = '9999-09-09'
   const today = new Date()
   const eventDate = src('.event-head').find('time').eq(0)
-    .attr('datetime').replace(/[^А-Яа-я0-9.-:/$]/g, "")
+    .attr('datetime').replace(/[^А-Яа-я0-9.:/$-]/g, '')
   let yyyy = today.getFullYear()
   const dd = eventDate.slice(-2)
   let mm = eventDate.slice(0, -2)
@@ -277,9 +276,10 @@ function ainDate (src) {
  * @returns {string} time - event time in HH:MM format.
  */
 function ainTime (src) {
-  const time = src('.event-head').find('time').eq(1).attr('datetime') ?
-    src('.event-head').find('time').eq(1).attr('datetime')
-    .replace(/(<span>|<\/span>)/g, '').slice(1, 6) : '00:00'
+  const time = src('.event-head').find('time').eq(1).attr('datetime')
+  ? src('.event-head').find('time').eq(1).attr('datetime')
+    .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
+  : '00:00'
   
   return time
 }
@@ -290,8 +290,9 @@ function ainTime (src) {
  * @returns {string} time - event place.
  */
 function ainPlace (src) {
-  const place = src('div.ven').next().text() === 'Онлайн' ? 'Online' : src('div.ven')
-    .next().text() + ' ' + src('.address-marker').text()
+  const place = src('div.ven').next().text() === 'Онлайн'
+  ? 'Онлайн'
+  : src('div.ven').next().text() + ' ' + src('.address-marker').text()
 
   return place
 }
@@ -303,7 +304,7 @@ function ainPlace (src) {
  */
 function ainPrice (src) {
   const price = src('.event-head').find('a').parent().next().text()
-    .replace(/[^A-Za-z0-9:/$ -]/g, '').replace(/[\n]/g, ' ')
+    .replace(/[^A-Za-z0-9:/$ -]/g, '').replace(/\\n/g, ' ')
 
   return price
 }

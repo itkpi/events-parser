@@ -25,6 +25,9 @@ const statsClient = new StatsD(
           port: parsedStatsdUrl.port,
         }
       );
+statsClient.socket.on('error', function(error) {
+  _log_(`Error in socket: ${error}`)
+});
 
 const firstEvent = 0
 
@@ -44,6 +47,8 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   // Save old data
   fs.copySync(newJSON, oldJSON)
+
+  statsClient.increment('eventsparser.get');
 
   // Get data from source
   let res = request('GET', srcLink)
@@ -81,6 +86,8 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 dataIO.read = (srcFrom, file) => {
   let data = fs.readJsonSync(file, {'throws': false})
   data = eval(giveConfig[srcFrom].allEvents)
+
+  statsClient.gauge(`eventsparser.sources.${srcFrom}.count`, data.length);
 
   return data
 }

@@ -39,7 +39,7 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
 
   switch (srcType) {
     case 'xml':
-      const jsonBody = xml2json.toJson(res.getBody(), {'sanitize': false})
+      const jsonBody = xml2json.toJson(res, {'sanitize': false})
       fs.writeFileSync(newJSON, jsonBody)
       break
     case 'json':

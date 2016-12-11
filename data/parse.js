@@ -225,18 +225,6 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
 }
 
 /**
- * Find title + price of Ain event.
- * @param {JSON} src - JSON of current event.
- * @param {string} price - event price.
- * @returns {string} name - event title.
- */
-function ainTitle (src) {
-  const name = src('h1').text() || ''
-
-  return name
-}
-
-/**
  * Find date of Ain event.
  * @param {JSON} src - JSON of current event.
  * @param {string} srcName - event date in YYYY=MM format.
@@ -277,9 +265,9 @@ function ainDate (src) {
  */
 function ainTime (src) {
   const time = src('.event-head').find('time').eq(1).attr('datetime')
-  ? src('.event-head').find('time').eq(1).attr('datetime')
-    .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
-  : '00:00'
+    ? src('.event-head').find('time').eq(1).attr('datetime')
+      .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
+    : '00:00'
   
   return time
 }
@@ -291,8 +279,8 @@ function ainTime (src) {
  */
 function ainPlace (src) {
   const place = src('div.ven').next().text() === 'Онлайн'
-  ? 'Онлайн'
-  : src('div.ven').next().text() + ' ' + src('.address-marker').text()
+    ? 'Онлайн'
+    : src('div.ven').next().text() + ' ' + src('.address-marker').text()
 
   return place
 }

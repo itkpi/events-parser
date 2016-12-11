@@ -15,6 +15,7 @@ module.exports = src
  * parse.place:           place - path to event place or code to extract it.
  * parse.regUrl:          registration - path to registration url or code to extract it.
  * parse.imgUrl:          image - path to event image or code to extract it.
+ * parse.price:           price - path to event price or code to extract it.
  * parse.date:            dateStart - path to date when event start or code to extract it.
  * parse.date:            dateEnd - path to date when event end or code to extract it.
  * parse.time:            timeStart - path to time when event start or code to extract it.
@@ -107,7 +108,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
     NUEeventId: 'link', 
     NUEsrcLink: 'link',
     eventData: `ainGetData(data)`,
-    title: 'ainTitle(src)',
+    title: `src('h1').text() || ''`,
     agenda: `src('.txt').html()`,
     addInfo: '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`',
     place: 'ainPlace(src)',

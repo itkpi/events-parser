@@ -184,7 +184,6 @@ function dateFromMilliseconds (src, path) {
  * @returns {string} date in format yyyy-mm-dd
  */
 function dateFromDOU (src) {
-  let date = '9999-09-09'
   const today = new Date()
 
   let yyyy = today.getFullYear()
@@ -200,12 +199,12 @@ function dateFromDOU (src) {
   if (dd.length === src.length || mm.length === src.length) {
     _log_(`ERROR: DOU has parsing problem in parse.whenStart\n${src}`)
 
-    return date
+    return '9999-09-09'
   }
 
   if (mmNow > mm) yyyy += 1
 
-  date = `${yyyy}-${mm}-${dd}`
+  const date = `${yyyy}-${mm}-${dd}`
 
   return date
 }
@@ -231,7 +230,6 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
  * @returns {string} - event date in YYYY-MM-DD format.
  */
 function ainDate (src) {
-  let date = '9999-09-09'
   const today = new Date()
   const eventDate = src('.event-head').find('time').eq(0)
     .attr('datetime').replace(/[^А-Яа-я0-9.:/$-]/g, '')
@@ -248,12 +246,12 @@ function ainDate (src) {
   if (dd.length === src.length || mm.length === src.length) {
     _log_(`ERROR: AIN has parsing problem in parse.whenStart\n${src}`)
 
-    return date
+    return '9999-09-09'
   }
 
   if (mmNow > mm) yyyy += 1
 
-  date = `${yyyy}-${mm}-${dd}`
+  const date = `${yyyy}-${mm}-${dd}`
 
   return date
 }
@@ -292,7 +290,7 @@ function ainPlace (src) {
  */
 function ainPrice (src) {
   const price = src('.event-head').find('a').parent().next().text()
-    .replace(/[^A-Za-z0-9:/$ -]/g, '').replace(/\\n/g, ' ')
+    .replace(/[^A-Za-z0-9:/ -]/g, '').replace(/\\n/g, ' ')
 
   return price
 }

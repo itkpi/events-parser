@@ -5,6 +5,7 @@
 'use strict'
 
 const moment = require('moment')
+const cheerio = require('cheerio')
 
 const _log_ = require('../utils.js')._log_
 const locale = require('../utils.js').locale
@@ -99,6 +100,16 @@ parse.imgUrl = (srcFrom, src) => {
 }
 
 /**
+ * Find Price of the event.
+ * @param {string} srcFrom - source, which is currently being processed.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} price - event price.
+ */
+parse.price = (srcFrom, src) => {
+  return eval(giveConfig[srcFrom].price)
+}
+
+/**
  * Find Date of the event.
  * @param {string} srcFrom - source, which is currently being processed.
  * @param {JSON} src - JSON of current event.
@@ -173,7 +184,6 @@ function dateFromMilliseconds (src, path) {
  * @returns {string} date in format yyyy-mm-dd
  */
 function dateFromDOU (src) {
-  let date = '9999-09-09'
   const today = new Date()
 
   let yyyy = today.getFullYear()
@@ -187,14 +197,14 @@ function dateFromDOU (src) {
   mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
 
   if (dd.length === src.length || mm.length === src.length) {
-    _log_(`ERROR: DOU have parsing problem in parse.whenStart\n${src}`)
+    _log_(`ERROR: DOU has parsing problem in parse.whenStart\n${src}`)
 
-    return date
+    return '9999-09-09'
   }
 
   if (mmNow > mm) yyyy += 1
 
-  date = `${yyyy}-${mm}-${dd}`
+  const date = `${yyyy}-${mm}-${dd}`
 
   return date
 }
@@ -211,4 +221,76 @@ function timeFromMilliseconds (src, path, greaterThanMS) {
   const time = new Date((byPath(src, path) * greaterThanMS) % MSinDay)
 
   return time
+}
+
+/**
+ * Find date of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @param {string} srcName - event date in YYYY=MM format.
+ * @returns {string} - event date in YYYY-MM-DD format.
+ */
+function ainDate (src) {
+  const today = new Date()
+  const eventDate = src('.event-head').find('time').eq(0)
+    .attr('datetime').replace(/[^А-Яа-я0-9.:/$-]/g, '')
+  let yyyy = today.getFullYear()
+  const dd = eventDate.slice(-2)
+  let mm = eventDate.slice(0, -2)
+
+  const mmStartFromZero = 1 // January is 0!
+  const mmNow = today.getMonth()
+
+  moment.locale(locale(mm))
+  mm = moment(mm, 'MMMM').get('month') + mmStartFromZero
+
+  if (dd.length === src.length || mm.length === src.length) {
+    _log_(`ERROR: AIN has parsing problem in parse.whenStart\n${src}`)
+
+    return '9999-09-09'
+  }
+
+  if (mmNow > mm) yyyy += 1
+
+  const date = `${yyyy}-${mm}-${dd}`
+
+  return date
+}
+
+/**
+ * Find time of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} time - event time in HH:MM format.
+ */
+function ainTime (src) {
+  const time = src('.event-head').find('time').eq(1).attr('datetime')
+    ? src('.event-head').find('time').eq(1).attr('datetime')
+      .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
+    : '00:00'
+  
+  return time
+}
+
+/**
+ * Find place of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} time - event place.
+ */
+function ainPlace (src) {
+  const place = src('div.ven').next().text() === 'Онлайн'
+    ? 'Онлайн'
+    : src('div.ven').next().text() + ' ' + src('.address-marker').text()
+
+  return place
+}
+
+/**
+ * Find price of Ain event.
+ * @param {JSON} src - JSON of current event.
+ * @returns {string} time - event price.
+ */
+function ainPrice (src) {
+  const price = src('.event-head').find('a').parent().next().text()
+    .replace(/[^A-Za-z0-9:/ -]/g, '').replace(/\\n/g, ' ')
+
+  return price
 }

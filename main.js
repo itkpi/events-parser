@@ -30,7 +30,9 @@ new Promise((resolve, reject) => {
     run(['fb', 'PROJECTOR', `https://graph.facebook.com/prjctrcomua/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
     run(['fb', 'HUB.4.0', `https://graph.facebook.com/HUB.4.0/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
     run(['fb', 'MS', `https://graph.facebook.com/ITproCommunity/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
-    run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`])
+    run(['fb', 'ЧИТАЛКА', `https://graph.facebook.com/cybcoworking/events?access_token=${process.env.FB_ACCESS_TOKEN}`]),
+    run(['ain', `${utils.ainGetMonth(0)}`, `http://ain.ua/events/${utils.ainGetMonth(0)}`]),
+    run(['ain', `${utils.ainGetMonth(1)}`, `http://ain.ua/events/${utils.ainGetMonth(1)}`])
   ])
 
   function run (source) {
@@ -77,6 +79,7 @@ new Promise((resolve, reject) => {
       let place = parse.place(srcFrom, data)
       const regUrl = parse.regUrl(srcFrom, data)
       const imgUrl = parse.imgUrl(srcFrom, data)
+      const price = parse.price(srcFrom, data)
       let onlyDate = parse.time(srcFrom, data, 'timeStart')
 
       if (onlyDate !== true) {
@@ -110,10 +113,10 @@ new Promise((resolve, reject) => {
           place = tr[0] // fucking vagga -_-
           agenda = tr[1]
           title = tr[2]
-          dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
+          dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName, price)
         })
       } else {
-        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName)
+        dataIO.sendtoAPI(title, agenda, addInfo, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName, price)
       }
       eventsPosition.shift()
     }

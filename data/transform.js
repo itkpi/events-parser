@@ -74,6 +74,8 @@ transform.addInfo = (data) => {
  */
 transform.place = (data) => {
   const place = data
+    // Remove 'Ukraine' from the field
+    .replace(/(Украина|Україна|Ukraine)(,\s)?/, '')
     // Remove 'Kyiv' from the field
     .replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
     // Remove html tags // FIX ME: It looks like a crutch. Need rewrite.

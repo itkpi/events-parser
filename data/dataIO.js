@@ -6,6 +6,7 @@
 
 const fs = require('fs-extra')
 const request = require('sync-request')
+const cheerio = require('cheerio')
 const xml2json = require('xml2json')
 const http = require('http')
 const _log_ = require('../utils.js')._log_
@@ -51,16 +52,21 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   statsClient.increment('eventsparser.get');
 
   // Get data from source
-  let res = request('GET', srcLink)
+  const res = request('GET', srcLink).getBody()
 
   switch (srcType) {
     case 'xml':
-      res = xml2json.toJson(res.getBody(), {'sanitize': false})
-      fs.writeFileSync(newJSON, res)
+      const jsonBody = xml2json.toJson(res, {'sanitize': false})
+      fs.writeFileSync(newJSON, jsonBody)
       break
     case 'json':
-      const readableBody = JSON.stringify(JSON.parse(res.getBody()))
+      const readableBody = JSON.stringify(JSON.parse(res))
       fs.writeFileSync(newJSON, readableBody)
+      break
+    case 'rawAin':
+      const links = ainGetLinks(res)
+      const ainBody = JSON.stringify(JSON.parse(links))
+      fs.writeFileSync(newJSON, ainBody)
       break
     default:
       _log_(`ERROR: NOT FOUND ${srcType} in dataIO.get`)
@@ -145,9 +151,10 @@ dataIO.data = (srcFrom, file, eventsPosition) => {
 /**
  * Send event to API.
  */
-dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName) => {
+dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whenEnd, onlyDate, srcName, price) => {
   const body = JSON.stringify({
-    'title': title.toString(),
+    // Add price in title (only for now)
+    'title': price ? title.toString() + ' | ' + price.toString() : title.toString(),
     'agenda': agenda.toString(),
     'social': `<i>From: ${srcName}</i> ${social.toString()}`,
     'place': place.toString(),
@@ -189,4 +196,38 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whe
 
   req.write(body)
   req.end()
+}
+
+/**
+ * Get event link from Ain calendar.
+ * @param {Raw} res - requested calendar page.
+ * @returns {JSON} file - list of events links.
+ */
+function ainGetLinks (res) {
+  const file = []
+  const year = new Date().getFullYear().toString()
+  const month = cheerio.load(res.toString())
+
+  for (let linkPos = 0; linkPos > -1; linkPos++) {
+    const event = {}
+    event.link = month('.date-items').find('a').eq(linkPos).attr('href')
+
+    if (event.link === undefined) break
+    if (event.link === '#' || event.link.slice(21, 25) === year) continue
+
+    file.push(event)
+  }
+
+  return JSON.stringify(file)
+}
+
+/**
+ * Get event data from Ain links list.
+ * @param {JSON} data - list of events links.
+ * @returns {Raw} data - event data.
+ */
+function ainGetData (data) {
+  data = cheerio.load(request('GET', data.link).getBody().toString())
+
+  return data
 }

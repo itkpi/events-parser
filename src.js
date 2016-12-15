@@ -15,6 +15,7 @@ module.exports = src
  * parse.place:           place - path to event place or code to extract it.
  * parse.regUrl:          registration - path to registration url or code to extract it.
  * parse.imgUrl:          image - path to event image or code to extract it.
+ * parse.price:           price - path to event price or code to extract it.
  * parse.date:            dateStart - path to date when event start or code to extract it.
  * parse.date:            dateEnd - path to date when event end or code to extract it.
  * parse.time:            timeStart - path to time when event start or code to extract it.
@@ -36,6 +37,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
     place: 'src.replace(/.+?(Место|Місце|Place):<\\/strong>\\s(.+?)<\\/p>.+/, \'$2\')',
     registration: '\'http://ITKPI.PP.UA/\'',
     image: '\'\'',
+    price: '',
     dateStart: 'dateFromDOU(src)',
     dateEnd: 'dateFromDOU(src)',
     timeStart: 'src.replace(/.+?(Начало|Время|Time|Start|Час|Початок):<\\/strong>\\s(\\d{2}:\\d{2}).+/, \'$2\')',
@@ -54,6 +56,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
     place: '`${JSON.parse(src).venue.address_1} (${JSON.parse(src).venue.name})`',
     registration: 'JSON.parse(src).event_url',
     image: '\'\'',
+    price: '',
     dateStart: 'dateFromMilliseconds(src, \'time\')',
     dateEnd: 'dateFromMilliseconds(src, \'time\')',
     timeStart: 'timeFromMilliseconds(src, \'time\')',
@@ -72,6 +75,7 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
     place: '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`',
     registration: 'JSON.parse(src).link',
     image: '\'\'',
+    price: '',
     dateStart: 'dateFromMilliseconds(src, \'eventTimestamp\')',
     dateEnd: 'dateFromMilliseconds(src, \'eventTimestamp\')',
     timeStart: 'timeFromMilliseconds(src, \'eventTimestamp\', 1000)',
@@ -91,9 +95,29 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
     place: '`${JSON.parse(src).place.location.city}, ${JSON.parse(src).place.location.street}`',
     registration: '`https://fb.com/${JSON.parse(src).id}`',
     image: '\'\'',
+    price: '',
     dateStart: 'dateFromMilliseconds(src, \'start_time\')',
     dateEnd: 'dateFromMilliseconds(src, \'end_time\')',
     timeStart: 'timeFromMilliseconds(src, \'start_time\')',
     timeEnd: 'timeFromMilliseconds(src, \'end_time\')'
+  },
+
+  ain: {
+    NUEsrcType: 'rawAin',
+    allEvents: 'data', 
+    NUEeventId: 'link', 
+    NUEsrcLink: 'link',
+    eventData: `ainGetData(data)`,
+    title: `src('h1').text() || ''`,
+    agenda: `src('.txt').html()`,
+    addInfo: '`<a href="${link}">ORIGINAL POST</a> | <br/>${title}<br/>${agenda}`',
+    place: 'ainPlace(src)',
+    registration: `src('.event-head').find('a').attr('href')`,
+    image: `src('.txt').find('img').attr('src') || ''`,
+    price: 'ainPrice(src)',
+    dateStart: "ainDate(src)",
+    dateEnd: "ainDate(src)",
+    timeStart: "ainTime(src)",
+    timeEnd: "ainTime(src)"
   }
 }

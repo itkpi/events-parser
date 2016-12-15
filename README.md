@@ -18,7 +18,7 @@ Licensed under the Apache License, Version 2.0.
 
 
 
-##Prerequisites
+## Prerequisites
 * [Git](https://git-scm.com/downloads)
 
 +
@@ -41,35 +41,46 @@ $ git clone https://github.com/itkpi/events-parser.git
 
 ### Vagga-way
 
-##### Add enviroment keys
-Add variables to your shell on this pattern:
+
+#### Add enviroment keys
+##### Add variables to your shell on this pattern:
 ```bash
 $ export VAGGA_ENV_%variable_name%='%value%'
 ```
-[All supported enviroment variables](#all-supported-enviroment-variables)
+**Warning!** Keep in mind how your shell work with variables: kept variables only in active session or global.
 
-##### Install dependencies and run
+##### Or add variables to `environ:` in your `vagga.yaml`
+```bash
+%variable_name%: %value%
+```
+**Warning!** `environ:` variables has higher priority than shell variables.
+
+**[All supported enviroment variables](#all-supported-enviroment-variables)**
+
+#### Install dependencies and run
 ```bash
 $ vagga run
 ```
 
 
-
 ### NodeJS-way
 
-##### Add enviroment keys
+
+#### Add enviroment keys
 Add variables to your shell on this pattern:
 ```bash
 $ export %variable_name%='%value%'
 ```
-[All supported enviroment variables](#all-supported-enviroment-variables)
+**Warning!** Keep in mind how your shell work with variables: kept variables only in active session or global.
 
-##### Install dependencies
+**[All supported enviroment variables](#all-supported-enviroment-variables)**
+
+#### Install dependencies
 ```bash
 $ npm install
 ```
 
-##### Run
+#### Run
 ```bash
 $ node main.js
 ```
@@ -78,15 +89,18 @@ $ node main.js
 
 ## All supported enviroment variables
 
-##### Need for send events to API
+
+
+### Need for send events to API
 ```bash
 EMAIL='your@mail.domain' 
-HOSTNAME_URL='http://your.api.host.name/'
-HOSTNAME_PATH='/path/to/you/suggestions/api/'
+HOSTNAME_URL='your.api.host.name'
+HOSTNAME_PATH='/path/to/you/suggestions/api'
 HOSTNAME_PORT='80'
 ```
 
-##### Need for Blacklist
+
+### Need for Blacklist
 ```bash
 BAN_IN_TITLE='Ignore this phrase|and this|case insensitive'
 BAN_IN_TITLE_OR_AGENDA='Ignore this phrase or company|and this|case insensitive'
@@ -94,15 +108,22 @@ BAN_COURSE_TITLE='Курс|Course' #case insensitive
 BAN_COURSE_COMPANY='Ignore courses by this company|and this|you can ban by URLs - it\'s more efective'
 ```
 
-##### Need for work with Meetup
+
+### Meetup access token
 ```bash
-MEETUP_GROUPS='https://api.meetup.com/find/groups?your-settings' 
-MEETUP_OPEN_EVENTS='https://api.meetup.com/2/open_events?your-settings' 
+MEETUP_OPEN_EVENTS='https://api.meetup.com/2/open_events?your-settings'
 ```
 More details about `MEETUP` in [this page](https://github.com/itkpi/events-parser/wiki/Meetup.com).
 
-##### Need for Translate Module
 
+### Facebook access token
+```bash
+FB_ACCESS_TOKEN='your_facebook_token'
+```
+You can get Access Token on [this page](https://developers.facebook.com/tools/explorer/).
+
+
+### Yandex Translate API-key
 ```bash
 YANDEX_TRANSLATE_KEY='Your Yandex-Translate API-key'
 ```

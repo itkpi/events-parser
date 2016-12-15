@@ -6,6 +6,7 @@
 
 const fs = require('fs-extra')
 const moment = require('moment')
+const spawn = require('child_process').spawn
 
 const utils = {}
 module.exports = utils
@@ -81,8 +82,56 @@ utils.ainGetMonth = (num) => {
 
 
 /**
- * @returns {number} days in curent month
+ * @returns {number} days in curent month.
  */
 Date.prototype.daysInMonth = function () {
   return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate()
+}
+
+/**
+ * Constructor. Run command in shell.
+ * @param {string} cmd - command name.
+ * @param {Array of strings} args - command's arguments.
+ * @param {string} cbStdout - callback with returned string.
+ * @param {number} cbEnd - callback with exit status code.
+ */
+function RunInShell (cmd, args, cbStdout, cbEnd) {
+  const child = spawn(cmd, args)
+  const self = this
+  // Send a cb to set 1 when cmd exits
+  self.exit = 0
+  self.stdout = ''
+  child.stdout.on('data', (data) => { cbStdout(self, data) })
+  child.stdout.on('end', () => { cbEnd(self) })
+}
+
+/**
+ * This is wrapper function for easly work with RunInShell function.
+ * @param {string} cmd - command name.
+ * @param {Array of strings} args - command's arguments.
+ * @returns {Object} RunInShell.
+ */
+function RIS (cmd, args) {
+  return new RunInShell(cmd, args,
+    (self, data) => { self.stdout += data.toString().slice(0, -1) },
+    (self) => { self.exit = 1 }
+  )
+}
+
+const describe = RIS('git', ['describe'])
+const branch = RIS('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
+
+/**
+ * Getting build version based on 'git tags' and curent branch.
+ * Patern: vMAJOR.MINOR.PATH-%branch name%-%number of commits from last tag%-%commit hash%.
+ * Example: v0.5.0-vesioning-8-g65cc3b3.
+ * @returns {string} version - curent build version.
+ */
+utils.getVersion = () => {
+  const ds = describe.stdout.split('-')
+  const version = ds.length === 1
+    ? `${ds[0]}-${branch.stdout}`
+    : `${ds[0]}-${branch.stdout}-${ds[1]}-${ds[2]}`
+
+  return version
 }

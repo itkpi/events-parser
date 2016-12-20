@@ -90,12 +90,13 @@ containers:
     - !NpmDependencies
   eventsparser:
     setup:
-    - !Alpine v3.3
-    - !Install [python, git]
+    - !Alpine v3.4
+    - !BuildDeps [python, git]
     - !NpmDependencies
       file: package.json
     environ:
       <<: *env_vars
+      NODE_PATH: /usr/lib/node_modules
 commands:
   run7: !Command
     container: nodejs-7-ubuntu-bin

@@ -13,16 +13,21 @@
     "url": "https://github.com/itkpi/events-parser/issues"
   },
   "homepage": "https://github.com/itkpi/events-parser",
+  "scripts": {
+    "start": "timeout -t 600 node main.js || echo 'KILLED BY TIMEOUT'"
+  },
   "engines": {
     "node": "7.2.1"
   },
   "dependencies": {
+    "cheerio": "0.22.0",
     "fs-extra": "~0.30.0",
     "moment": "~2.13.0",
+    "node-statsd": "0.1.1",
     "sync-request": "~3.0.0",
-    "xml2json": "~0.9.0",
-    "yandex-translate": "~2.1.0",
-    "node-statsd": "0.1.1"
+    "url": "0.11.0",
+    "xml2json": "0.9.2",
+    "yandex-translate": "~2.1.0"
   },
   "devDependencies": {
     "standard": "^7.1.1"

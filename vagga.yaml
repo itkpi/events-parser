@@ -1,4 +1,93 @@
 containers:
+  nodejs-7-ubuntu-bin:
+    environ: &env_vars
+      NODE_VERSION: 7.2.1
+      NODE_PATH: /usr/local/lib/node_modules
+      NPM_CONFIG_LOGLEVEL: info
+      HOSTNAME_URL: eventsmonkey.itkpi.pp.ua
+    setup:
+    - !Ubuntu xenial
+    - !Env
+      <<: *env_vars
+    # Get and install an official nodejs7 binary
+    - &install_nodejs_7 !Tar
+      url: https://nodejs.org/dist/v7.2.1/node-v7.2.1-linux-x64.tar.xz
+      path: /usr/local
+      subdir: node-v7.2.1-linux-x64
+      sha256: 1907fff2698444e8fac0d6b1f0f8fddeb355fd4924e284af0fd71089f365b187
+    - !Sh ln -s /usr/local/bin/node /usr/local/bin/nodejs
+    # Do not install node from the repo as we use official binary instead:
+    # Ref: vagga.readthedocs.io/en/latest/build_steps.html#step-NpmConfig
+    - !NpmConfig
+      install_node: false
+    # Python is a dendency of node-gyp:
+    # Ref: https://github.com/nodejs/node-gyp#installation
+    - !BuildDeps [python]
+    - !Install [libexpat1]
+    # install dependencies from package.json, see the doc for extra options:
+    # Ref: vagga.readthedocs.io/en/latest/build_steps.html#step-NpmDependencies
+    - !NpmDependencies
+  nodejs-7-alpine-src:
+  # Inspired by alpine-node docker container
+  # Ref: https://github.com/mhart/alpine-node/blob/87a3d836d5be5d57da10d918042e69858fdcb266/Dockerfile
+    environ:
+      <<: *env_vars
+    setup:
+    - !Alpine v3.4
+    - !BuildDeps [binutils-gold, curl, g++, gcc, gnupg, libgcc, linux-headers, make, python]
+    - !Install [libstdc++]
+    - !Env
+      <<: *env_vars
+    # Add a user to make him nodejs files owner:
+    - !Sh adduser -D -u 1000 node
+    # Add trusted keys to the gpg registry:
+    - !Sh for key in 9554F04D7259F04124DE6B476D5A82AC7E37093B 94AE36675C464D64BAFA68DD7434390BDBE9B9C5 0034A06D9D9B0064CE8ADF6BF1747F4AD2306D93 FD3A5288F042B6850C66B31F09FE44734EB7990E 71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 DD8F2338BAE7501E3DD5AC78C273792F7D83545D B9AE9905FFD7803F25714661B63B535A4C206CA9 C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8; do gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; done
+    - !Sh curl -SLO https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz
+    - !Sh curl -SLO https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc
+    - !Sh gpg --batch --decrypt -v --output SHASUMS256.txt SHASUMS256.txt.asc
+    - !Sh grep " node-v$NODE_VERSION.tar.xz\$" SHASUMS256.txt | sha256sum -c -
+    - !Sh tar -xf "node-v$NODE_VERSION.tar.xz"
+    - !Sh cd "node-v$NODE_VERSION" && ./configure && make -j$(getconf _NPROCESSORS_ONLN) && make install && cd ..
+    - !Sh rm -Rf "node-v$NODE_VERSION" "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
+    - !NpmConfig
+      install_node: false
+    - !NpmDependencies
+  nodejs-7-alpine-bin:
+  # WARNING: This container is not finished (and will not be)
+  # Since node is linked against glibc not installing dependencies results in:
+  # /usr/local/bin # ldd /usr/local/bin/node 
+  #     /lib64/ld-linux-x86-64.so.2 (0x55ac449e0000)
+  #     libdl.so.2 => /lib64/ld-linux-x86-64.so.2 (0x55ac449e0000)
+  #     librt.so.1 => /lib64/ld-linux-x86-64.so.2 (0x55ac449e0000)
+  # Error loading shared library libstdc++.so.6: No such file or directory (needed by /usr/local/bin/node)
+  #     libm.so.6 => /lib64/ld-linux-x86-64.so.2 (0x55ac449e0000)
+  # Error loading shared library libgcc_s.so.1: No such file or directory (needed by /usr/local/bin/node)
+  #     libpthread.so.0 => /lib64/ld-linux-x86-64.so.2 (0x55ac449e0000)
+  #     libc.so.6 => /lib64/ld-linux-x86-64.so.2 (0x55ac449e0000)
+  # Error relocating /usr/local/bin/node: _ZNSt15basic_streambufIcSt11char_traitsIcEE9pbackfailEi: symbol not found
+  # Error relocating /usr/local/bin/node: _ZNSt13runtime_errorC2ERKSs: symbol not found
+  # ...
+    environ:
+      <<: *env_vars
+    setup:
+    - !Alpine v3.4
+    - !Install [binutils-gold, curl, g++, gcc, gnupg, libgcc, linux-headers, make, python, libstdc++]
+    - !Env
+      <<: *env_vars
+    - !Download
+      url: https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
+      path: /etc/apk/keys/sgerrand.rsa.pub
+    # Try installing glibc replacement
+    - !Download
+      url: https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk
+      path: /tmp/glibc-2.23-r3.apk
+    - !Sh apk add /tmp/glibc-2.23-r3.apk
+    # Get nodejs7 binary
+    - *install_nodejs_7
+    - !NpmConfig
+      install_node: false
+      npm_exe: /usr/local/bin/npm
+    - !NpmDependencies
   eventsparser:
     setup:
     - !Alpine v3.3
@@ -6,8 +95,11 @@ containers:
     - !NpmDependencies
       file: package.json
     environ:
-      NODE_PATH: /usr/lib/node_modules
+      <<: *env_vars
 commands:
+  run7: !Command
+    container: nodejs-7-ubuntu-bin
+    run: npm start
   run: !Command
     container: eventsparser
-    run: timeout -t 600 node main.js || echo "KILLED BY TIMEOUT"
+    run: npm start

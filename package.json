@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/itkpi/events-parser",
   "scripts": {
-    "start": "timeout -t 600 node main.js || echo 'KILLED BY TIMEOUT'"
+    "start": "timeout_opts=$(cat /etc/os-release | grep ^ID= | sed 's/ID=alpine/t/' | sed 's/ID=ubuntu/k 600/'; echo -n ' 600'); timeout -$timeout_opts node main.js || echo 'KILLED BY TIMEOUT'"
   },
   "engines": {
     "node": "7.2.1"

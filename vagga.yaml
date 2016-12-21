@@ -1,3 +1,4 @@
+minimum-vagga: v0.6.1
 containers:
   nodejs-7-ubuntu-bin:
     environ: &env_vars

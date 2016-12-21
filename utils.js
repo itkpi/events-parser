@@ -62,7 +62,7 @@ utils.locale = (mm) => {
 /**
  * Date generator for ain links.
  * @param {number} num - what month from now we need.
- * @returns {string} date in 'year-month' format. 
+ * @returns {string} date in 'year-month' format.
  */
 utils.ainGetMonth = (num) => {
   const now = new Date()
@@ -79,7 +79,6 @@ utils.ainGetMonth = (num) => {
 
   return date
 }
-
 
 /**
  * @returns {number} days in curent month.

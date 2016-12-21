@@ -104,8 +104,8 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
 
   ain: {
     NUEsrcType: 'rawAin',
-    allEvents: 'data', 
-    NUEeventId: 'link', 
+    allEvents: 'data',
+    NUEeventId: 'link',
     NUEsrcLink: 'link',
     eventData: `ainGetData(data)`,
     title: `src('h1').text() || ''`,
@@ -115,9 +115,9 @@ target="_blank">SEARCH IMAGE</a><br/>${title}<br/>${agenda}`',
     registration: `src('.event-head').find('a').attr('href')`,
     image: `src('.txt').find('img').attr('src') || ''`,
     price: 'ainPrice(src)',
-    dateStart: "ainDate(src)",
-    dateEnd: "ainDate(src)",
-    timeStart: "ainTime(src)",
-    timeEnd: "ainTime(src)"
+    dateStart: 'ainDate(src)',
+    dateEnd: 'ainDate(src)',
+    timeStart: 'ainTime(src)',
+    timeEnd: 'ainTime(src)'
   }
 }

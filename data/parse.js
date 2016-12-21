@@ -266,7 +266,7 @@ function ainTime (src) {
     ? src('.event-head').find('time').eq(1).attr('datetime')
       .replace(/(<span>|<\/span>)/g, '').slice(1, 6)
     : '00:00'
-  
+
   return time
 }
 

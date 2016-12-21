@@ -101,6 +101,9 @@ commands:
   run7: !Command
     container: nodejs-7-ubuntu-bin
     run: npm start
+  test: !Command
+    container: nodejs-7-ubuntu-bin
+    run: [standard]
   run: !Command
     container: eventsparser
     run: npm start

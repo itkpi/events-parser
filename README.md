@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0.
 
 ## Clone repo
 ```bash
-$ git clone https://github.com/itkpi/events-parser.git
+$ git clone git@github.com:itkpi/events-parser.git
 ```
 
 

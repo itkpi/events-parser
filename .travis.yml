@@ -10,7 +10,7 @@ sudo: required
 # OS packages
 addons:
   apt:
-    packages: [uidmap, vagga]
+    packages: [vagga]
     sources:
       - sourceline: >-
           deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
@@ -25,9 +25,7 @@ cache:
 
 # Scripts to install dependencies
 # These are mostly honestly borrowed from https://github.com/tailhook/vagga/tree/master/.travis.yml
-before_install:
-  - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
-  - echo "$(id -un):100000:65536" | sudo tee /etc/subuid | sudo tee /etc/subgid
+before_install: 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
 
 install: vagga _build nodejs-7-ubuntu-bin
 

@@ -6,10 +6,24 @@ containers:
       NODE_PATH: /usr/local/lib/node_modules
       NPM_CONFIG_LOGLEVEL: info
       HOSTNAME_URL: eventsmonkey.itkpi.pp.ua
+      APP_VERSION_FILE: /.app-version
     setup:
     - !Ubuntu xenial
     - !Env
       <<: *env_vars
+    - !Depends .git/index
+    # Python is a dendency of node-gyp:
+    # Ref: https://github.com/nodejs/node-gyp#installation
+    - !BuildDeps [python, git]
+    - !Install [libexpat1]
+    # Generate the current version of app
+    - &generate_app_version !Sh |
+        ver=`git describe | awk -F- '{print$1}'`-`git rev-parse --abbrev-ref HEAD`
+        git describe | awk -F- '{print$2"\n"$3}' | while read sub_ver
+        do
+          ver=$ver-$sub_ver
+        done
+        echo $ver > $APP_VERSION_FILE
     # Get and install an official nodejs7 binary
     - &install_nodejs_7 !Tar
       url: https://nodejs.org/dist/v7.2.1/node-v7.2.1-linux-x64.tar.xz
@@ -21,10 +35,6 @@ containers:
     # Ref: vagga.readthedocs.io/en/latest/build_steps.html#step-NpmConfig
     - !NpmConfig
       install_node: false
-    # Python is a dendency of node-gyp:
-    # Ref: https://github.com/nodejs/node-gyp#installation
-    - !BuildDeps [python]
-    - !Install [libexpat1]
     # install dependencies from package.json, see the doc for extra options:
     # Ref: vagga.readthedocs.io/en/latest/build_steps.html#step-NpmDependencies
     - !NpmDependencies
@@ -35,10 +45,13 @@ containers:
       <<: *env_vars
     setup:
     - !Alpine v3.4
-    - !BuildDeps [binutils-gold, curl, g++, gcc, gnupg, libgcc, linux-headers, make, python]
+    - !BuildDeps [binutils-gold, curl, g++, gcc, gnupg, libgcc, linux-headers, make, python, git]
     - !Install [libstdc++]
     - !Env
       <<: *env_vars
+    - !Depends .git/index
+    # Generate the current version of app
+    - *generate_app_version
     # Add a user to make him nodejs files owner:
     - !Sh adduser -D -u 1000 node
     # Add trusted keys to the gpg registry:
@@ -72,9 +85,13 @@ containers:
       <<: *env_vars
     setup:
     - !Alpine v3.4
+    - !BuildDeps [git]
+    - !Depends .git/index
     - !Install [binutils-gold, curl, g++, gcc, gnupg, libgcc, linux-headers, make, python, libstdc++]
     - !Env
       <<: *env_vars
+    # Generate the current version of app
+    - *generate_app_version
     - !Download
       url: https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
       path: /etc/apk/keys/sgerrand.rsa.pub
@@ -93,6 +110,13 @@ containers:
     setup:
     - !Alpine v3.4
     - !BuildDeps [python, git]
+    # Catch branch changes
+    - !Depends .git/index
+    # Add env vars into build time
+    - !Env
+      <<: *env_vars
+    # Generate the current version of app
+    - *generate_app_version
     - !NpmDependencies
       file: package.json
     environ:
@@ -101,10 +125,16 @@ containers:
 commands:
   run7: !Command
     container: nodejs-7-ubuntu-bin
-    run: npm start
+    # add current version of the app to env vars
+    run: |
+      export APP_VERSION=`cat $APP_VERSION_FILE`
+      npm start
   test: !Command
     container: nodejs-7-ubuntu-bin
     run: [standard]
   run: !Command
     container: eventsparser
-    run: npm start
+    # add current version of the app to env vars
+    run: |
+      export APP_VERSION=`cat $APP_VERSION_FILE`
+      npm start

@@ -117,20 +117,11 @@ function RIS (cmd, args) {
   )
 }
 
-const describe = RIS('git', ['describe'])
-const branch = RIS('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
-
 /**
- * Getting build version based on 'git tags' and curent branch.
- * Patern: vMAJOR.MINOR.PATH-%branch name%-%number of commits from last tag%-%commit hash%.
- * Example: v0.5.0-vesioning-8-g65cc3b3.
- * @returns {string} version - curent build version.
+ * Get build version based on 'git tags' and current branch.
+ * Reads the app version from the env var or the file as a fallback.
+ * Pattern: vMAJOR.MINOR.PATCH-%branch name%-%number of commits from last tag%-%commit hash%.
+ * Example: v0.5.0-versioning-8-g65cc3b3.
+ * @returns {string} version - current build version.
  */
-utils.getVersion = () => {
-  const ds = describe.stdout.split('-')
-  const version = ds.length === 1
-    ? `${ds[0]}-${branch.stdout}`
-    : `${ds[0]}-${branch.stdout}-${ds[1]}-${ds[2]}`
-
-  return version
-}
+utils.getVersion = () => process.env.APP_VERSION || RIS('cat', [process.env.APP_VERSION_FILE]).stdout

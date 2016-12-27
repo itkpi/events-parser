@@ -15,19 +15,6 @@ const giveConfig = require('../src.js').config
 const dataIO = {}
 module.exports = dataIO
 
-const url = require('url')
-const parsedStatsdUrl = url.parse(process.env.STATSD_URL, true, true)
-const StatsD = require('node-statsd')
-const statsClient = new StatsD(
-  {
-    host: parsedStatsdUrl.hostname,
-    port: parsedStatsdUrl.port
-  }
-      )
-statsClient.socket.on('error', function (error) {
-  _log_(`Error in socket: ${error}`)
-})
-
 const firstEvent = 0
 
 /**
@@ -166,8 +153,6 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whe
     'submitter_email': process.env.EMAIL
   })
 
-  statsClient.increment('eventsparser.sendToAPI.sends')
-
   const options = {
     'hostname': process.env.HOSTNAME_URL,
     'port': process.env.HOSTNAME_PORT,
@@ -187,11 +172,7 @@ dataIO.sendtoAPI = (title, agenda, social, place, regUrl, imgUrl, whenStart, whe
       res.on('end', () => { _log_('No more data in response. \n') })
     }
   })
-  req.on('error', (e) => {
-    _log_(`problem with request: ${e.message}`)
-    statsClient.increment('eventsparser.sendToAPI.errors')
-  })
-
+  req.on('error', (e) => { _log_(`problem with request: ${e.message}`) })
   req.write(body)
   req.end()
 }

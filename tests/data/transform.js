@@ -64,4 +64,55 @@ const titleRaw = [{
   data: 'Бесплатный webinars    вебиНар"« “Automated testing безКоштовно in вебинаРНО DevOps..”   free"„“    '
 }]
 
+const agendaOK = '<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p><br><br><b><br>О вебинаре</b><br><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+const agendaRaw = [{
+  name: 'Remove words "free"',
+  data: '<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь fREE такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p><br><br><b><br>О вебинаре</b><br><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; бесплатнООо business. Специфика безкоштовно общения с различными стейкхолдерами</li></ul><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+}, {
+  name: 'Remove images',
+  data: '<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p><br><br><b><br>О вебинаре</b><br><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+}, {
+  name: 'Replace Header-text to Bold-text',
+  data: '<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p><br><br><h4>О вебинаре</h4><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+}, {
+  name: 'Remove iframes',
+  data: '<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p><br><br><b><br>О вебинаре</b><br><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul><br><br><p><iframe wepfkpowfekpwekfpok pooqwkdfpwqkp iframe></p><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете<iframe iframe> написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+}, {
+  name: 'Replace spans to paragraph',
+  data: '<span>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</span><br><br><b><br>О вебинаре</b><br><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+}, {
+  name: 'Replace \\n to <br>',
+  data: `<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p>
+
+<b><br>О вебинаре</b><br>
+
+<ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul>
+
+<p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p>
+
+<p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p>
+
+<p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>`
+}, {
+  name: 'Replace paragraph with custom line to horizontal rule',
+  data: '<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p><br><br><b><br>О вебинаре</b><br><br><br><ul><li>Как и откуда появилась позиция продакт-менеджер</li><li>Что это, собственно, такое — управление продуктом </li><li>С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами</li></ul><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><p>———</p>'
+}, {
+  name: 'Replace custom unordered lists to html',
+  data: '<span>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</span><br><br><b><br>О вебинаре</b><br><br><br><p>— Как и откуда появилась позиция продакт-менеджер<br>— Что это, собственно, такое — управление продуктом <br>— С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика <iframe sdfsfsdf iframe>общения с различными стейкхолдерами.</p><br><br><p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p><br><br><p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p><br><br><p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><hr>'
+}, {
+  name: 'Combo',
+  data: `<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p>
+
+<h4>О вебинаре</h4>
+
+<p>— Как и откуда появилась позиция продакт-менеджер<br>— Что это, собственно, такое — управление продуктом <br>— С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами.</p>
+
+<p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p>
+
+<p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p>
+
+<p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><p>———</p>`
+}]
+
 assertData('title', titleOK, titleRaw)
+assertData('agenda', agendaOK, agendaRaw)

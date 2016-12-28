@@ -25,6 +25,8 @@ Licensed under the Apache License, Version 2.0.
 
 +
 * [Vagga](http://vagga.readthedocs.io/en/latest/installation.html) (higly recomended)
++
+* [Docker](https://docs.docker.com/engine/getstarted/)
 <br>OR
 * [Node.JS](https://nodejs.org/uk/) 4+ (not recomended)
 
@@ -63,6 +65,29 @@ $ export VAGGA_ENV_%variable_name%='%value%'
 ```bash
 $ vagga run
 ```
+
+
+### Docker-way
+
+
+#### Add enviroment keys
+Add variables to your `Dockerfile` on this pattern:
+```bash
+ENV %variable% %value%
+```
+
+**[All supported enviroment variables](#all-supported-enviroment-variables)**
+
+#### Build image
+```bash
+$ docker build -f Dockerfile -t events-parser:latest .
+```
+
+#### Run
+```bash
+$ docker run  --rm events-parser:latest
+```
+
 
 
 ### NodeJS-way

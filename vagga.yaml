@@ -7,6 +7,7 @@ containers:
       NPM_CONFIG_LOGLEVEL: info
       HOSTNAME_URL: eventsmonkey.itkpi.pp.ua
       APP_VERSION_FILE: /.app-version
+      APP_NAME: Events Parser
     setup:
     - !Ubuntu xenial
     - !Env
@@ -138,3 +139,11 @@ commands:
     run: |
       export APP_VERSION=`cat $APP_VERSION_FILE`
       npm start
+  version: !Command
+    container: nodejs-7-ubuntu-bin
+    # add current version of the app to env vars
+    run: |
+      export APP_VERSION=`cat $APP_VERSION_FILE`
+      echo -n $APP_NAME 'version: ' >&2
+      echo -n $APP_VERSION
+      echo >&2

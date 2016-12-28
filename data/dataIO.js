@@ -13,7 +13,13 @@ const _log_ = require('../utils.js')._log_
 const giveConfig = require('../src.js').config
 
 const dataIO = {}
-module.exports = dataIO
+const dataIOTests = {
+  convertToJson
+}
+module.exports = {
+  dataIO,
+  dataIOTests
+}
 
 const firstEvent = 0
 
@@ -32,31 +38,14 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   fs.ensureFileSync(oldJSON)
 
   // Save old data
-  fs.copySync(newJSON, oldJSON)
+  fs.renameSync(newJSON, oldJSON)
 
   // Get data from source
   const res = request('GET', srcLink).getBody()
-
-  switch (srcType) {
-    case 'xml':
-      const jsonBody = xml2json.toJson(res, {'sanitize': false})
-      fs.writeFileSync(newJSON, jsonBody)
-      break
-    case 'json':
-      const readableBody = JSON.stringify(JSON.parse(res))
-      fs.writeFileSync(newJSON, readableBody)
-      break
-    case 'rawAin':
-      const links = ainGetLinks(res)
-      const ainBody = JSON.stringify(JSON.parse(links))
-      fs.writeFileSync(newJSON, ainBody)
-      break
-    default:
-      _log_(`ERROR: NOT FOUND ${srcType} in dataIO.get`)
-  }
+  const json = convertToJson(res, srcType)
+  fs.writeFileSync(newJSON, json)
 
   const old = fs.readFileSync(oldJSON)
-
   if (old == '') { // not rewrite to '==='
     _log_(`${srcName}: INIT`)
 
@@ -64,6 +53,32 @@ dataIO.get = (srcName, srcType, srcLink, newJSON, oldJSON) => {
   }
 
   return true
+}
+
+/**
+ * convertToJson - convert data to json.
+ * @param {} data - data for convert.
+ * @param {string} dataType - datatype.
+ * @returns {JSON} json analogue to original data..
+ */
+function convertToJson (data, dataType) {
+  let json
+  switch (dataType) {
+    case 'xml':
+      json = xml2json.toJson(data, {'sanitize': false})
+      break
+    case 'json':
+      json = JSON.stringify(JSON.parse(data))
+      break
+    case 'rawAin':
+      const links = ainGetLinks(data)
+      json = JSON.stringify(JSON.parse(links))
+      break
+    default:
+      _log_(`ERROR: NOT FOUND ${dataType} in dataIO: convertToJson`)
+  }
+
+  return json
 }
 
 /**

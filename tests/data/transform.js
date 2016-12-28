@@ -144,6 +144,22 @@ const addInfoRaw = [{
 <p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p></div>`
 }]
 
+const placeOK = 'вул. Абракадабри 15 (офіс 17)'
+const placeRaw = [{
+  name: 'Remove "Ukraine" from the field',
+  data: 'Україна, вул. Абракадабри 15 (офіс 17)'
+}, {
+  name: 'Remove "Kyiv" from the field',
+  data: 'Київ, вул. Абракадабри 15 (офіс 17)'
+}, {
+  name: 'Remove html tags',
+  data: '<html tag>вул. Абракадабри <tag tag tag>15 (офіс 17)'
+}, {
+  name: 'Combo',
+  data: 'Украина, <html tag>Kyiv, вул. Абракадабри <tag tag tag>15 (офіс 17)'
+}]
+
 assertData('title', titleOK, titleRaw)
 assertData('agenda', agendaOK, agendaRaw)
 assertData('addInfo', addInfoOK, addInfoRaw)
+assertData('place', placeOK, placeRaw)

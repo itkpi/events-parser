@@ -114,5 +114,36 @@ const agendaRaw = [{
 <p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p><p>———</p>`
 }]
 
+const addInfoOK = `<a href="https://dou.ua/calendar/">ORIGINAL POST</a> | <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url="https://s.dou.ua/371.png" target="_blank">SEARCH IMAGE</a><br/>Вебинар: Ни кнута, ни пряника. Чем и как управляет продакт-менеджер<br/><div><p><a href="https://dou.ua/calendar/" target="_blank"><img width="600" src="https://s.dou.ua/371.png"><br/>https://s.dou.ua/371.png<br/></a><strong>Дата:</strong> 10 ноября (четверг)<br><strong>Начало:</strong> 19:00<br><strong>Место:</strong> Online</p>
+
+<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p>
+
+<h4>О вебинаре</h4>
+
+<p>— Как и откуда появилась позиция продакт-менеджер<br>— Что это, собственно, такое — управление продуктом <br>— С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами.</p>
+
+<p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p>
+
+<p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p>
+
+<p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p></div>`
+const addInfoRaw = [{
+  name: 'Combo',
+  data: `<a href="https://dou.ua/calendar/">ORIGINAL POST</a> | <a href="https://www.google.com.ua/searchbyimage?newwindow=1&site=search&image_url="https://s.dou.ua/371.png" target="_blank">SEARCH IMAGE</a><br/>Вебинар: Ни кнута, ни пряника. Чем и как управляет продакт-менеджер<br/><div><p><a href="https://dou.ua/calendar/" target="_blank"><img src="https://s.dou.ua/371.png" style="float: right; padding-left: 4px;"></a><strong>Дата:</strong> 10 ноября (четверг)<br><strong>Начало:</strong> 19:00<br><strong>Место:</strong> Online</p>
+
+<p>Давно хотели узнать о суровых буднях продакт-менеджера? <br>Или просто узнать побольше о том, что это за зверь такой — продакт-менеджер?<br>Тогда этот вебинар для вас.</p>
+
+<h4>О вебинаре</h4>
+
+<p>— Как и откуда появилась позиция продакт-менеджер<br>— Что это, собственно, такое — управление продуктом <br>— С кем взаимодействует продакт-менеджер в работе: tech &amp; business. Специфика общения с различными стейкхолдерами.</p>
+
+<p><strong>Продолжительность:</strong> <nobr>40-60</nobr> минут</p>
+
+<p><strong>Регистрация:</strong> <a href="https://goo.gl/forms/" target="_blank">goo.gl/forms/EsUoO6fM5lXiiHIJ2</a> </p>
+
+<p>Если у вас есть вопросы, можете написать мне на <a href="mailto:disco@prod.com">disco@prod.com</a> или отправить сообщение на <a href="https://www.linkedin.com/" target="_blank">LinkedIn</a>.</p></div>`
+}]
+
 assertData('title', titleOK, titleRaw)
 assertData('agenda', agendaOK, agendaRaw)
+assertData('addInfo', addInfoOK, addInfoRaw)

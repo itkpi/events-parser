@@ -24,7 +24,7 @@ containers:
     # Python is a dendency of node-gyp:
     # Ref: https://github.com/nodejs/node-gyp#installation
     - !BuildDeps [python]
-    - !Install [libexpat1, git]
+    - !Install [libexpat1]
     # install dependencies from package.json, see the doc for extra options:
     # Ref: vagga.readthedocs.io/en/latest/build_steps.html#step-NpmDependencies
     - !NpmDependencies
@@ -92,7 +92,7 @@ containers:
   eventsparser:
     setup:
     - !Alpine v3.4
-    - !Install  [python, git]
+    - !BuildDeps [python, git]
     - !NpmDependencies
       file: package.json
     environ:

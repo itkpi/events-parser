@@ -36,3 +36,32 @@ ${rawData.data}
 
   return true
 }
+
+const titleOK = 'Automated testing in DevOps'
+const titleRaw = [{
+  name: 'Remove words "free" and "webinar" [1]',
+  data: 'Бесплатный вебиНар Automated testing in DevOps'
+}, {
+  name: 'Remove words "free" and "webinar" [2]',
+  data: 'Automated вебіНаро testing безКоштовне in DevOps'
+}, {
+  name: 'Remove words "free" and "webinar" [3]',
+  data: 'webinars webinar Automated testing in DevOps free'
+}, {
+  name: 'Remove quotation mark',
+  data: '“Automated »testing in" ”DevOps’“”"«»‘„“'
+}, {
+  name: 'Remove useless spaces',
+  data: ' Automated   testing   in  DevOps  '
+}, {
+  name: 'Remove dots in the end [1]',
+  data: 'Automated testing in DevOps..........'
+}, {
+  name: 'Remove dots in the end [2]',
+  data: 'Automated testing in DevOps...вебіНаро.......'
+}, {
+  name: 'Combo',
+  data: 'Бесплатный webinars    вебиНар"« “Automated testing безКоштовно in вебинаРНО DevOps..”   free"„“    '
+}]
+
+assertData('title', titleOK, titleRaw)

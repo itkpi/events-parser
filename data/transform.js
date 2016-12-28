@@ -16,11 +16,14 @@ module.exports = transform
 transform.title = (data) => {
   const title = data
     // Remove words 'free' and 'webinar'
-    .replace(/(бесплат|вебин|безкоштовн|вебін)[а-я]+\s/ig, '')
+    .replace(/((бесплат|вебин|безкоштовн|вебін)[а-я]+|free|webinars?)/ig, '')
     // Remove quotation mark
-    .replace(/[",«,‘,“,„]+(.{0,})+[",»,’,”,“]/, '$1')
+    .replace(/["«»‘’“”„“]/g, '')
+    // Remove useless spaces
+    .trim().replace(/\s{2,}/g, ' ')
     // Remove dots in the end
-    .replace(/(.{0,})(\.{1,})/, '$1')
+    .replace(/\.+$/g, '')
+
 
   return title
 }
@@ -32,8 +35,8 @@ transform.title = (data) => {
  */
 transform.agenda = (data) => {
   const agenda = data
-    // Remove word 'free'
-    .replace(/(бесплат|безкоштовн)[а-я]+\s/ig, '')
+    // Remove words 'free'
+    .replace(/((бесплат|безкоштовн)[а-я]+|free)\s?/ig, '')
     // Remove images
     .replace(/<img.+?">(<br>)?/g, '')
     // Replace Header-text to Bold-text
@@ -41,7 +44,7 @@ transform.agenda = (data) => {
     // Remove iframes
     .replace(/<p><iframe.{0,}iframe><\/p>|<iframe.{0,}iframe>/g, '')
     // Replace spans to paragraph
-    .replace(/<span.+?>(.+?)<\/span>(<br>)?/g, '<p>$1</p>')
+    .replace(/<span.*?>(.+?)<\/span>/g, '<p>$1</p>')
     // Replace \n to <br>
     .replace(/\n/g, '<br>')
     // Replace paragraph with custom line to horizontal rule
@@ -78,7 +81,7 @@ transform.place = (data) => {
     .replace(/(Украина|Україна|Ukraine)(,\s)?/, '')
     // Remove 'Kyiv' from the field
     .replace(/(Киев|Київ|Kyiv|Kiev)(,\s)?/, '')
-    // Remove html tags // FIX ME: It looks like a crutch. Need rewrite.
+    // Remove html tags
     .replace(/(.*?)<.+?>(.+?)/g, '$1$2')
 
   return place

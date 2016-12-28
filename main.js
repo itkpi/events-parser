@@ -9,7 +9,7 @@ const path = require('path')
 
 const parse = require('./data/parse')
 const inBlackList = require('./data/blackList').inBlackList
-const dataIO = require('./data/dataIO')
+const { dataIO } = require('./data/dataIO')
 const transform = require('./data/transform')
 const src = require('./src')
 

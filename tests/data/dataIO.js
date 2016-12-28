@@ -53,6 +53,15 @@ function read (sources) {
   })
 }
 
+function link (sources) {
+  sources.forEach((source) => {
+    const file = fs.readJsonSync(`${path}/link/${source}.json`)
+    const link = dataIO.link(source, file, [0])
+    assert.strictEqual(link, links[source])
+  })
+}
+
 get()
 convertToJson(types)
 read(sources)
+link(sources)

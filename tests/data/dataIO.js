@@ -45,5 +45,14 @@ function convertToJson (types) {
   })
 }
 
+function read (sources) {
+  sources.forEach((source) => {
+    const src = util.inspect(dataIO.read(source, `${path}/read/${source}.json`), 0, null)
+    const srcRead = fs.readFileSync(`${path}/read/${source}Read`).toString()
+    assert.strictEqual(src, srcRead)
+  })
+}
+
 get()
 convertToJson(types)
+read(sources)

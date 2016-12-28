@@ -36,4 +36,14 @@ function get () {
   fs.rmdirSync(`${path}/json/`)
 }
 
+function convertToJson (types) {
+  types.forEach((type) => {
+    const dataType = fs.readFileSync(`${path}/convert.${type}`)
+    const convertType = dataIOTests.convertToJson(dataType, type)
+    const jsonType = fs.readFileSync(`${path}/${type}.json`).toString()
+    assert.strictEqual(convertType, jsonType)
+  })
+}
+
 get()
+convertToJson(types)

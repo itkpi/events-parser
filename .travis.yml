@@ -48,4 +48,5 @@ before_install:
   - docker ps -a
 
 script: 
+  - npm i standard
   - standard

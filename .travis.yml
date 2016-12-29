@@ -33,3 +33,20 @@ install:
 
 # Run tests
 script: vagga test
+
+# Docker analog
+sudo: required
+
+language: javascript
+
+services:
+  - docker
+
+before_install:
+  - docker build -t events-parser:latest .
+  - docker run  --rm events-parser:latest
+  - docker ps -a
+
+script: 
+  - npm i standard
+  - standard

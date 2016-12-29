@@ -19,11 +19,11 @@ containers:
     - !Install [libexpat1]
     # Generate the current version of app
     - &generate_app_version !Sh |
-        ver=`git describe | awk -F- '{print$1}'`-`git rev-parse --abbrev-ref HEAD`
-        git describe | awk -F- '{print$2"\n"$3}' | while read sub_ver
+        ver=`git describe | awk -F- '{print$1}'`-`git rev-parse --abbrev-ref HEAD;`\
+        `git describe | awk -F- '{print$2"\n"$3}' | while read sub_ver
         do
-          ver=$ver-$sub_ver
-        done
+          echo -n -$sub_ver
+        done`
         echo $ver > $APP_VERSION_FILE
     # Get and install an official nodejs7 binary
     - &install_nodejs_7 !Tar

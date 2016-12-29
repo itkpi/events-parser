@@ -27,7 +27,9 @@ cache:
 # These are mostly honestly borrowed from https://github.com/tailhook/vagga/tree/master/.travis.yml
 before_install: 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
 
-install: vagga _build nodejs-7-ubuntu-bin
+install:
+  - vagga _build nodejs-7-ubuntu-bin
+  - vagga version
 
 # Run tests
 script: vagga test
